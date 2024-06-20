@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  db:
+    container_name: se_db
+    image: postgres:13
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=db_skyexplorer
+    ports:
+      - "5432:5432"
+
+  backend:
+    container_name: se_backend
+    depends_on:
+      - db
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=se_db; Database=db_skyexplorer; User Id=postgres_user; Password=1234;"
+    ports:
+      - "5000:5000"
+
+  frontend:
+    container_name: se_frontend
+    depends_on:
+      - backend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+
+volumes:
+    pgdata: {}
+# version: '3.8'
+
+# services:
+#   db:
+#     image: postgres:13
+#     container_name: postgres_container
+#     restart: always
+#     environment:
+#       POSTGRES_DB: mydatabase
+#       POSTGRES_USER: myuser
+#       POSTGRES_PASSWORD: mypassword
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#       - ./initdb:/docker-entrypoint-initdb.d
+
+# volumes:
+#   postgres_data:
+
