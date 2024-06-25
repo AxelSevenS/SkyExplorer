@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("bills")]
-public record Bill : Entity<BillDTO> {
+public record Bill : Entity<BillCreateDTO, BillUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,23 +28,35 @@ public record Bill : Entity<BillDTO> {
 
 
 	public Bill() : base() { }
-	public Bill(BillDTO dto) : base(dto) { }
+	public Bill(BillCreateDTO dto) : base(dto) {
+		URL = dto.URL;
+		WasAcquitted = dto.WasAcquitted;
+		CreatedAt = DateTime.Now;
+	}
 
-
-	public override void Update(BillDTO dto) {
+	public override void Update(BillUpdateDTO dto) {
 		if (dto.URL is not null) URL = dto.URL;
-		if (dto.WasAcquitted.HasValue) WasAcquitted = dto.WasAcquitted.Value;
-		if (dto.CreatedAt.HasValue) CreatedAt = dto.CreatedAt.Value;
+		if (dto.WasAcquitted is not null) WasAcquitted = dto.WasAcquitted.Value;
 	}
 }
 
-public class BillDTO {
+[Serializable]
+public class BillCreateDTO {
+	[JsonPropertyName("url")]
+	public string URL { get; set; }
+
+	[JsonPropertyName("wasAcquitted")]
+	public bool WasAcquitted { get; set; }
+
+	[JsonPropertyName("createdAt")]
+	public bool CreatedAt { get; set; }
+}
+
+[Serializable]
+public class BillUpdateDTO {
 	[JsonPropertyName("url")]
 	public string? URL { get; set; }
 
 	[JsonPropertyName("wasAcquitted")]
 	public bool? WasAcquitted { get; set; }
-
-	[JsonPropertyName("createdAt")]
-	public DateTime? CreatedAt { get; set; }
 }

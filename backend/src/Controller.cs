@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using UserAuth = User.Authorizations;
 
-public abstract class Controller<TData, TDTO>(AppDbContext repository) : ControllerBase where TData : Entity<TDTO> where TDTO : class {
+public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : Entity<TSetupDTO, TUpdateDTO> {
 	protected readonly AppDbContext Repository = repository;
 
 	/// <summary>
@@ -17,7 +17,7 @@ public abstract class Controller<TData, TDTO>(AppDbContext repository) : Control
 	/// <returns>True if the user is authenticated and holds the authorization(s), False if the user is not authenticated or doesn't hold the authorization(s)</returns>
 	protected bool VerifyAuthorization(UserAuth authorizations) {
 		if (HttpContext.User.FindFirst(JwtOptions.RoleClaim)?.Value is string claim) {
-			return (claim.GetAuths() & authorizations) == authorizations;
+			return (claim.ParseAuths() & authorizations) == authorizations;
 		}
 
 		return false;

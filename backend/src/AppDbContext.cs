@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext(DbContextOptions options, JwtOptions jwtOptions) : DbContext(options) {
 	public DbSet<User> Users { get; set; }
+	public DbSet<Plane> Planes { get; set; }
+	public DbSet<Message> Messages { get; set; }
 	public DbSet<Lesson> Lessons { get; set; }
 	public DbSet<Activity> Activities { get; set; }
 	public DbSet<Flight> Flights { get; set; }
@@ -18,7 +20,7 @@ public class AppDbContext(DbContextOptions options, JwtOptions jwtOptions) : DbC
 				Id = 1,
 				Email = "AdminUser",
 				Password = jwtOptions.HashPassword("""p4&nY7]S<m'l3H£59?:^^WG*p&6YPN0wt$L9]gr8"UcjcvE):7"""),
-				Auth = (User.Authorizations)User.Roles.Admin
+				Auth = (User.Authorizations)User.Positions.Admin
 			}
 		);
 	}

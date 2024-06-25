@@ -1,11 +1,9 @@
 namespace SkyExplorer;
 
-public abstract record Entity<T> {
+public abstract record Entity<TCreateDTO, TUpdateDTO> {
 	public Entity() { }
-	public Entity(T dto) {
-		Update(dto);
-	}
+	public Entity(TCreateDTO dto) { }
 
 
-	public abstract void Update(T dto);
+	public abstract void Update(TUpdateDTO dto);
 }

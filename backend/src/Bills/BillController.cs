@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 [ApiController]
 [Route("api/bills")]
-public class BillController(AppDbContext repo) : Controller<Bill, BillDTO>(repo) {
+public class BillController(AppDbContext repo) : Controller<Bill, BillCreateDTO, BillUpdateDTO>(repo) {
 	[HttpGet]
 	public Task<List<Bill>> GetAll() =>
 		Repository.Bills.ToListAsync();
@@ -19,6 +19,6 @@ public class BillController(AppDbContext repo) : Controller<Bill, BillDTO>(repo)
 		};
 
 	[HttpPost]
-	public async Task<ActionResult<Bill>> AddBill([FromForm] BillDTO dto) =>
+	public async Task<ActionResult<Bill>> AddBill([FromForm] BillCreateDTO dto) =>
 		Ok(await Repository.Bills.AddAsync(new(dto)));
 }

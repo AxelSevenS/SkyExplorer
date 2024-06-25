@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 [ApiController]
 [Route("api/flights")]
-public class FlightController(AppDbContext repo) : Controller<Flight, FlightDTO>(repo) {
+public class FlightController(AppDbContext repo) : Controller<Flight, FlightCreateDTO, FlightUpdateDTO>(repo) {
 	[HttpGet]
 	public Task<List<Flight>> GetAll() =>
 		Repository.Flights.ToListAsync();
@@ -19,11 +19,11 @@ public class FlightController(AppDbContext repo) : Controller<Flight, FlightDTO>
 		};
 
 	[HttpPost]
-	public async Task<ActionResult<Flight>> AddFlight([FromForm] FlightDTO dto) =>
+	public async Task<ActionResult<Flight>> AddFlight([FromForm] FlightCreateDTO dto) =>
 		Ok(await Repository.Flights.AddAsync(new(dto)));
 
 	[HttpPatch("{id}")]
-	public async Task<ActionResult<Flight>> UpdateFlight(uint id, [FromForm] FlightDTO dto) {
+	public async Task<ActionResult<Flight>> UpdateFlight(uint id, [FromForm] FlightUpdateDTO dto) {
 		Flight? found = Repository.Flights.Find(id);
 		if (found is null) {
 			return NotFound();
