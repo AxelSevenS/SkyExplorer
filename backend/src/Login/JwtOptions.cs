@@ -38,7 +38,7 @@ public record class JwtOptions {
 		[
 			// new Claim(JwtRegisteredClaimNames.Name, user.Username),
 			new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-			new Claim(RoleClaim, user.Auth.GetRoles()),
+			new Claim(RoleClaim, user.Auth.FormatAuths()),
 
 			new Claim(JwtRegisteredClaimNames.Iss, Issuer),
 			new Claim(JwtRegisteredClaimNames.Aud, Audience),
