@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("lessons")]
-public record Lesson : Entity<LessonDTO> {
+public record Lesson : Entity<LessonCreateDTO, LessonUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -31,21 +31,37 @@ public record Lesson : Entity<LessonDTO> {
 
 
 	public Lesson() : base() { }
-	public Lesson(LessonDTO dto) : base(dto) { }
+	public Lesson(LessonCreateDTO dto) : base(dto) {
+		Goals = dto.Goals;
+		AchievedGoals = dto.AchievedGoals ?? string.Empty;
+		Note = dto.Note ?? string.Empty;
+	}
 
 
-	public override void Update(LessonDTO dto) {
-		if (dto.FlightId.HasValue) FlightId = dto.FlightId.Value;
+	public override void Update(LessonUpdateDTO dto) {
 		if (dto.Goals is not null) Goals = dto.Goals;
 		if (dto.AchievedGoals is not null) AchievedGoals = dto.AchievedGoals;
 		if (dto.Note is not null) Note = dto.Note;
 	}
 }
 
-
-public record LessonDTO {
+[Serializable]
+public record LessonCreateDTO {
 	[JsonPropertyName("flightId")]
-	public uint? FlightId { get; set; }
+	public uint FlightId { get; set; }
+
+	[JsonPropertyName("goals")]
+	public string? Goals { get; set; }
+
+	[JsonPropertyName("achievedGoals")]
+	public string? AchievedGoals { get; set; }
+
+	[JsonPropertyName("note")]
+	public string? Note { get; set; }
+}
+
+[Serializable]
+public record LessonUpdateDTO {
 
 	[JsonPropertyName("goals")]
 	public string? Goals { get; set; }

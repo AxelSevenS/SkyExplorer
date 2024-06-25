@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using UserAuth = User.Authorizations;
 
-public abstract class Controller<TData, TDTO>(AppDbContext repository) : ControllerBase where TData : Entity<TDTO> where TDTO : class {
+public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : Entity<TSetupDTO, TUpdateDTO> {
 	protected readonly AppDbContext Repository = repository;
 
 	/// <summary>

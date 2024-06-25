@@ -5,22 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("users")]
-public record User : Entity<UserDTO> {
+public record User : Entity<UserSetupDTO, UserUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[JsonPropertyName("id")]
 	public uint Id { get; set; }
-
-	[Required]
-	[Column("firstname")]
-	[JsonPropertyName("firstname")]
-	public string Firstname { get; set; } = string.Empty;
-
-	[Required]
-	[Column("lastname")]
-	[JsonPropertyName("lastname")]
-	public string Lastname { get; set; } = string.Empty;
 
 	[Required]
 	[Column("email")]
@@ -33,20 +23,32 @@ public record User : Entity<UserDTO> {
 	public string Password { get; set; } = string.Empty;
 
 	[Required]
+	[Column("firstname")]
+	[JsonPropertyName("firstname")]
+	public string FirstName { get; set; } = string.Empty;
+
+	[Required]
+	[Column("lastname")]
+	[JsonPropertyName("lastname")]
+	public string LastName { get; set; } = string.Empty;
+
+	[Required]
 	[Column("authorizations")]
 	[JsonPropertyName("authorizations")]
 	public Authorizations Auth { get; set; } = (Authorizations)Positions.User;
 
 
 	public User() : base() { }
-	public User(UserDTO dto) : base(dto) { }
+	public User(UserSetupDTO dto) : base(dto) {
+		// TODO: GUILLAUME
+	}
 
 
-	public override void Update(UserDTO dto) {
-		if (dto.Firstname is not null) Firstname = dto.Firstname;
-		if (dto.Lastname is not null) Lastname = dto.Lastname;
+	public override void Update(UserUpdateDTO dto) {
 		if (dto.Email is not null) Email = dto.Email;
 		if (dto.Password is not null) Password = dto.Password;
+		if (dto.FirstName is not null) FirstName = dto.FirstName;
+		if (dto.LastName is not null) LastName = dto.LastName;
 	}
 
 
@@ -71,21 +73,68 @@ public record User : Entity<UserDTO> {
 	}
 }
 
-
-
-public record UserDTO {
-	[JsonPropertyName("firstname")]
-	public string? Firstname { get; set; }
-
-	[JsonPropertyName("lastname")]
-	public string? Lastname { get; set; }
-
+[Serializable]
+public record UserUpdateDTO {
 	[JsonPropertyName("email")]
 	public string? Email { get; set; }
 
 	[JsonPropertyName("password")]
 	public string? Password { get; set; }
 
-	[JsonPropertyName("roles")]
-	public User.Authorizations? Auth { get; set; }
+	[JsonPropertyName("firstname")]
+	public string? FirstName { get; set; }
+
+	[JsonPropertyName("lastname")]
+	public string? LastName { get; set; }
+}
+[Serializable]
+public record UserLoginDTO {
+	[JsonPropertyName("email")]
+	public string Email { get; set; }
+
+	[JsonPropertyName("password")]
+	public string Password { get; set; }
+}
+
+[Serializable]
+public record UserSetupDTO {
+	[JsonPropertyName("email")]
+	public string Email { get; set; }
+
+	[JsonPropertyName("password")]
+	public string Password { get; set; }
+
+	[JsonPropertyName("firstname")]
+	public string? FirstName { get; set; }
+
+	[JsonPropertyName("lastname")]
+	public string? LastName { get; set; }
+
+	[JsonPropertyName("authorizations")]
+	public User.Authorizations Auth { get; set; }
+}
+
+[Serializable]
+public record UserRegisterDTO {
+	[JsonPropertyName("email")]
+	public string Email { get; set; }
+
+	[JsonPropertyName("password")]
+	public string Password { get; set; }
+
+	[JsonPropertyName("firstname")]
+	public string? FirstName { get; set; }
+
+	[JsonPropertyName("lastname")]
+	public string? LastName { get; set; }
+
+
+	public UserSetupDTO WithAuths(User.Authorizations authorizations) =>
+		new() {
+			Email = Email,
+			FirstName = FirstName,
+			LastName = LastName,
+			Password = Password,
+			Auth = authorizations,
+		};
 }

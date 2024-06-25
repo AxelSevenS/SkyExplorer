@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("messages")]
-public record Message : Entity<MessageDTO> {
+public record Message : Entity<MessageCreateDTO, MessageUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[JsonPropertyName("id")]
@@ -13,11 +13,11 @@ public record Message : Entity<MessageDTO> {
 
 	[Column("title")]
 	[JsonPropertyName("title")]
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	[Column("body")]
 	[JsonPropertyName("body")]
-	public string Body { get; set; }
+	public string? Body { get; set; }
 
 	[Column("sending_date")]
 	[JsonPropertyName("sendingDate")]
@@ -33,19 +33,23 @@ public record Message : Entity<MessageDTO> {
 
 
 	public Message() { }
-	public Message(MessageDTO dto) : base(dto) { }
+	public Message(MessageCreateDTO dto) : base(dto) {
+		Title = dto.Title;
+		Body = dto.Body;
+		SendingDate = dto.SendingDate;
+		SenderId = dto.SenderId;
+		RecipientId = dto.RecipientId;
+	}
 
 
-	public override void Update(MessageDTO dto) {
+	public override void Update(MessageUpdateDTO dto) {
 		if (dto.Title is not null) Title = dto.Title;
 		if (dto.Body is not null) Body = dto.Body;
-		if (dto.SendingDate.HasValue) SendingDate = dto.SendingDate.Value;
-		if (dto.SenderId.HasValue) SenderId = dto.SenderId.Value;
-		if (dto.RecipientId.HasValue) RecipientId = dto.RecipientId.Value;
 	}
 }
 
-public record MessageDTO {
+[Serializable]
+public record MessageCreateDTO {
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
 
@@ -53,11 +57,20 @@ public record MessageDTO {
 	public string? Body { get; set; }
 
 	[JsonPropertyName("sendingDate")]
-	public DateTime? SendingDate { get; set; }
+	public DateTime SendingDate { get; set; }
 
 	[JsonPropertyName("senderId")]
-	public int? SenderId { get; set; }
+	public int SenderId { get; set; }
 
 	[JsonPropertyName("recipientId")]
-	public int? RecipientId { get; set; }
+	public int RecipientId { get; set; }
+}
+
+[Serializable]
+public record MessageUpdateDTO {
+	[JsonPropertyName("title")]
+	public string? Title { get; set; }
+
+	[JsonPropertyName("body")]
+	public string? Body { get; set; }
 }
