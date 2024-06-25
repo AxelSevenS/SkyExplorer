@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("flights")]
-public record Flight : Entity<FlightDTO> {
+public record Flight : Entity<FlightCreateDTO, FlightUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -44,11 +44,18 @@ public record Flight : Entity<FlightDTO> {
 
 
 	public Flight() : base() { }
-	public Flight(FlightDTO dto) : base(dto) { }
+	public Flight(FlightCreateDTO dto) : base(dto) {
+		UserId = dto.UserId;
+		OverseerId = dto.OverseerId;
+		BillId = dto.BillId;
+		PlaneId = dto.PlaneId;
+		FlightType = dto.FlightType;
+		Duration = dto.Duration;
+		DateTime = dto.DateTime;
+	}
 
 
-	public override void Update(FlightDTO dto) {
-		if (dto.UserId.HasValue) UserId = dto.UserId.Value;
+	public override void Update(FlightUpdateDTO dto) {
 		if (dto.OverseerId.HasValue) OverseerId = dto.OverseerId.Value;
 		if (dto.BillId.HasValue) BillId = dto.BillId.Value;
 		if (dto.PlaneId.HasValue) PlaneId = dto.PlaneId.Value;
@@ -57,9 +64,33 @@ public record Flight : Entity<FlightDTO> {
 	}
 }
 
-public class FlightDTO {
+
+[Serializable]
+public class FlightCreateDTO {
 	[JsonPropertyName("userId")]
-	public uint? UserId { get; set; }
+	public uint UserId { get; set; }
+
+	[JsonPropertyName("overseerId")]
+	public uint OverseerId { get; set; }
+
+	[JsonPropertyName("billId")]
+	public uint BillId { get; set; }
+
+	[JsonPropertyName("planeId")]
+	public uint PlaneId { get; set; }
+
+	[JsonPropertyName("flightType")]
+	public string FlightType { get; set; }
+
+	[JsonPropertyName("duration")]
+	public TimeSpan Duration { get; set; }
+
+	[JsonPropertyName("dateTime")]
+	public DateTime DateTime { get; set; }
+}
+
+[Serializable]
+public class FlightUpdateDTO {
 
 	[JsonPropertyName("overseerId")]
 	public uint? OverseerId { get; set; }
