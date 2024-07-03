@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@use '@angular/material' as mat;
+@use 'theme.scss' as theme;
+
+
+@include mat.all-component-themes(theme.$SkyExplorer-theme);
+
+
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	gap: 1.5px;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5px;
+}

@@ -1,0 +1,97 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+// $SkyExplorer-primary: mat.define-palette(mat.$indigo-palette, 700, 500, 900); // Customize shades as needed
+$se-primary: (
+	50 : #e0eff8,
+	100 : #b3d6ef,
+	200 : #80bbe4,
+	300 : #4da0d9,
+	400 : #268bd0,
+	500 : #0077c8,
+	600 : #006fc2,
+	700 : #0064bb,
+	800 : #005ab4,
+	900 : #0047a7,
+	A100 : #d1e1ff,
+	A200 : #9ec0ff,
+	A400 : #6b9fff,
+	A700 : #528fff,
+	contrast: (
+		50 : #000000,
+		100 : #000000,
+		200 : #000000,
+		300 : #000000,
+		400 : #ffffff,
+		500 : #ffffff,
+		600 : #ffffff,
+		700 : #ffffff,
+		800 : #ffffff,
+		900 : #ffffff,
+		A100 : #000000,
+		A200 : #000000,
+		A400 : #000000,
+		A700 : #000000,
+	)
+);
+$SkyExplorer-primary: mat.define-palette($se-primary);
+
+$se-accent: (
+	50 : #e5e5eb,
+	100 : #bdbece,
+	200 : #9293ad,
+	300 : #66678c,
+	400 : #454773,
+	500 : #24265a,
+	600 : #202252,
+	700 : #1b1c48,
+	800 : #16173f,
+	900 : #0d0d2e,
+	A100 : #6b6bff,
+	A200 : #3838ff,
+	A400 : #0505ff,
+	A700 : #0000eb,
+	contrast: (
+		50 : #000000,
+		100 : #000000,
+		200 : #000000,
+		300 : #ffffff,
+		400 : #ffffff,
+		500 : #ffffff,
+		600 : #ffffff,
+		700 : #ffffff,
+		800 : #ffffff,
+		900 : #ffffff,
+		A100 : #ffffff,
+		A200 : #ffffff,
+		A400 : #ffffff,
+		A700 : #ffffff,
+	)
+);
+$SkyExplorer-accent: mat.define-palette($se-accent);
+
+// The warn palette is optional (defaults to red).
+$SkyExplorer-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$SkyExplorer-theme: mat.define-light-theme((
+	color: (
+		primary: $SkyExplorer-primary,
+		accent: $SkyExplorer-accent,
+		warn: $SkyExplorer-warn,
+	),
+	typography: mat.define-typography-config(),
+	density: 0
+));
