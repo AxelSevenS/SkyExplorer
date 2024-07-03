@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("flights")]
-public record Flight : Entity<FlightCreateDTO, FlightUpdateDTO> {
+public record Flight : IEntity<Flight, FlightCreateDTO, FlightUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -44,7 +44,7 @@ public record Flight : Entity<FlightCreateDTO, FlightUpdateDTO> {
 
 
 	public Flight() : base() { }
-	public Flight(FlightCreateDTO dto) : base(dto) {
+	public Flight(FlightCreateDTO dto) : this() {
 		UserId = dto.UserId;
 		OverseerId = dto.OverseerId;
 		BillId = dto.BillId;
@@ -55,7 +55,8 @@ public record Flight : Entity<FlightCreateDTO, FlightUpdateDTO> {
 	}
 
 
-	public override void Update(FlightUpdateDTO dto) {
+	public static Flight CreateFrom(FlightCreateDTO dto) => new(dto);
+	public void Update(FlightUpdateDTO dto) {
 		if (dto.OverseerId.HasValue) OverseerId = dto.OverseerId.Value;
 		if (dto.BillId.HasValue) BillId = dto.BillId.Value;
 		if (dto.PlaneId.HasValue) PlaneId = dto.PlaneId.Value;

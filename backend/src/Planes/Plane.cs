@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("planes")]
-public record Plane : Entity<PlaneCreateDTO, PlaneUpdateDTO> {
+public record Plane : IEntity<Plane, PlaneCreateDTO, PlaneUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,19 +22,28 @@ public record Plane : Entity<PlaneCreateDTO, PlaneUpdateDTO> {
 
 	[Column("status")]
 	[JsonPropertyName("status")]
-	public string Status { get; set; }
+	public Availability Status { get; set; }
 
 
 	public Plane() { }
-	public Plane(PlaneCreateDTO dto) : base(dto) {
+	public Plane(PlaneCreateDTO dto) : this() {
 		Name = dto.Name;
 		Type = dto.Type;
 		Status = dto.Status;
 	}
 
 
-	public override void Update(PlaneUpdateDTO dto) {
-		if (dto.Status is not null) Status = dto.Status;
+	public static Plane CreateFrom(PlaneCreateDTO dto) => new(dto);
+	public void Update(PlaneUpdateDTO dto) {
+		if (dto.Status.HasValue) Status = dto.Status.Value;
+	}
+
+
+
+	public enum Availability {
+		Available,
+		Maintenance,
+		Unavailable
 	}
 }
 
@@ -47,11 +56,11 @@ public record PlaneCreateDTO {
 	public string Type { get; set; }
 
 	[JsonPropertyName("status")]
-	public string Status { get; set; }
+	public Plane.Availability Status { get; set; }
 }
 
 [Serializable]
 public record PlaneUpdateDTO {
 	[JsonPropertyName("status")]
-	public string Status { get; set; }
+	public Plane.Availability? Status { get; set; }
 }
