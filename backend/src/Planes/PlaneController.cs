@@ -5,20 +5,29 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 [ApiController]
-[Route("api/Planes")]
+[Route("api/planes")]
 public class PlaneController(AppDbContext repo) : Controller<Plane, PlaneCreateDTO, PlaneUpdateDTO>(repo) {
-	[HttpGet]
-	public Task<List<Plane>> GetAll() =>
-		Repository.Planes.ToListAsync();
+	protected override DbSet<Plane> Set => Repository.Planes;
 
-	[HttpGet("{id}")]
-	public ActionResult<Plane> Get(int id) =>
-		Repository.Planes.Find(id) switch {
-			Plane plane => Ok(plane),
-			null => NotFound(),
+
+	[HttpGet("mean")]
+	public async Task<ActionResult<double>> GetMeanAverage() {
+		List<Plane> AvailablePlanes = await Repository.Planes.ToListAsync();
+		return AvailablePlanes.Count == 0
+			? 0
+			: AvailablePlanes.Count(p => p.Status == Plane.Availability.Available ) / AvailablePlanes.Count;
+	}
+
+	[HttpPut("status/{id}")]
+	public async Task<ActionResult<Plane>> GetPlaneStatus(int id) {
+		return await Repository.Planes.FindAsync(id) switch {
+			Plane p => p.Status switch {
+				Plane.Availability.Available => Ok(Plane.Availability.Unavailable),
+				Plane.Availability.Unavailable => Ok(Plane.Availability.Available),
+				Plane.Availability.Maintenance => Ok(Plane.Availability.Unavailable),
+				_ => BadRequest(),
+			},
+			_ => NotFound()
 		};
-
-	[HttpPost]
-	public async Task<ActionResult<Plane>> AddPlane([FromForm] PlaneCreateDTO dto) =>
-		Ok(await Repository.Planes.AddAsync(new(dto)));
+	}
 }

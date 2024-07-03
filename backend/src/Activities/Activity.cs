@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("activities")]
-public record Activity : Entity<ActivityCreateDTO, ActivityUpdateDTO> {
+public record Activity : IEntity<Activity, ActivityCreateDTO, ActivityUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,13 +23,14 @@ public record Activity : Entity<ActivityCreateDTO, ActivityUpdateDTO> {
 
 
 	public Activity() : base() { }
-	public Activity(ActivityCreateDTO dto) : base(dto) {
+	public Activity(ActivityCreateDTO dto) : this() {
 		FlightId = dto.FlightId ?? 0;
 		Title = dto.Title ?? string.Empty;
 	}
 
 
-	public override void Update(ActivityUpdateDTO dto) {
+	public static Activity CreateFrom(ActivityCreateDTO dto) => new(dto);
+	public void Update(ActivityUpdateDTO dto) {
 		if (dto.Title is not null) Title = dto.Title;
 	}
 }

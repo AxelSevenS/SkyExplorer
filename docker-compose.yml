@@ -23,7 +23,7 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=se_db; Database=db_skyexplorer; User Id=postgres_user; Password=1234;"
     ports:
-      - "5000:5000"
+      - "5001:5001"
 
   frontend:
     container_name: se_frontend

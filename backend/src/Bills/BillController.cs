@@ -2,23 +2,16 @@ namespace SkyExplorer;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 [ApiController]
 [Route("api/bills")]
 public class BillController(AppDbContext repo) : Controller<Bill, BillCreateDTO, BillUpdateDTO>(repo) {
-	[HttpGet]
-	public Task<List<Bill>> GetAll() =>
-		Repository.Bills.ToListAsync();
+	protected override DbSet<Bill> Set => Repository.Bills;
 
-	[HttpGet("{id}")]
-	public ActionResult<Bill> Get(int id) =>
-		Repository.Bills.Find(id) switch {
-			Bill bill => Ok(bill),
-			null => NotFound(),
-		};
 
-	[HttpPost]
-	public async Task<ActionResult<Bill>> AddBill([FromForm] BillCreateDTO dto) =>
-		Ok(await Repository.Bills.AddAsync(new(dto)));
+	// [HttpGet("searchByName")]
+	// public async Task<ActionResult<List<Bill>>> SearchByName([FromQuery] string name) {
+	// 	var bills = await Repository.Bills.Where(b => b.Name.Contains(name)).ToListAsync();
+	// 	return Ok(bills);
+	// }
 }

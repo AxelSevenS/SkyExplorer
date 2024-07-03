@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("bills")]
-public record Bill : Entity<BillCreateDTO, BillUpdateDTO> {
+public record Bill : IEntity<Bill, BillCreateDTO, BillUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,13 +28,15 @@ public record Bill : Entity<BillCreateDTO, BillUpdateDTO> {
 
 
 	public Bill() : base() { }
-	public Bill(BillCreateDTO dto) : base(dto) {
+	public Bill(BillCreateDTO dto) : this() {
 		URL = dto.URL;
 		WasAcquitted = dto.WasAcquitted;
 		CreatedAt = DateTime.Now;
 	}
 
-	public override void Update(BillUpdateDTO dto) {
+
+	public static Bill CreateFrom(BillCreateDTO dto) => new(dto);
+	public void Update(BillUpdateDTO dto) {
 		if (dto.URL is not null) URL = dto.URL;
 		if (dto.WasAcquitted is not null) WasAcquitted = dto.WasAcquitted.Value;
 	}

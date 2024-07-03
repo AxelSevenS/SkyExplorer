@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=build /app/out ./
 
 # Expose the desired port
-ENV ASPNETCORE_URLS=http://+:5000
-EXPOSE 5000
+ENV ASPNETCORE_URLS=http://+:5001
+EXPOSE 5001
 
 ENTRYPOINT ["dotnet", "SkyExplorer.dll", "migrate"]

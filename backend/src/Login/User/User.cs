@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("users")]
-public record User : Entity<UserSetupDTO, UserUpdateDTO> {
+public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -39,12 +39,17 @@ public record User : Entity<UserSetupDTO, UserUpdateDTO> {
 
 
 	public User() : base() { }
-	public User(UserSetupDTO dto) : base(dto) {
-		// TODO: GUILLAUME
+	public User(UserRegisterDTO dto) : this() {
+		Email = dto.Email;
+		Password = dto.Password;
+		FirstName = dto.FirstName ?? string.Empty;
+		LastName = dto.LastName ?? string.Empty;
+		Auth = (Authorizations)Positions.User;
 	}
 
 
-	public override void Update(UserUpdateDTO dto) {
+	public static User CreateFrom(UserRegisterDTO dto) => new(dto);
+	public void Update(UserUpdateDTO dto) {
 		if (dto.Email is not null) Email = dto.Email;
 		if (dto.Password is not null) Password = dto.Password;
 		if (dto.FirstName is not null) FirstName = dto.FirstName;
@@ -56,11 +61,8 @@ public record User : Entity<UserSetupDTO, UserUpdateDTO> {
 	[Flags]
 	public enum Positions : ushort {
 		User = 0,
-
 		Collaborator = User,
-
 		Staff = Collaborator,
-
 		Admin = ushort.MaxValue,
 	}
 
@@ -97,24 +99,6 @@ public record UserLoginDTO {
 }
 
 [Serializable]
-public record UserSetupDTO {
-	[JsonPropertyName("email")]
-	public string Email { get; set; }
-
-	[JsonPropertyName("password")]
-	public string Password { get; set; }
-
-	[JsonPropertyName("firstname")]
-	public string? FirstName { get; set; }
-
-	[JsonPropertyName("lastname")]
-	public string? LastName { get; set; }
-
-	[JsonPropertyName("authorizations")]
-	public User.Authorizations Auth { get; set; }
-}
-
-[Serializable]
 public record UserRegisterDTO {
 	[JsonPropertyName("email")]
 	public string Email { get; set; }
@@ -127,14 +111,4 @@ public record UserRegisterDTO {
 
 	[JsonPropertyName("lastname")]
 	public string? LastName { get; set; }
-
-
-	public UserSetupDTO WithAuths(User.Authorizations authorizations) =>
-		new() {
-			Email = Email,
-			FirstName = FirstName,
-			LastName = LastName,
-			Password = Password,
-			Auth = authorizations,
-		};
 }
