@@ -1,0 +1,15 @@
+@use '@angular/material' as mat;
+@use 'theme.scss' as theme;
+
+@function get-color($palette: primary, $value: 500) {
+	@return mat.get-theme-color(theme.$SkyExplorer-theme, $palette, $value);
+}
+
+$primary: mat.get-theme-color(theme.$SkyExplorer-theme, primary);
+$primary-contrast: mat.get-theme-color(theme.$SkyExplorer-theme, primary, 500-contrast);
+
+$accent: mat.get-theme-color(theme.$SkyExplorer-theme, accent);
+$accent-contrast: mat.get-theme-color(theme.$SkyExplorer-theme, accent, 500-contrast);
+
+$warn: mat.get-theme-color(theme.$SkyExplorer-theme, warn);
+$warn-contrast: mat.get-theme-color(theme.$SkyExplorer-theme, warn, 500-contrast);
