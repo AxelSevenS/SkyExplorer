@@ -1,0 +1,105 @@
+<head>
+	<link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"> -->
+</head>
+
+<div class="authentication-card">
+	<h6 class="toggle-labels">
+		<span color="primary">Se Connecter</span>
+		<span color="primary">S'Inscrire</span>
+	</h6>
+	<input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
+	<label for="reg-log"></label>
+
+	<div class="card-3d-container">
+		<div class="card-3d-wrapper">
+
+			<div class="card-front">
+				<form [formGroup]="loginForm" (ngSubmit)="login()" class="card-content">
+
+					<mat-card-header>
+						<mat-card-title color="primary">Se Connecter</mat-card-title>
+					</mat-card-header>
+
+					<div class="col">
+						<mat-form-field>
+							<mat-label>
+								Nom d'Utilisateur
+								<mat-icon aria-hidden="false" aria-label="Nom d'Utilisateur" fontIcon="person"></mat-icon>
+							</mat-label>
+							<input matInput formControlName="username" type="text">
+							@if (registerForm.controls['username'].hasError('required')) {
+								<mat-error>Email is <strong>required</strong></mat-error>
+							}
+						</mat-form-field>
+
+						<mat-form-field>
+							<mat-label>
+								Mot de Passe
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe" fontIcon="lock"></mat-icon>
+							</mat-label>
+							<input matInput formControlName="password" type="password">
+						</mat-form-field>
+					</div>
+
+					<button mat-raised-button>Se Connecter</button>
+
+				</form>
+			</div>
+
+			<div class="card-back">
+				<form [formGroup]="registerForm" (ngSubmit)="register()" class="card-content">
+
+					<mat-card-header>
+						<mat-card-title color="primary">S'Inscrire</mat-card-title>
+					</mat-card-header>
+
+					<div>
+						<mat-form-field>
+							<mat-label>
+								Nom d'Utilisateur
+								<mat-icon aria-hidden="false" aria-label="Nom d'Utilisateur" fontIcon="person"></mat-icon>
+							</mat-label>
+							<input matInput formControlName="username" type="text">
+							@if (registerForm.controls['username'].hasError('required')) {
+								<mat-error>Email is <strong>required</strong></mat-error>
+							}
+						</mat-form-field>
+
+						<div class="row">
+							<mat-form-field>
+								<mat-label>Prénom</mat-label>
+								<input matInput formControlName="firstName" type="text">
+							</mat-form-field>
+							<mat-form-field>
+								<mat-label>Nom de Famille</mat-label>
+								<input matInput formControlName="lastName" type="text">
+							</mat-form-field>
+						</div>
+
+						<div class="row">
+							<mat-form-field>
+								<mat-label>
+									Mot de Passe
+									<mat-icon aria-hidden="false" aria-label="Mot de Passe" fontIcon="lock"></mat-icon>
+								</mat-label>
+								<input matInput formControlName="password" type="password">
+							</mat-form-field>
+							<mat-form-field>
+								<mat-label>
+									Confirmer le Mot de Passe
+									<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe" fontIcon="check"></mat-icon>
+								</mat-label>
+								<input matInput formControlName="passwordConfirm" type="password">
+							</mat-form-field>
+						</div>
+					</div>
+
+					<button mat-raised-button>S'Inscrire</button>
+
+				</form>
+			</div>
+
+		</div>
+	</div>
+</div>
