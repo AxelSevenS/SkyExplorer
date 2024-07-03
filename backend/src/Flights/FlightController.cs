@@ -2,51 +2,35 @@ namespace SkyExplorer;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 [ApiController]
 [Route("api/flights")]
 public class FlightController(AppDbContext repo) : Controller<Flight, FlightCreateDTO, FlightUpdateDTO>(repo) {
-	[HttpGet]
-	public Task<List<Flight>> GetAll() =>
-		Repository.Flights.ToListAsync();
+	protected override DbSet<Flight> Set => Repository.Flights;
 
-	[HttpGet("{id}")]
-	public ActionResult<Flight> GetById(uint id) =>
-		Repository.Flights.Find(id) switch {
-			Flight flight => Ok(flight),
-			null => NotFound(),
+
+	[HttpGet("hours")]
+	public async Task<ActionResult<TimeSpan>> GetHoursSum() {
+		return Ok(await Repository.Flights.SumAsync(f => f.Duration.TotalHours));
+	}
+
+	[HttpGet("hours/{id}")]
+	public async Task<ActionResult<TimeSpan>> GetHoursSumByUser(uint id) {
+		return Repository.Flights.Where(f => f.UserId == id) switch {
+			Flight flight => Ok(flight.Duration.TotalHours),
+			_ => NotFound(),
 		};
-
-	[HttpPost]
-	public async Task<ActionResult<Flight>> AddFlight([FromForm] FlightCreateDTO dto) =>
-		Ok(await Repository.Flights.AddAsync(new(dto)));
-
-	[HttpPatch("{id}")]
-	public async Task<ActionResult<Flight>> UpdateFlight(uint id, [FromForm] FlightUpdateDTO dto) {
-		Flight? found = Repository.Flights.Find(id);
-		if (found is null) {
-			return NotFound();
-		}
-
-		found.Update(dto);
-
-		Repository.SaveChanges();
-		return Ok(found);
 	}
 
+	[HttpGet("hours/weeklySum")]
+	public async Task<ActionResult<TimeSpan>> GetWeeklyHoursSum() {
+		DateTime now = DateTime.Now;
+		DateTime startOfWeek = now.AddDays(-1 * (int)now.DayOfWeek);
+		DateTime endOfWeek = startOfWeek.AddDays(7);
 
-	[HttpDelete("{id}")]
-	public async Task<ActionResult<Flight>> DeleteFlight(uint id) {
-		Flight? found = Repository.Flights.Find(id);
-		if (found is null) {
-			Console.WriteLine("Flight not found");
-			return NotFound();
-
-		}
-
-		Repository.Flights.Remove(found);
-		Repository.SaveChanges();
-		return Ok(found);
+		return Ok(await Repository.Flights
+			.Where(f => f.DateTime >= startOfWeek && f.DateTime < endOfWeek)
+			.SumAsync(f => f.Duration.TotalHours));
 	}
+
 }

@@ -4,11 +4,59 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 using UserAuth = User.Authorizations;
 
-public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : Entity<TSetupDTO, TUpdateDTO> {
+public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : class, IEntity<TData, TSetupDTO, TUpdateDTO> {
 	protected readonly AppDbContext Repository = repository;
+	protected abstract DbSet<TData> Set { get; }
+
+
+	[HttpGet]
+	public virtual Task<List<TData>> GetAll() =>
+		Set.ToListAsync();
+
+	[HttpGet("{id}")]
+	public virtual ActionResult<TData> GetById(uint id) =>
+		Set.Find(id) switch {
+			TData flight => Ok(flight),
+			null => NotFound(),
+		};
+
+
+	[HttpPost]
+	public virtual async Task<ActionResult<TData>> Add([FromForm] TSetupDTO dto) =>
+		Ok(await Set.AddAsync(TData.CreateFrom(dto)));
+
+
+	[HttpPatch("{id}")]
+	public virtual async Task<ActionResult<TData>> Update(uint id, [FromForm] TUpdateDTO dto) {
+		TData? found = Set.Find(id);
+		if (found is null) {
+			return NotFound();
+		}
+
+		found.Update(dto);
+
+		Repository.SaveChanges();
+		return Ok(found);
+	}
+
+
+	[HttpDelete("{id}")]
+	public virtual async Task<ActionResult<TData>> Delete(uint id) {
+		TData? found = Set.Find(id);
+		if (found is null) {
+			return NotFound();
+		}
+
+		Set.Remove(found);
+
+		Repository.SaveChanges();
+		return Ok(found);
+	}
+
+
 
 	/// <summary>
 	/// Check wether the user is authenticated and if the user holds the given <c>authorizations</c>

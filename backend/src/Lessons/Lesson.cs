@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("lessons")]
-public record Lesson : Entity<LessonCreateDTO, LessonUpdateDTO> {
+public record Lesson : IEntity<Lesson, LessonCreateDTO, LessonUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -31,14 +31,15 @@ public record Lesson : Entity<LessonCreateDTO, LessonUpdateDTO> {
 
 
 	public Lesson() : base() { }
-	public Lesson(LessonCreateDTO dto) : base(dto) {
+	public Lesson(LessonCreateDTO dto) : this() {
 		Goals = dto.Goals;
 		AchievedGoals = dto.AchievedGoals ?? string.Empty;
 		Note = dto.Note ?? string.Empty;
 	}
 
 
-	public override void Update(LessonUpdateDTO dto) {
+	public static Lesson CreateFrom(LessonCreateDTO dto) => new(dto);
+	public void Update(LessonUpdateDTO dto) {
 		if (dto.Goals is not null) Goals = dto.Goals;
 		if (dto.AchievedGoals is not null) AchievedGoals = dto.AchievedGoals;
 		if (dto.Note is not null) Note = dto.Note;

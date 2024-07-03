@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("messages")]
-public record Message : Entity<MessageCreateDTO, MessageUpdateDTO> {
+public record Message : IEntity<Message, MessageCreateDTO, MessageUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[JsonPropertyName("id")]
@@ -33,7 +33,7 @@ public record Message : Entity<MessageCreateDTO, MessageUpdateDTO> {
 
 
 	public Message() { }
-	public Message(MessageCreateDTO dto) : base(dto) {
+	public Message(MessageCreateDTO dto) : this() {
 		Title = dto.Title;
 		Body = dto.Body;
 		SendingDate = dto.SendingDate;
@@ -42,7 +42,8 @@ public record Message : Entity<MessageCreateDTO, MessageUpdateDTO> {
 	}
 
 
-	public override void Update(MessageUpdateDTO dto) {
+	public static Message CreateFrom(MessageCreateDTO dto) => new(dto);
+	public void Update(MessageUpdateDTO dto) {
 		if (dto.Title is not null) Title = dto.Title;
 		if (dto.Body is not null) Body = dto.Body;
 	}

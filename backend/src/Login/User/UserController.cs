@@ -8,30 +8,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 [ApiController]
 [Route("api/users")]
-public class UserController(AppDbContext repo, JwtOptions jwtOptions) : Controller<User, UserSetupDTO, UserUpdateDTO>(repo) {
-	/// <summary>
-	/// Get all users
-	/// </summary>
-	/// <returns>
-	/// All users
-	/// </returns>
-	[HttpGet]
-	public async Task<List<User>> GetAll() =>
-		await Repository.Users.ToListAsync();
+public class UserController(AppDbContext repo, JwtOptions jwtOptions) : Controller<User, UserRegisterDTO, UserUpdateDTO>(repo) {
+	protected override DbSet<User> Set => Repository.Users;
 
-	/// <summary>
-	/// Get a user by id
-	/// </summary>
-	/// <param name="id">The id of the user</param>
-	/// <returns>
-	/// The user with the given id
-	/// </returns>
-	[HttpGet("{id}")]
-	public async Task<ActionResult<User>> GetById(uint id) =>
-		await Repository.Users.FindAsync(id) switch {
-			User user => Ok(user),
-			null => NotFound(),
-		};
 
 	/// <summary>
 	/// Authenticate a user
@@ -48,51 +27,6 @@ public class UserController(AppDbContext repo, JwtOptions jwtOptions) : Controll
 			User user => Ok(JsonSerializer.Serialize(jwtOptions.GenerateFrom(user).Write())),
 			null => NotFound(),
 		};
-	}
-
-	/// <summary>
-	/// Register a user
-	/// </summary>
-	/// <param name="dto">The Registering info of the user</param>
-	/// <returns>
-	/// The user,
-	///    or BadRequest if the user already exists
-	/// </returns>
-	[HttpPut]
-	public ActionResult<User> RegisterUser([FromForm] UserRegisterDTO dto) {
-		EntityEntry<User>? result = Repository.Users.Add(
-			new(
-				dto.WithAuths((User.Authorizations)SkyExplorer.User.Positions.User)
-			)
-		);
-
-		if (result.Entity is not User user) return BadRequest();
-
-		Repository.SaveChanges();
-		return Ok(user);
-	}
-
-	/// <summary>
-	/// Update a user
-	/// </summary>
-	/// <param name="id">The id of the user</param>
-	/// <param name="dto">The user info to update</param>
-	/// <returns>
-	/// The updated user
-	/// </returns>
-	[HttpPatch("{id}")]
-	[Authorize]
-	public async Task<ActionResult<User>> UpdateUser(uint id, [FromForm] UserUpdateDTO dto) {
-		if (!VerifyOwnershipOrAuthZ(id, SkyExplorer.User.Authorizations.EditAnyUser, out ActionResult<User> error))
-			return error;
-
-		User? user = await Repository.Users.FindAsync(id);
-		if (user is null) return NotFound();
-
-		user.Update(dto);
-
-		Repository.SaveChanges();
-		return Ok(user);
 	}
 
 	/// <summary>
@@ -121,25 +55,20 @@ public class UserController(AppDbContext repo, JwtOptions jwtOptions) : Controll
 		return Ok(current);
 	}
 
-	/// <summary>
-	/// Delete a user
-	/// </summary>
-	/// <param name="id">The id of the user</param>
-	/// <returns>
-	/// The deleted user
-	/// </returns>
-	[HttpDelete("{id}")]
+
 	[Authorize]
-	public async Task<ActionResult<User>> DeleteUser(uint id) {
-		if (!VerifyOwnershipOrAuthZ(id, SkyExplorer.User.Authorizations.DeleteAnyUser, out ActionResult<User> error))
+	public override async Task<ActionResult<User>> Update(uint id, [FromForm] UserUpdateDTO dto) {
+		if (! VerifyOwnershipOrAuthZ(id, SkyExplorer.User.Authorizations.EditAnyUser, out ActionResult<User> error))
 			return error;
 
-		User? current = await Repository.Users.FindAsync(id);
-		if (current is null) return NotFound();
+		return await base.Update(id, dto);
+	}
 
-		EntityEntry<User> deleted = Repository.Users.Remove(current);
+	[Authorize]
+	public override async Task<ActionResult<User>> Delete(uint id) {
+		if (! VerifyOwnershipOrAuthZ(id, SkyExplorer.User.Authorizations.DeleteAnyUser, out ActionResult<User> error))
+			return error;
 
-		Repository.SaveChanges();
-		return Ok(deleted.Entity);
+		return await base.Delete(id);
 	}
 }
