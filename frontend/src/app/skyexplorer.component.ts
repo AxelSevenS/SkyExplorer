@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { AuthenticationService } from './authentication/authentication.service';
+import { AuthenticationService } from './authentication/services/authentication.service';
 
 @Component({
 	selector: 'se-root',
-	templateUrl: 'skyexplorer.component.html',
+	template: '<router-outlet />',
 	styleUrls: ['skyexplorer.component.scss'],
 })
 export class SkyExplorerComponent {

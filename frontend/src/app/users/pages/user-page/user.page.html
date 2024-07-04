@@ -1,0 +1,94 @@
+<ng-template [ngIf]="user" [fullscreen]="true">
+	<div> <!-- ion-header -->
+		<div> <!-- ion-toolbar -->
+			<div> <!-- ion-title -->
+				<ng-template [ngIf]="isOwner" [ngIfElse]="notOwner">Votre Profil</ng-template>
+				<ng-template #notOwner>Profile de {{ user.firstName }} {{ user.lastName }}</ng-template>
+			</div> <!-- ion-title -->
+		</div> <!-- ion-toolbar -->
+	</div> <!-- ion-header -->
+
+	<div> <!-- ion-content -->
+		<div *ngIf="user"> <!-- ion-grid -->
+			<div> <!-- ion-row -->
+				<div> <!-- ion-col -->
+
+					<form [formGroup]="editUserForm" class="form-col">
+
+						<ng-template [ngIf]="isOwner || isAdmin" [ngIfElse]="cannotEditMail">
+							<div lines="full"> <!-- ion-item -->
+								<div formControlName="email" type="text" label="E-mail" labelPlacement="floating"></div> <!-- ion-input -->
+							</div> <!-- ion-item -->
+						</ng-template>
+						<ng-template #cannotEditMail>
+							<div lines="full"> <!-- ion-item -->
+								<div position="stacked">E-mail</div> <!-- ion-label -->
+								<div>{{ user.email }}</div> <!-- ion-text -->
+							</div> <!-- ion-item -->
+						</ng-template>
+
+						<div lines="full"> <!-- ion-item -->
+							<div position="stacked">Prénom</div> <!-- ion-label -->
+							<div>{{ user.firstName }}</div> <!-- ion-text -->
+						</div> <!-- ion-item -->
+
+						<div lines="full"> <!-- ion-item -->
+							<div position="stacked">Nom</div> <!-- ion-label -->
+							<div>{{ user.lastName }}</div> <!-- ion-text -->
+						</div> <!-- ion-item -->
+
+						<ng-template [ngIf]="isAdmin && ! isOwner" [ngIfElse]="cannotEditRole">
+							<mat-form-field>
+								<mat-label>Rôle</mat-label>
+								<mat-select formControlName="role" [(value)]="user.role">
+									@for (role of subRoles; track role) {
+										<mat-option [value]="role">{{role}}</mat-option>
+									}
+								</mat-select>
+							</mat-form-field>
+						</ng-template>
+						<ng-template #cannotEditRole>
+							<div lines="full"> <!-- ion-item -->
+								<div position="stacked">Rôle</div> <!-- ion-label -->
+								<div>{{ user.role }}</div> <!-- ion-text -->
+							</div> <!-- ion-item -->
+						</ng-template>
+
+
+						<div> <!-- ion-grid -->
+
+							<div *ngIf="isOwner"> <!-- ion-row -->
+								<div> <!-- ion-col -->
+									<div [routerLink]="['/edit-password']" expand="block"> <!-- ion-button -->
+										Modifier le Mot de Passe
+									</div> <!-- ion-button -->
+								</div> <!-- ion-col -->
+							</div> <!-- ion-row -->
+
+							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
+								<div> <!-- ion-col -->
+									<div (click)="onSubmit()" expand="block"> <!-- ion-button -->
+										Sauvegarder
+									</div> <!-- ion-button -->
+								</div> <!-- ion-col -->
+							</div> <!-- ion-row -->
+
+							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
+								<div> <!-- ion-col -->
+									<div (click)="delete()" color="danger" expand="block"> <!-- ion-button -->
+										<div slot="start" name="trash-outline"></div> <!-- ion-icon -->
+										Supprimer
+									</div> <!-- ion-button -->
+								</div> <!-- ion-col -->
+							</div> <!-- ion-row -->
+
+						</div> <!-- ion-grid -->
+
+					</form>
+
+				</div> <!-- ion-col -->
+			</div> <!-- ion-row -->
+		</div> <!-- ion-grid -->
+	</div> <!-- ion-content -->
+
+</ng-template>
