@@ -57,10 +57,10 @@ public record Flight : IEntity<Flight, FlightCreateDTO, FlightUpdateDTO> {
 
 	public static Flight CreateFrom(FlightCreateDTO dto) => new(dto);
 	public void Update(FlightUpdateDTO dto) {
-		if (dto.OverseerId.HasValue) OverseerId = dto.OverseerId.Value;
-		if (dto.BillId.HasValue) BillId = dto.BillId.Value;
-		if (dto.PlaneId.HasValue) PlaneId = dto.PlaneId.Value;
-		if (dto.Duration.HasValue) Duration = dto.Duration.Value;
+		if (dto.OverseerId is not null) OverseerId = dto.OverseerId.Value;
+		if (dto.BillId is not null) BillId = dto.BillId.Value;
+		if (dto.PlaneId is not null) PlaneId = dto.PlaneId.Value;
+		if (dto.Duration is not null) Duration = dto.Duration.Value;
 		if (dto.FlightType is not null) FlightType = dto.FlightType;
 	}
 }

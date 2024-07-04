@@ -1,18 +1,14 @@
 export interface User {
 	id: number,
 	email: string,
-	password?: string,
-	roles: string,
+	firstName: string,
+	lastName: string,
+	role: UserRoles,
 }
 
-export interface UserAuths {
-	UserEditor: boolean,
-	AuthEditor: boolean,
-	UserDeleter: boolean,
-	SongCreator: boolean,
-	SongEditor: boolean,
-	SongDeleter: boolean,
-	PlaylistCreator: boolean,
-	PlaylistEditor: boolean,
-	PlaylistDeleter: boolean,
+export enum UserRoles {
+	User = "User",
+	Collaborator = "Collaborator",
+	Staff = "Staff",
+	Admin = "Admin",
 }
