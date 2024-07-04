@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { UserListComponent } from './user-list/user-list.component';
 import { UserPage } from './user-page/user.page';
@@ -13,6 +15,8 @@ import { UserRoutingModule } from './user-routing.module';
 		UserRoutingModule,
 		CommonModule,
 		FormsModule,
+		MatSelectModule,
+		MatFormFieldModule,
 		ReactiveFormsModule,
 	],
 	declarations: [

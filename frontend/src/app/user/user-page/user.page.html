@@ -2,8 +2,8 @@
 	<div> <!-- ion-header -->
 		<div> <!-- ion-toolbar -->
 			<div> <!-- ion-title -->
-				<ng-template [ngIf]="authentication.user?.id == user.id" [ngIfElse]="notOwner">Votre Profil</ng-template>
-				<ng-template #notOwner>Profile de {{ user.email }}</ng-template>
+				<ng-template [ngIf]="isOwner" [ngIfElse]="notOwner">Votre Profil</ng-template>
+				<ng-template #notOwner>Profile de {{ user.firstName }} {{ user.lastName }}</ng-template>
 			</div> <!-- ion-title -->
 		</div> <!-- ion-toolbar -->
 	</div> <!-- ion-header -->
@@ -15,40 +15,49 @@
 
 					<form [formGroup]="editUserForm" class="form-col">
 
-						<ng-template [ngIf]="authentication.user?.id == user.id || authentication.auths.UserEditor" [ngIfElse]="isNotOwner">
+						<ng-template [ngIf]="isOwner || isAdmin" [ngIfElse]="cannotEditMail">
 							<div lines="full"> <!-- ion-item -->
 								<div formControlName="email" type="text" label="E-mail" labelPlacement="floating"></div> <!-- ion-input -->
 							</div> <!-- ion-item -->
 						</ng-template>
-						<ng-template #isNotOwner>
+						<ng-template #cannotEditMail>
 							<div lines="full"> <!-- ion-item -->
 								<div position="stacked">E-mail</div> <!-- ion-label -->
 								<div>{{ user.email }}</div> <!-- ion-text -->
 							</div> <!-- ion-item -->
 						</ng-template>
 
-						<ng-template [ngIf]="authentication.auths.AuthEditor">
+						<div lines="full"> <!-- ion-item -->
+							<div position="stacked">Prénom</div> <!-- ion-label -->
+							<div>{{ user.firstName }}</div> <!-- ion-text -->
+						</div> <!-- ion-item -->
+
+						<div lines="full"> <!-- ion-item -->
+							<div position="stacked">Nom</div> <!-- ion-label -->
+							<div>{{ user.lastName }}</div> <!-- ion-text -->
+						</div> <!-- ion-item -->
+
+						<ng-template [ngIf]="isAdmin && ! isOwner" [ngIfElse]="cannotEditRole">
+							<mat-form-field>
+								<mat-label>Rôle</mat-label>
+								<mat-select formControlName="role" [(value)]="user.role">
+									@for (role of subRoles; track role) {
+										<mat-option [value]="role">{{role}}</mat-option>
+									}
+								</mat-select>
+							</mat-form-field>
+						</ng-template>
+						<ng-template #cannotEditRole>
 							<div lines="full"> <!-- ion-item -->
 								<div position="stacked">Rôle</div> <!-- ion-label -->
-
-								<div > <!-- ion-select --> <!-- formControlName="roles" placeholder="Autorisations" labelPlacement="stacked" [multiple]="true" -->
-									<div >Modifier n'importe quel Utilisateur</div> <!-- ion-select-option --> <!-- value="UserEditor" [disabled]="!authentication.auths.UserEditor" -->
-									<div >Modifier des Autorisations</div> <!-- ion-select-option --> <!-- value="AuthEditor" [disabled]="!authentication.auths.AuthEditor" -->
-									<div >Supprimer n'importe quel Utilisateur</div> <!-- ion-select-option --> <!-- value="UserDeleter" [disabled]="!authentication.auths.UserDeleter" -->
-									<div >Ajouter des Chansons</div> <!-- ion-select-option --> <!-- value="SongCreator" [disabled]="!authentication.auths.SongCreator" -->
-									<div >Modifier n'importe quelle Chanson</div> <!-- ion-select-option --> <!-- value="SongEditor" [disabled]="!authentication.auths.SongEditor" -->
-									<div >Supprimer n'importe quelle Chanson</div> <!-- ion-select-option --> <!-- value="SongDeleter" [disabled]="!authentication.auths.SongDeleter" -->
-									<div >Créer des Playlists</div> <!-- ion-select-option --> <!-- value="PlaylistCreator" [disabled]="!authentication.auths.PlaylistCreator" -->
-									<div >Modifier n'importe quelle Playlist</div> <!-- ion-select-option --> <!-- value="PlaylistEditor" [disabled]="!authentication.auths.PlaylistEditor" -->
-									<div >Supprimer n'importe quelle Playlist</div> <!-- ion-select-option --> <!-- value="PlaylistDeleter" [disabled]="!authentication.auths.PlaylistDeleter" -->
-								</div> <!-- ion-select -->
+								<div>{{ user.role }}</div> <!-- ion-text -->
 							</div> <!-- ion-item -->
 						</ng-template>
 
 
 						<div> <!-- ion-grid -->
 
-							<div *ngIf="authentication.user?.id == user.id"> <!-- ion-row -->
+							<div *ngIf="isOwner"> <!-- ion-row -->
 								<div> <!-- ion-col -->
 									<div [routerLink]="['/users/password']" expand="block"> <!-- ion-button -->
 										Modifier le Mot de Passe
@@ -56,7 +65,7 @@
 								</div> <!-- ion-col -->
 							</div> <!-- ion-row -->
 
-							<div *ngIf="authentication.user?.id == user.id || authentication.auths.UserEditor"> <!-- ion-row -->
+							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
 								<div> <!-- ion-col -->
 									<div (click)="onSubmit()" expand="block"> <!-- ion-button -->
 										Sauvegarder
@@ -64,9 +73,9 @@
 								</div> <!-- ion-col -->
 							</div> <!-- ion-row -->
 
-							<div *ngIf="authentication.user?.id == user.id || authentication.auths.UserEditor"> <!-- ion-row -->
+							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
 								<div> <!-- ion-col -->
-									<div *ngIf="this.authentication.user?.id == user.id || this.authentication.auths.UserDeleter" (click)="delete()" color="danger" expand="block"> <!-- ion-button -->
+									<div (click)="delete()" color="danger" expand="block"> <!-- ion-button -->
 										<div slot="start" name="trash-outline"></div> <!-- ion-icon -->
 										Supprimer
 									</div> <!-- ion-button -->

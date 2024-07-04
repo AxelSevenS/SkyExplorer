@@ -23,19 +23,19 @@ public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 	public string Password { get; set; } = string.Empty;
 
 	[Required]
-	[Column("firstname")]
-	[JsonPropertyName("firstname")]
+	[Column("first_name")]
+	[JsonPropertyName("firstName")]
 	public string FirstName { get; set; } = string.Empty;
 
 	[Required]
-	[Column("lastname")]
-	[JsonPropertyName("lastname")]
+	[Column("last_name")]
+	[JsonPropertyName("lastName")]
 	public string LastName { get; set; } = string.Empty;
 
 	[Required]
-	[Column("authorizations")]
-	[JsonPropertyName("authorizations")]
-	public Authorizations Auth { get; set; } = (Authorizations)Positions.User;
+	[Column("role")]
+	[JsonPropertyName("role")]
+	public Roles Role { get; set; } = Roles.User;
 
 
 	public User() : base() { }
@@ -44,7 +44,7 @@ public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 		Password = dto.Password;
 		FirstName = dto.FirstName ?? string.Empty;
 		LastName = dto.LastName ?? string.Empty;
-		Auth = (Authorizations)Positions.User;
+		Role = Roles.User;
 	}
 
 
@@ -54,26 +54,21 @@ public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 		if (dto.Password is not null) Password = dto.Password;
 		if (dto.FirstName is not null) FirstName = dto.FirstName;
 		if (dto.LastName is not null) LastName = dto.LastName;
+		if (dto.Role is not null) Role = dto.Role.Value;
 	}
 
 
 
 	[Flags]
-	public enum Positions : ushort {
-		User = 0,
-		Collaborator = User,
-		Staff = Collaborator,
-		Admin = ushort.MaxValue,
-	}
-
-	[Flags]
-	[JsonConverter(typeof(UserAuthorizationsJsonConverter))]
-	public enum Authorizations : ushort {
-		EditAnyUser = 1 << 0,        // 0b0000_0000_0000_0001
-		EditUserAuths = 1 << 1,      // 0b0000_0000_0000_0010
-		DeleteAnyUser = 1 << 2,      // 0b0000_0000_0000_0100
-	}
+	[JsonConverter(typeof(UserRolesJsonConverter))]
+	public enum Roles : ushort {
+		User,
+		Collaborator,
+		Staff,
+		Admin,
+	};
 }
+
 
 [Serializable]
 public record UserUpdateDTO {
@@ -83,12 +78,16 @@ public record UserUpdateDTO {
 	[JsonPropertyName("password")]
 	public string? Password { get; set; }
 
-	[JsonPropertyName("firstname")]
+	[JsonPropertyName("firstName")]
 	public string? FirstName { get; set; }
 
-	[JsonPropertyName("lastname")]
+	[JsonPropertyName("lastName")]
 	public string? LastName { get; set; }
+
+	[JsonPropertyName("role")]
+	public User.Roles? Role { get; set; }
 }
+
 [Serializable]
 public record UserLoginDTO {
 	[JsonPropertyName("email")]
@@ -106,9 +105,9 @@ public record UserRegisterDTO {
 	[JsonPropertyName("password")]
 	public string Password { get; set; }
 
-	[JsonPropertyName("firstname")]
+	[JsonPropertyName("firstName")]
 	public string? FirstName { get; set; }
 
-	[JsonPropertyName("lastname")]
+	[JsonPropertyName("lastName")]
 	public string? LastName { get; set; }
 }

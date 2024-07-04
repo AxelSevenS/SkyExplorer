@@ -35,7 +35,7 @@ public record Plane : IEntity<Plane, PlaneCreateDTO, PlaneUpdateDTO> {
 
 	public static Plane CreateFrom(PlaneCreateDTO dto) => new(dto);
 	public void Update(PlaneUpdateDTO dto) {
-		if (dto.Status.HasValue) Status = dto.Status.Value;
+		if (dto.Status is not null) Status = dto.Status.Value;
 	}
 
 

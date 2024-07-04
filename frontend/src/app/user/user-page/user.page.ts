@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User, UserAuths } from '../user.model';
+import { User, UserRoles } from '../user.model';
 import { UserService } from '../user.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -21,14 +21,20 @@ export class UserPage {
 		}
 	);
 
+	public get isOwner(): boolean { return this._user != null && this._authentication.user?.id === this._user.id }
+	public get isAdmin(): boolean { return this._authentication.user?.role === UserRoles.Admin }
+
+	public get subRoles(): UserRoles[] {
+		if (this._authentication.user == null) return [];
+
+		return this.userService.getSubserviantRoles(this._authentication.user.role);
+	}
+
 	public get authentication(): AuthenticationService { return this._authentication }
 	public get requestId(): number { return this.activatedRoute.snapshot.params['id'] }
 
 	public get user() { return this._user }
 	private _user?: User | null;
-
-	public get auths() { return this._auths }
-	private _auths: UserAuths = this.userService.getAuths(undefined);
 
 
 
@@ -46,10 +52,9 @@ export class UserPage {
 				if (user instanceof HttpErrorResponse) return;
 
 				this._user = user;
-				this._auths = this.userService.getAuths(this._user.roles);
 
 				this.editUserForm.controls['email'].setValue(this._user.email);
-				this.editUserForm.controls['roles'].setValue(this.userService.getRolesList(this._auths));
+				this.editUserForm.controls['role'].setValue(this._user.role);
 			});
 
 		this.userService.eventRemoved
@@ -71,7 +76,7 @@ export class UserPage {
 
 		let updated = {
 			email: this.editUserForm.controls['email'].value,
-			roles: this.editUserForm.controls['roles'].value.join(',')
+			role: this.editUserForm.controls['role'].value
 		};
 
 		this.userService.updateUserById(this.requestId, updated)

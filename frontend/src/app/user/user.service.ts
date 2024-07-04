@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { User, UserAuths } from './user.model';
+import { User, UserRoles } from './user.model';
 import { Observable, Subject, catchError, map, of, share } from 'rxjs';
 import { AuthenticationService } from '../authentication/authentication.service';
 
@@ -25,51 +25,27 @@ export class UserService {
 		private http: HttpClient
 	) { }
 
-	getAuths(roles?: string): UserAuths {
-		return {
-			UserEditor: roles?.includes("UserEditor") ?? false,
-			AuthEditor: roles?.includes("AuthEditor") ?? false,
-			UserDeleter: roles?.includes("UserDeleter") ?? false,
-			SongCreator: roles?.includes("SongCreator") ?? false,
-			SongEditor: roles?.includes("SongEditor") ?? false,
-			SongDeleter: roles?.includes("SongDeleter") ?? false,
-			PlaylistCreator: roles?.includes("PlaylistCreator") ?? false,
-			PlaylistEditor: roles?.includes("PlaylistEditor") ?? false,
-			PlaylistDeleter: roles?.includes("PlaylistDeleter") ?? false,
+
+	getSubserviantRoles(role: UserRoles): UserRoles[] {
+		let roles: UserRoles[] = [];
+
+		switch (role) {
+			case UserRoles.Admin:
+				roles.push(UserRoles.Admin);
+
+			case UserRoles.Staff:
+				roles.push(UserRoles.Staff);
+
+			case UserRoles.Collaborator:
+				roles.push(UserRoles.Collaborator);
+
+			case UserRoles.User:
+				roles.push(UserRoles.User);
+				break;
+
+			default:
+				break;
 		}
-	}
-
-	getRolesList(auths: UserAuths): string[] {
-		let roles: string[] = [];
-
-		if (auths.UserEditor) roles.push('UserEditor');
-		if (auths.AuthEditor) roles.push('AuthEditor');
-		if (auths.UserDeleter) roles.push('UserDeleter');
-		if (auths.SongCreator) roles.push('SongCreator');
-		if (auths.SongEditor) roles.push('SongEditor');
-		if (auths.SongDeleter) roles.push('SongDeleter');
-		if (auths.PlaylistCreator) roles.push('PlaylistCreator');
-		if (auths.PlaylistEditor) roles.push('PlaylistEditor');
-		if (auths.PlaylistDeleter) roles.push('PlaylistDeleter');
-
-		return roles;
-	}
-	getRolesString(auths: UserAuths): string {
-		return this.getRolesList(auths).join(',');
-	}
-
-	getRolesFlags(auths: UserAuths): number {
-		let roles: number = 0;
-
-		if (auths.UserEditor) roles |= 1 << 0;
-		if (auths.AuthEditor) roles |= 1 << 1;
-		if (auths.UserDeleter) roles |= 1 << 2;
-		if (auths.SongCreator) roles |= 1 << 3;
-		if (auths.SongEditor) roles |= 1 << 4;
-		if (auths.SongDeleter) roles |= 1 << 5;
-		if (auths.PlaylistCreator) roles |= 1 << 6;
-		if (auths.PlaylistEditor) roles |= 1 << 7;
-		if (auths.PlaylistDeleter) roles |= 1 << 8;
 
 		return roles;
 	}
@@ -104,10 +80,12 @@ export class UserService {
 			);
 	}
 
-	createUser(email: string, password: string): Observable<User | HttpErrorResponse> {
+	createUser(email: string, password: string, firstName: string, lastName: string): Observable<User | HttpErrorResponse> {
 		const formData = new FormData();
 		formData.append('Email', email);
 		formData.append('Password', password);
+		formData.append('FirstName', firstName);
+		formData.append('LastName', lastName);
 
 		const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
 
@@ -126,13 +104,14 @@ export class UserService {
 		return observable;
 	}
 
-	updateUserById(id: number, user: Partial<User>): Observable<User | HttpErrorResponse> {
+	updateUserById(id: number, user: Partial<User> | undefined, password: string | undefined = undefined): Observable<User | HttpErrorResponse> {
 		const formData = new FormData();
-		let roles = this.getRolesFlags(this.getAuths(user.roles)).toString();
 
-		if (user.email) formData.append('Email', user.email);
-		if (user.password) formData.append('Password', user.password);
-		if (user.roles) formData.append('Roles', roles);
+		if (user?.email) formData.append('Email', user.email);
+		if (user?.firstName) formData.append('FirstName', user.firstName);
+		if (user?.lastName) formData.append('LastName', user.lastName);
+		if (user?.role) formData.append('Role', user.role);
+		if (password) formData.append('Password', password);
 
 		const headers = new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}` });
 

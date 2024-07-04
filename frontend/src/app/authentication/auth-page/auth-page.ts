@@ -61,7 +61,9 @@ export class AuthPage implements OnInit {
 	register() {
 		let username = this.registerForm.controls["username"].value;
 		let password = this.registerForm.controls["password"].value;
-		this.authenticationService.register(username, password)
+		let firstName = this.registerForm.controls["firstName"].value;
+		let lastName = this.registerForm.controls["lastName"].value;
+		this.authenticationService.register(username, password, firstName, lastName)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({

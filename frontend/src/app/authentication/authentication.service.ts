@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
-import { User, UserAuths } from '../user/user.model';
+import { User, UserRoles } from '../user/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../user/user.service';
 
@@ -21,9 +21,6 @@ export class AuthenticationService {
 	private _user: User | null = null;
 	public get user() { return this._user }
 
-	private _auths: UserAuths = this.userService.getAuths(undefined);
-	public get auths() { return this._auths }
-
 	constructor(
 		private userService: UserService,
 		private router: Router
@@ -40,7 +37,6 @@ export class AuthenticationService {
 		}
 
 		this._user = user;
-		this._auths = this.userService.getAuths(this._user.roles);
 		this._state = 'loggedIn';
 
 		this.userService.eventRemoved
@@ -72,7 +68,6 @@ export class AuthenticationService {
 					if (res instanceof HttpErrorResponse) {
 						this._user = null;
 						this._state = res.error == 0 ? 'disconnected' : 'loggedOut';
-						this._auths = this.userService.getAuths(undefined);
 						return res;
 					}
 
@@ -81,14 +76,13 @@ export class AuthenticationService {
 
 					localStorage.setItem(AuthenticationService.storageKey, res);
 					this._state = 'loggedIn';
-					this._auths = this.userService.getAuths(this._user.roles);
 					return this._user;
 				})
 			);
 	}
 
-	register(username: string, password: string): Observable<User | HttpErrorResponse> {
-		return this.userService.createUser(username, password);
+	register(username: string, password: string, firstName: string, lastName: string): Observable<User | HttpErrorResponse> {
+		return this.userService.createUser(username, password, firstName, lastName);
 	}
 
 	logout(): void {
@@ -107,8 +101,10 @@ export class AuthenticationService {
 		console.log(decoded);
 		if (
 			decoded.sub === undefined ||
-			decoded.name === undefined ||
-			decoded.roles === undefined ||
+			decoded.email === undefined ||
+			decoded.given_name === undefined ||
+			decoded.family_name === undefined ||
+			decoded.role === undefined ||
 			decoded.exp === undefined ||
 			decoded.exp <= Math.floor(Date.now() / 1000)
 		) {
@@ -117,8 +113,10 @@ export class AuthenticationService {
 
 		return {
 			id: parseInt(decoded.sub),
-			email: decoded.name,
-			roles: decoded.roles,
+			email: decoded.email,
+			role: UserRoles[decoded.role as keyof typeof UserRoles],
+			firstName: decoded.given_name,
+			lastName: decoded.family_name,
 		}
 	}
 }
@@ -126,6 +124,8 @@ export class AuthenticationService {
 
 interface UserPayload extends JwtPayload {
 	sub?: string,
-	name?: string,
-	roles?: string
+	email?: string,
+	given_name?: string,
+	family_name?: string,
+	role?: string
 }
