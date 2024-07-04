@@ -12,11 +12,7 @@ const routes: Routes = [
 		path: 'edit-password',
 		component: PasswordEditPage
 	},
-	{
-		path: '',
-		redirectTo: 'login',
-		pathMatch: 'full'
-	},
+	{ path: '', redirectTo: 'login', pathMatch: 'full' },
 ];
 
 @NgModule({
