@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UserAuth = User.Authorizations;
 
 public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : class, IEntity<TData, TSetupDTO, TUpdateDTO> {
 	protected readonly AppDbContext Repository = repository;
@@ -59,16 +58,69 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 
 
 	/// <summary>
-	/// Check wether the user is authenticated and if the user holds the given <c>authorizations</c>
+	/// Check wether the user is authenticated and if the user holds the given <c>neededRole</c>
 	/// </summary>
-	/// <param name="authorizations"></param>
+	/// <param name="neededRole"></param>
 	/// <returns>True if the user is authenticated and holds the authorization(s), False if the user is not authenticated or doesn't hold the authorization(s)</returns>
-	protected bool VerifyAuthorization(UserAuth authorizations) {
-		if (HttpContext.User.FindFirst(JwtOptions.RoleClaim)?.Value is string claim) {
-			return (claim.ParseAuths() & authorizations) == authorizations;
+	protected bool VerifyRole(User.Roles neededRole, out User.Roles role) {
+		role = SkyExplorer.User.Roles.User;
+		if (
+			HttpContext.User.FindFirst(JwtOptions.RoleClaim)?.Value is string roleClaim &&
+			Enum.TryParse(roleClaim, true, out role)
+		) {
+			return (int)role >= (int)neededRole;
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	/// Verifies wether the current authenticated user has the given authorizations, if not <c>result</c> will contain a StatusCodeResult corresponding to the error.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="neededRole">The authorizations the authenticated user needs to posess to validate the check</param>
+	/// <param name="result">The StatusCodeResult corresponding to the error, if the function returns False</param>
+	/// <param name="userId">The Id of the currently authenticated user, if the function returns True</param>
+	/// <returns>
+	/// True if the user is authenticated and posesses the given <c>authorizations</c>, otherwise False.
+	/// </returns>
+	protected bool VerifyRole<T>(User.Roles neededRole, out ActionResult<T> result, out uint userId, out User.Roles userRole) where T : class {
+		result = null!;
+		userRole = SkyExplorer.User.Roles.User;
+
+		if (! TryGetAuthenticatedUserId(out userId)) {
+			result = Unauthorized();
+			return false;
+		}
+		if (! VerifyRole(neededRole, out userRole)) {
+			result = Forbid();
+			return false;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// Verifies wether the current authenticated user has the given id.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="authId">The Id that the authenticated user needs to have to be deemed "Owner" of the resource</param>
+	/// <param name="result">The StatusCodeResult corresponding to the error if the verification was unsuccessful</param>
+	/// <returns>
+	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
+	/// </returns>
+	protected bool VerifyOwnership<T>(uint authId, out ActionResult<T> result) {
+		if (! TryGetAuthenticatedUserId(out uint currentId)) {
+			result = Unauthorized();
+			return false;
+		}
+		if (authId != currentId) {
+			result = Forbid();
+			return false;
+		}
+
+		result = null!;
+		return true;
 	}
 
 	/// <summary>
@@ -100,47 +152,25 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 	/// Verifies wether the current authenticated user has the given authorizations, if not <c>result</c> will contain a StatusCodeResult corresponding to the error.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <param name="neededAuthorizations">The authorizations the authenticated user needs to posess to validate the check</param>
-	/// <param name="authId">The Id of the currently authenticated user, if the function returns True</param>
-	/// <param name="result">The StatusCodeResult corresponding to the error, if the function returns False</param>
-	/// <returns>
-	/// True if the user is authenticated and posesses the given <c>authorizations</c>, otherwise False.
-	/// </returns>
-	protected bool VerifyAuthZ<T>(UserAuth neededAuthorizations, out uint authId, out ActionResult<T> result) where T : class {
-		if (!TryGetAuthenticatedUserId(out authId)) {
-			result = Unauthorized();
-			return false;
-		}
-		if (!VerifyAuthorization(neededAuthorizations)) {
-			result = Forbid();
-			return false;
-		}
-
-		result = null!;
-		return true;
-	}
-
-	/// <summary>
-	/// Verifies wether the current authenticated user has the given authorizations, if not <c>result</c> will contain a StatusCodeResult corresponding to the error.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
 	/// <param name="authId">The Id that the authenticated user needs to have to be deemed "Owner" of the resource</param>
-	/// <param name="neededAuthorizations">The authorizations the authenticated user needs to posess to validate the check and override the Ownership check</param>
+	/// <param name="neededRole">The authorizations the authenticated user needs to posess to validate the check and override the Ownership check</param>
 	/// <param name="result">The StatusCodeResult corresponding to the error if the verification was unsuccessful</param>
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
 	/// </returns>
-	protected bool VerifyOwnershipOrAuthZ<T>(uint authId, UserAuth neededAuthorizations, out ActionResult<T> result) where T : class {
-		if (!TryGetAuthenticatedUserId(out uint currentId)) {
+	protected bool VerifyOwnershipOrRole<T>(uint authId, User.Roles neededRole, out ActionResult<T> result, out uint userId, out User.Roles userRole) where T : class {
+		result = null!;
+		userRole = SkyExplorer.User.Roles.User;
+
+		if (! TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
 			return false;
 		}
-		if (authId != currentId && !VerifyAuthorization(neededAuthorizations)) {
+		if (authId != userId && ! VerifyRole(neededRole, out userRole)) {
 			result = Forbid();
 			return false;
 		}
 
-		result = null!;
 		return true;
 	}
 }

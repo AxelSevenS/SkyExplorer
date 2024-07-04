@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 public record class JwtOptions {
 	public const string Jwt = "Jwt";
-	public const string RoleClaim = "roles";
+	public const string RoleClaim = "role";
 
 	public string Issuer { get; set; } = string.Empty;
 	public string Audience { get; set; } = string.Empty;
@@ -36,9 +36,11 @@ public record class JwtOptions {
 
 		List<Claim> claims =
 		[
-			new Claim(JwtRegisteredClaimNames.Name, user.Email),
 			new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-			new Claim(RoleClaim, user.Auth.FormatAuths()),
+			new Claim(JwtRegisteredClaimNames.Email, user.Email),
+			new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+			new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+			new Claim(RoleClaim, user.Role.ToString()),
 
 			new Claim(JwtRegisteredClaimNames.Iss, Issuer),
 			new Claim(JwtRegisteredClaimNames.Aud, Audience),

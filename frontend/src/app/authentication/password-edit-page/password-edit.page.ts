@@ -46,11 +46,9 @@ export class PasswordEditPage {
 		if ( ! this.authentication.user ) return;
 		if ( ! this.editUserForm.valid ) return;
 
-		let user = {
-			password: this.editUserForm.controls['password'].value
-		};
+		let password: string = this.editUserForm.controls['password'].value;
 
-		this.userService.updateUserById(this.authentication.user.id, user)
+		this.userService.updateUserById(this.authentication.user.id, undefined, password)
 			.subscribe( async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
@@ -63,7 +61,7 @@ export class PasswordEditPage {
 					return;
 				}
 
-				this.authentication.login(res.email, user.password)
+				this.authentication.login(res.email, password)
 					.subscribe(() => {
 						window.location.reload();
 					});
