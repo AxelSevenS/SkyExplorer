@@ -1,99 +1,100 @@
 <div class="authentication-card">
-	<h6 class="toggle-labels">
+
+	<h6 id="toggle-labels">
 		<span color="primary">Se Connecter</span>
 		<span color="primary">S'Inscrire</span>
 	</h6>
-	<input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
-	<label for="reg-log"></label>
+	<input type="checkbox" id="toggle-btn" name="toggle-btn"/>
+	<label for="toggle-btn"></label>
 
 	<div class="card-3d-container">
 		<div class="card-3d-wrapper">
 
-			<div class="card-front">
+			<mat-card class="card-front">
 				<form [formGroup]="loginForm" (ngSubmit)="login()" class="card-content">
 
 					<mat-card-header>
-						<mat-card-title color="primary">Se Connecter</mat-card-title>
+						<mat-card-title>Se Connecter</mat-card-title>
 					</mat-card-header>
 
-					<div class="col">
-						<mat-form-field>
+					<mat-card-content>
+						<mat-form-field class="full-width">
 							<mat-label>
-								Nom d'Utilisateur
-								<mat-icon aria-hidden="false" aria-label="Nom d'Utilisateur" fontIcon="person"></mat-icon>
+								Adresse E-mail
+								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
 							</mat-label>
 							<input matInput formControlName="username" type="text">
 							@if (registerForm.controls['username'].hasError('required')) {
-								<mat-error>Email is <strong>required</strong></mat-error>
+								<mat-error>L'Adresse E-mail <strong>obligatoire</strong></mat-error>
 							}
+						</mat-form-field>
+
+						<mat-form-field class="full-width">
+							<mat-label>
+								Mot de Passe
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
+							</mat-label>
+							<input matInput formControlName="password" type="password">
+						</mat-form-field>
+					</mat-card-content>
+
+					<mat-card-footer>
+						<button mat-raised-button>Se Connecter</button>
+					</mat-card-footer>
+
+				</form>
+			</mat-card>
+
+			<mat-card class="card-back">
+				<form [formGroup]="registerForm" (ngSubmit)="register()" class="card-content">
+
+					<mat-card-header>
+						<mat-card-title>S'Inscrire</mat-card-title>
+					</mat-card-header>
+
+					<mat-card-content>
+						<mat-form-field class="full-width">
+							<mat-label>
+								Adresse E-mail
+								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
+							</mat-label>
+							<input matInput formControlName="username" type="text">
+							@if (registerForm.controls['username'].hasError('required')) {
+								<mat-error>L'Adresse E-mail <strong>obligatoire</strong></mat-error>
+							}
+						</mat-form-field>
+
+						<mat-form-field>
+							<mat-label>Prénom</mat-label>
+							<input matInput formControlName="firstName" type="text">
+						</mat-form-field>
+						<mat-form-field>
+							<mat-label>Nom de Famille</mat-label>
+							<input matInput formControlName="lastName" type="text">
 						</mat-form-field>
 
 						<mat-form-field>
 							<mat-label>
 								Mot de Passe
-								<mat-icon aria-hidden="false" aria-label="Mot de Passe" fontIcon="lock"></mat-icon>
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
 							</mat-label>
 							<input matInput formControlName="password" type="password">
 						</mat-form-field>
-					</div>
-
-					<button mat-raised-button>Se Connecter</button>
-
-				</form>
-			</div>
-
-			<div class="card-back">
-				<form [formGroup]="registerForm" (ngSubmit)="register()" class="card-content">
-
-					<mat-card-header>
-						<mat-card-title color="primary">S'Inscrire</mat-card-title>
-					</mat-card-header>
-
-					<div>
 						<mat-form-field>
 							<mat-label>
-								Nom d'Utilisateur
-								<mat-icon aria-hidden="false" aria-label="Nom d'Utilisateur" fontIcon="person"></mat-icon>
+								Confirmer le Mot de Passe
+								<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
 							</mat-label>
-							<input matInput formControlName="username" type="text">
-							@if (registerForm.controls['username'].hasError('required')) {
-								<mat-error>Email is <strong>required</strong></mat-error>
-							}
+							<input matInput formControlName="passwordConfirm" type="password">
 						</mat-form-field>
+					</mat-card-content>
 
-						<div class="row">
-							<mat-form-field>
-								<mat-label>Prénom</mat-label>
-								<input matInput formControlName="firstName" type="text">
-							</mat-form-field>
-							<mat-form-field>
-								<mat-label>Nom de Famille</mat-label>
-								<input matInput formControlName="lastName" type="text">
-							</mat-form-field>
-						</div>
-
-						<div class="row">
-							<mat-form-field>
-								<mat-label>
-									Mot de Passe
-									<mat-icon aria-hidden="false" aria-label="Mot de Passe" fontIcon="lock"></mat-icon>
-								</mat-label>
-								<input matInput formControlName="password" type="password">
-							</mat-form-field>
-							<mat-form-field>
-								<mat-label>
-									Confirmer le Mot de Passe
-									<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe" fontIcon="check"></mat-icon>
-								</mat-label>
-								<input matInput formControlName="passwordConfirm" type="password">
-							</mat-form-field>
-						</div>
-					</div>
-
-					<button mat-raised-button>S'Inscrire</button>
+					<mat-card-footer>
+						<button mat-raised-button>S'Inscrire</button>
+					</mat-card-footer>
 
 				</form>
-			</div>
+			</mat-card>
 
 		</div>
 	</div>
