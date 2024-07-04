@@ -7,10 +7,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 const routes: Routes = [
 	{
-		path: 'dashboard',
-		loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
-	},
-	{
 		path: 'auth',
 		loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule),
 	},
@@ -18,7 +14,10 @@ const routes: Routes = [
 		path: 'users',
 		loadChildren: () => import('./user/user.module').then(m => m.UserModule),
 	},
-	{ path: '', redirectTo: 'auth', pathMatch: 'full' },
+	{
+		path: '',
+		loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+	},
 	{ path: '**', component: NotFoundPage, }
 ];
 @NgModule({
