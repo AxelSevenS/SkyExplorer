@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("users")]
-public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
+public record AppUser : IEntity<AppUser, UserRegisterDTO, UserUpdateDTO> {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -38,8 +38,8 @@ public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 	public Roles Role { get; set; } = Roles.User;
 
 
-	public User() : base() { }
-	public User(UserRegisterDTO dto) : this() {
+	public AppUser() : base() { }
+	public AppUser(UserRegisterDTO dto) : this() {
 		Email = dto.Email;
 		Password = dto.Password;
 		FirstName = dto.FirstName ?? string.Empty;
@@ -48,7 +48,7 @@ public record User : IEntity<User, UserRegisterDTO, UserUpdateDTO> {
 	}
 
 
-	public static User CreateFrom(UserRegisterDTO dto) => new(dto);
+	public static AppUser CreateFrom(UserRegisterDTO dto) => new(dto);
 	public void Update(UserUpdateDTO dto) {
 		if (dto.Email is not null) Email = dto.Email;
 		if (dto.Password is not null) Password = dto.Password;
@@ -85,7 +85,7 @@ public record UserUpdateDTO {
 	public string? LastName { get; set; }
 
 	[JsonPropertyName("role")]
-	public User.Roles? Role { get; set; }
+	public AppUser.Roles? Role { get; set; }
 }
 
 [Serializable]
