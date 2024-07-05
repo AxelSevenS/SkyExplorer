@@ -5,32 +5,37 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where TData : class, IEntity<TData, TSetupDTO, TUpdateDTO> {
+public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class, IEntity<T, TSetupDTO, TUpdateDTO> {
 	protected readonly AppDbContext Repository = repository;
-	protected abstract DbSet<TData> Set { get; }
+	protected abstract DbSet<T> Set { get; }
 
 
 	[HttpGet]
-	public virtual Task<List<TData>> GetAll() =>
+	public virtual Task<List<T>> GetAll() =>
 		Set.ToListAsync();
 
 	[HttpGet("{id}")]
-	public virtual ActionResult<TData> GetById(uint id) =>
+	public virtual ActionResult<T> GetById(uint id) =>
 		Set.Find(id) switch {
-			TData flight => Ok(flight),
+			T flight => Ok(flight),
 			null => NotFound(),
 		};
 
 
 	[HttpPost]
-	public virtual async Task<ActionResult<TData>> Add([FromForm] TSetupDTO dto) =>
-		Ok(await Set.AddAsync(TData.CreateFrom(dto)));
+	public virtual async Task<ActionResult<T>> Add([FromForm] TSetupDTO dto) {
+		EntityEntry<T> res = await Set.AddAsync(T.CreateFrom(dto));
+
+		Repository.SaveChanges();
+		return Ok(res.Entity);
+	}
 
 
 	[HttpPatch("{id}")]
-	public virtual async Task<ActionResult<TData>> Update(uint id, [FromForm] TUpdateDTO dto) {
-		TData? found = Set.Find(id);
+	public virtual async Task<ActionResult<T>> Update(uint id, [FromForm] TUpdateDTO dto) {
+		T? found = Set.Find(id);
 		if (found is null) {
 			return NotFound();
 		}
@@ -43,8 +48,8 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 
 
 	[HttpDelete("{id}")]
-	public virtual async Task<ActionResult<TData>> Delete(uint id) {
-		TData? found = Set.Find(id);
+	public virtual async Task<ActionResult<T>> Delete(uint id) {
+		T? found = Set.Find(id);
 		if (found is null) {
 			return NotFound();
 		}
@@ -62,8 +67,8 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 	/// </summary>
 	/// <param name="neededRole"></param>
 	/// <returns>True if the user is authenticated and holds the authorization(s), False if the user is not authenticated or doesn't hold the authorization(s)</returns>
-	protected bool VerifyRole(User.Roles neededRole, out User.Roles role) {
-		role = SkyExplorer.User.Roles.User;
+	protected bool VerifyRole(AppUser.Roles neededRole, out AppUser.Roles role) {
+		role = SkyExplorer.AppUser.Roles.User;
 		if (
 			HttpContext.User.FindFirst(JwtOptions.RoleClaim)?.Value is string roleClaim &&
 			Enum.TryParse(roleClaim, true, out role)
@@ -84,9 +89,9 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c>, otherwise False.
 	/// </returns>
-	protected bool VerifyRole<T>(User.Roles neededRole, out ActionResult<T> result, out uint userId, out User.Roles userRole) where T : class {
+	protected bool VerifyRole<T>(AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) where T : class {
 		result = null!;
-		userRole = SkyExplorer.User.Roles.User;
+		userRole = SkyExplorer.AppUser.Roles.User;
 
 		if (! TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
@@ -158,9 +163,9 @@ public abstract class Controller<TData, TSetupDTO, TUpdateDTO>(AppDbContext repo
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
 	/// </returns>
-	protected bool VerifyOwnershipOrRole<T>(uint authId, User.Roles neededRole, out ActionResult<T> result, out uint userId, out User.Roles userRole) where T : class {
+	protected bool VerifyOwnershipOrRole<T>(uint authId, AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) where T : class {
 		result = null!;
-		userRole = SkyExplorer.User.Roles.User;
+		userRole = SkyExplorer.AppUser.Roles.User;
 
 		if (! TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
