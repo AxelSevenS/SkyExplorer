@@ -24,7 +24,7 @@ export class UserComponent implements OnInit {
 
 	ngOnInit() {
 		if (this.id && ! this.user) {
-			this.userService.getUserById(this.id)
+			this.userService.getById(this.id)
 				.subscribe(user => {
 					if (user instanceof HttpErrorResponse) return;
 
@@ -50,7 +50,7 @@ export class UserComponent implements OnInit {
 	async delete() {
 		if( ! this.user ) return;
 
-		this.userService.deleteUserById(this.user.id)
+		this.userService.deleteById(this.user.id)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({

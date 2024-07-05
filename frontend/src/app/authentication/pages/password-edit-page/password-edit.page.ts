@@ -4,7 +4,7 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationValidators } from '../../validators/authentication-validators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { User } from '../../../users/models/user.model';
+import { User, UserUpdateDto } from '../../../users/models/user.model';
 import { UserService } from '../../../users/services/user.service';
 
 @Component({
@@ -47,8 +47,9 @@ export class PasswordEditPage {
 		if ( ! this.editUserForm.valid ) return;
 
 		let password: string = this.editUserForm.controls['password'].value;
+		let updated = new UserUpdateDto({ password: password });
 
-		this.userService.updateUserById(this.authentication.user.id, undefined, password)
+		this.userService.updateById(this.authentication.user.id, updated)
 			.subscribe( async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({

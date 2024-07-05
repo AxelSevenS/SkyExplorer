@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
-import { User, UserRoles } from '../../users/models/user.model';
+import { User, UserCreateDto, UserRoles } from '../../users/models/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../../users/services/user.service';
 
@@ -62,7 +62,7 @@ export class AuthenticationService {
 
 	login(username: string, password: string): Observable<User | HttpErrorResponse> {
 
-		return this.userService.authenticateUserByUsernameAndPassword(username, password)
+		return this.userService.authenticateUserByEmailAndPassword(username, password)
 			.pipe(
 				map(res => {
 					if (res instanceof HttpErrorResponse) {
@@ -82,7 +82,7 @@ export class AuthenticationService {
 	}
 
 	register(username: string, password: string, firstName: string, lastName: string): Observable<User | HttpErrorResponse> {
-		return this.userService.createUser(username, password, firstName, lastName);
+		return this.userService.create(new UserCreateDto(username, password, firstName, lastName));
 	}
 
 	logout(): void {
@@ -98,7 +98,6 @@ export class AuthenticationService {
 
 	private jwtToUser(token: string): User | null {
 		let decoded = jwtDecode<UserPayload>(token);
-		console.log(decoded);
 		if (
 			decoded.sub === undefined ||
 			decoded.email === undefined ||
