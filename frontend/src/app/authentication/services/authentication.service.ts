@@ -60,9 +60,9 @@ export class AuthenticationService {
 	}
 
 
-	login(username: string, password: string): Observable<User | HttpErrorResponse> {
+	login(email: string, password: string): Observable<User | HttpErrorResponse> {
 
-		return this.userService.authenticateUserByEmailAndPassword(username, password)
+		return this.userService.authenticateUserByEmailAndPassword(email, password)
 			.pipe(
 				map(res => {
 					if (res instanceof HttpErrorResponse) {
@@ -81,8 +81,8 @@ export class AuthenticationService {
 			);
 	}
 
-	register(username: string, password: string, firstName: string, lastName: string): Observable<User | HttpErrorResponse> {
-		return this.userService.create(new UserCreateDto(username, password, firstName, lastName));
+	register(email: string, password: string, firstName: string, lastName: string): Observable<User | HttpErrorResponse> {
+		return this.userService.create(new UserCreateDto(email, password, firstName, lastName));
 	}
 
 	logout(): void {
