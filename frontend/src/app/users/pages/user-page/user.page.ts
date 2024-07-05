@@ -16,7 +16,7 @@ export class UserPage {
 
 	editUserForm: FormGroup = this.formBuilder.group(
 		{
-			username: ['', Validators.required],
+			email: ['', Validators.required],
 			roles: []
 		}
 	);

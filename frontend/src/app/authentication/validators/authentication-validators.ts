@@ -15,7 +15,7 @@ export class AuthenticationValidators {
 			PasswordNoUppercase: ! new RegExp('(?=.*[A-Z])').test(control.value),
 			PasswordNoLowercase: ! new RegExp('(?=.*[a-z])').test(control.value),
 			PasswordNoDigit: ! new RegExp('(.*[0-9].*)').test(control.value),
-			PasswordNoSpecial: ! new RegExp('(?=.*[!@#$%^&*])').test(control.value),
+			PasswordNoSpecial: ! new RegExp('(?=.*[!@#$%^&*/])').test(control.value),
 			PasswordTooShort: ! new RegExp('.{8,}').test(control.value),
 		};
 

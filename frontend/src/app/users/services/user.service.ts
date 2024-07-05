@@ -45,7 +45,7 @@ export class UserService extends EntityService<User, UserCreateDto, UserUpdateDt
 		return roles;
 	}
 
-	authenticateUserByUsernameAndPassword(email: string, password: string): Observable<string | HttpErrorResponse> {
+	authenticateUserByEmailAndPassword(email: string, password: string): Observable<string | HttpErrorResponse> {
 		const formData = new FormData();
 		formData.append('Email', email);
 		formData.append('Password', password);

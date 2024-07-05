@@ -13,17 +13,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class LoginPage implements OnInit {
 
 	loginForm: FormGroup = this.formBuilder.group({
-		username: ['', /* Validators.compose([ */Validators.required/* , Validators.username]) */],
-		password: ['', Validators.required],
+		email: [''],
+		password: [''],
 	});
 
 	registerForm: FormGroup = this.formBuilder.group(
 		{
-			username: ['', /* Validators.compose([ */Validators.required, /* Validators.email]) */],
+			email: ['', Validators.email],
 			firstName: [''],
 			lastName: [''],
-			password: ['', Validators.compose([Validators.required, AuthenticationValidators.securePasswordValidator])],
-			passwordConfirm: ['', Validators.compose([Validators.required, AuthenticationValidators.securePasswordValidator])],
+			password: ['', AuthenticationValidators.securePasswordValidator],
+			passwordConfirm: ['', AuthenticationValidators.securePasswordValidator],
 		}, {
 			validators: [
 				AuthenticationValidators.confirmPasswordValidator('password', 'passwordConfirm')
@@ -40,7 +40,7 @@ export class LoginPage implements OnInit {
 	ngOnInit() {}
 
 	login() {
-		this.authenticationService.login(this.loginForm.controls["username"].value, this.loginForm.controls["password"].value)
+		this.authenticationService.login(this.loginForm.controls["email"].value, this.loginForm.controls["password"].value)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
@@ -59,11 +59,11 @@ export class LoginPage implements OnInit {
 	}
 
 	register() {
-		let username = this.registerForm.controls["username"].value;
+		let email = this.registerForm.controls["email"].value;
 		let password = this.registerForm.controls["password"].value;
 		let firstName = this.registerForm.controls["firstName"].value;
 		let lastName = this.registerForm.controls["lastName"].value;
-		this.authenticationService.register(username, password, firstName, lastName)
+		this.authenticationService.register(email, password, firstName, lastName)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
@@ -76,7 +76,7 @@ export class LoginPage implements OnInit {
 					return;
 				}
 
-				this.authenticationService.login(username, password)
+				this.authenticationService.login(email, password)
 					.subscribe(() => {
 						this.router.navigate([''])
 							.then(() => window.location.reload())

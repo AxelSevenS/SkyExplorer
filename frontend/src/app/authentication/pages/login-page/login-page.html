@@ -23,10 +23,7 @@
 								Adresse E-mail
 								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
 							</mat-label>
-							<input matInput formControlName="username" type="text">
-							@if (registerForm.controls['username'].hasError('required')) {
-								<mat-error>L'Adresse E-mail <strong>obligatoire</strong></mat-error>
-							}
+							<input matInput formControlName="email" type="text" autocomplete="email" required>
 						</mat-form-field>
 
 						<mat-form-field class="full-width">
@@ -34,7 +31,7 @@
 								Mot de Passe
 								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
 							</mat-label>
-							<input matInput formControlName="password" type="password">
+							<input matInput formControlName="password" type="password" autocomplete="current-password" required>
 						</mat-form-field>
 					</mat-card-content>
 
@@ -58,35 +55,58 @@
 								Adresse E-mail
 								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
 							</mat-label>
-							<input matInput formControlName="username" type="text">
-							@if (registerForm.controls['username'].hasError('required')) {
-								<mat-error>L'Adresse E-mail <strong>obligatoire</strong></mat-error>
+							<input matInput formControlName="email" type="text" autocomplete="email" required>
+							@if (registerForm.controls['email'].hasError('email')) {
+								<mat-error>L'Adresse E-mail doit être <strong>valide</strong></mat-error>
 							}
 						</mat-form-field>
 
 						<mat-form-field>
 							<mat-label>Prénom</mat-label>
-							<input matInput formControlName="firstName" type="text">
+							<input matInput formControlName="firstName" type="text" autocomplete="given-password" required>
 						</mat-form-field>
 						<mat-form-field>
 							<mat-label>Nom de Famille</mat-label>
-							<input matInput formControlName="lastName" type="text">
+							<input matInput formControlName="lastName" type="text" autocomplete="family-password" required>
 						</mat-form-field>
 
 						<mat-form-field>
 							<mat-label>
 								Mot de Passe
-								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe" >lock</mat-icon>
 							</mat-label>
-							<input matInput formControlName="password" type="password">
+							<input matInput formControlName="password" type="password" autocomplete="new-password" required>
 						</mat-form-field>
 						<mat-form-field>
 							<mat-label>
 								Confirmer le Mot de Passe
 								<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
 							</mat-label>
-							<input matInput formControlName="passwordConfirm" type="password">
+							<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password" required>
 						</mat-form-field>
+
+						<div class="full-width">
+							@if (registerForm.controls['password'].errors != null && registerForm.controls['password'].touched) {
+								@if (registerForm.controls['password'].hasError('PasswordNoUppercase')) {
+									<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
+								}
+								@if (registerForm.controls['password'].hasError('PasswordNoLowercase')) {
+									<mat-error class="full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
+								}
+								@if (registerForm.controls['password'].hasError('PasswordNoDigit')) {
+									<mat-error class="full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
+								}
+								@if (registerForm.controls['password'].hasError('PasswordNoSpecial')) {
+									<mat-error class="full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
+								}
+								@if (registerForm.controls['password'].hasError('PasswordTooShort')) {
+									<mat-error class="full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
+								}
+							}
+							@if (registerForm.controls['password'].errors == null && registerForm.hasError('PasswordNoMatch')) {
+								<mat-error class="full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
+							}
+						</div>
 					</mat-card-content>
 
 					<mat-card-footer>
