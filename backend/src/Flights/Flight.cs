@@ -7,28 +7,49 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("flights")]
-public record Flight : IEntity<Flight, FlightCreateDTO, FlightUpdateDTO> {
+public record Flight {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[JsonPropertyName("id")]
 	public uint Id { get; set; }
 
+
 	[Column("user_id")]
 	[JsonPropertyName("userId")]
 	public uint UserId { get; set; }
+
+	[ForeignKey(nameof(UserId))]
+	[JsonIgnore]
+	public AppUser User { get; set; }
+
 
 	[Column("overseer_id")]
 	[JsonPropertyName("overseerId")]
 	public uint OverseerId { get; set; }
 
+	[ForeignKey(nameof(OverseerId))]
+	[JsonIgnore]
+	public AppUser Overseer { get; set; }
+
+
 	[Column("bill_id")]
 	[JsonPropertyName("billId")]
 	public uint BillId { get; set; }
 
+	[ForeignKey(nameof(BillId))]
+	[JsonIgnore]
+	public Bill Bill { get; set; }
+
+
 	[Column("plane_id")]
 	[JsonPropertyName("planeId")]
 	public uint PlaneId { get; set; }
+
+	[ForeignKey(nameof(PlaneId))]
+	[JsonIgnore]
+	public Plane Plane { get; set; }
+
 
 	[Column("flight_type")]
 	[JsonPropertyName("flightType")]
@@ -44,7 +65,7 @@ public record Flight : IEntity<Flight, FlightCreateDTO, FlightUpdateDTO> {
 
 
 	public Flight() : base() { }
-	public Flight(FlightCreateDTO dto) : this() {
+	public Flight(FlightSetupDTO dto) : this() {
 		UserId = dto.UserId;
 		OverseerId = dto.OverseerId;
 		BillId = dto.BillId;
@@ -53,21 +74,11 @@ public record Flight : IEntity<Flight, FlightCreateDTO, FlightUpdateDTO> {
 		Duration = dto.Duration;
 		DateTime = dto.DateTime;
 	}
-
-
-	public static Flight CreateFrom(FlightCreateDTO dto) => new(dto);
-	public void Update(FlightUpdateDTO dto) {
-		if (dto.OverseerId is not null) OverseerId = dto.OverseerId.Value;
-		if (dto.BillId is not null) BillId = dto.BillId.Value;
-		if (dto.PlaneId is not null) PlaneId = dto.PlaneId.Value;
-		if (dto.Duration is not null) Duration = dto.Duration.Value;
-		if (dto.FlightType is not null) FlightType = dto.FlightType;
-	}
 }
 
 
 [Serializable]
-public class FlightCreateDTO {
+public class FlightSetupDTO : IEntitySetup<Flight> {
 	[JsonPropertyName("userId")]
 	public uint UserId { get; set; }
 
@@ -88,10 +99,33 @@ public class FlightCreateDTO {
 
 	[JsonPropertyName("dateTime")]
 	public DateTime DateTime { get; set; }
+
+
+	public Flight? Create(AppDbContext repo, out string error) {
+		if (repo.Users.Find(UserId) is null) {
+			error = "Invalid User Id";
+			return null;
+		}
+		if (repo.Users.Find(OverseerId) is null) {
+			error = "Invalid Overseer Id";
+			return null;
+		}
+		if (repo.Bills.Find(BillId) is null) {
+			error = "Invalid Bill Id";
+			return null;
+		}
+		if (repo.Planes.Find(PlaneId) is null) {
+			error = "Invalid Plane Id";
+			return null;
+		}
+
+		error = string.Empty;
+		return new(this);
+	}
 }
 
 [Serializable]
-public class FlightUpdateDTO {
+public class FlightUpdateDTO : IEntityUpdate<Flight> {
 
 	[JsonPropertyName("overseerId")]
 	public uint? OverseerId { get; set; }
@@ -110,4 +144,40 @@ public class FlightUpdateDTO {
 
 	[JsonPropertyName("dateTime")]
 	public DateTime? DateTime { get; set; }
+
+
+	public bool TryUpdate(Flight entity, AppDbContext repo, out string error) {
+		if (OverseerId is not null) {
+			AppUser? overseer = repo.Users.Find(OverseerId);
+			if (overseer is null) {
+				error = "Invalid Overseer Id";
+				return false;
+			}
+			entity.Overseer = overseer;
+		}
+
+		if (BillId is not null) {
+			Bill? bill = repo.Bills.Find(BillId);
+			if (bill is null) {
+				error = "Invalid Bill Id";
+				return false;
+			}
+			entity.Bill = bill;
+		}
+
+		if (PlaneId is not null) {
+			Plane? plane = repo.Planes.Find(PlaneId);
+			if (plane is null) {
+				error = "Invalid Plane Id";
+				return false;
+			}
+			entity.Plane = plane;
+		}
+
+		if (Duration is not null) entity.Duration = Duration.Value;
+		if (FlightType is not null) entity.FlightType = FlightType;
+
+		error = string.Empty;
+		return true;
+	}
 }

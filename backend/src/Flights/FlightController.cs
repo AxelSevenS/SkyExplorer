@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/flights")]
-public class FlightController(AppDbContext repo) : Controller<Flight, FlightCreateDTO, FlightUpdateDTO>(repo) {
+public class FlightController(AppDbContext repo) : Controller<Flight, FlightSetupDTO, FlightUpdateDTO>(repo) {
 	protected override DbSet<Flight> Set => Repository.Flights;
-
 
 	[HttpGet("hours")]
 	public async Task<ActionResult<TimeSpan>> GetHoursSum() {

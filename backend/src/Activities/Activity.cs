@@ -6,16 +6,22 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("activities")]
-public record Activity : IEntity<Activity, ActivityCreateDTO, ActivityUpdateDTO> {
+public record Activity {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[JsonPropertyName("id")]
 	public uint Id { get; set; }
 
+
 	[Column("flight_id")]
 	[JsonPropertyName("flightId")]
 	public uint FlightId { get; set; }
+
+	[ForeignKey(nameof(FlightId))]
+	[JsonIgnore]
+	public Flight Flight { get; set; }
+
 
 	[Column("title")]
 	[JsonPropertyName("title")]
@@ -23,29 +29,40 @@ public record Activity : IEntity<Activity, ActivityCreateDTO, ActivityUpdateDTO>
 
 
 	public Activity() : base() { }
-	public Activity(ActivityCreateDTO dto) : this() {
-		FlightId = dto.FlightId ?? 0;
+	public Activity(ActivitySetupDTO dto) : this() {
+		FlightId = dto.FlightId;
 		Title = dto.Title ?? string.Empty;
-	}
-
-
-	public static Activity CreateFrom(ActivityCreateDTO dto) => new(dto);
-	public void Update(ActivityUpdateDTO dto) {
-		if (dto.Title is not null) Title = dto.Title;
 	}
 }
 
 [Serializable]
-public class ActivityCreateDTO {
+public class ActivitySetupDTO : IEntitySetup<Activity> {
 	[JsonPropertyName("flightId")]
-	public uint? FlightId { get; set; }
+	public uint FlightId { get; set; }
 
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
+
+	public Activity? Create(AppDbContext context, out string error) {
+		if (context.Flights.Find(FlightId) is null) {
+			error = "Invalid Flight Id";
+			return null;
+		}
+
+		error = string.Empty;
+		return new(this);
+	}
 }
 
 [Serializable]
-public class ActivityUpdateDTO {
+public class ActivityUpdateDTO : IEntityUpdate<Activity> {
 	[JsonPropertyName("title")]
 	public string Title { get; set; }
+
+	public bool TryUpdate(Activity entity, AppDbContext context, out string error) {
+		if (Title is not null) entity.Title = Title;
+
+		error = string.Empty;
+		return true;
+	}
 }
