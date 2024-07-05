@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class, IEntity<T, TSetupDTO, TUpdateDTO> {
+public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
 	protected readonly AppDbContext Repository = repository;
 	protected abstract DbSet<T> Set { get; }
 
@@ -26,10 +26,15 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 
 	[HttpPost]
 	public virtual async Task<ActionResult<T>> Add([FromForm] TSetupDTO dto) {
-		EntityEntry<T> res = await Set.AddAsync(T.CreateFrom(dto));
+		T? entity = dto.Create(Repository, out string error);
+		if (entity is null) {
+			return BadRequest(error);
+		}
+
+		EntityEntry<T> entry = await Set.AddAsync(entity);
 
 		Repository.SaveChanges();
-		return Ok(res.Entity);
+		return Ok(entry.Entity);
 	}
 
 
@@ -40,7 +45,9 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 			return NotFound();
 		}
 
-		found.Update(dto);
+		if (! dto.TryUpdate(found, Repository, out string error)) {
+			return BadRequest(error);
+		}
 
 		Repository.SaveChanges();
 		return Ok(found);

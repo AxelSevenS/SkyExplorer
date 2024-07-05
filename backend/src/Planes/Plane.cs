@@ -3,14 +3,15 @@ namespace SkyExplorer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 [Table("planes")]
-public record Plane : IEntity<Plane, PlaneCreateDTO, PlaneUpdateDTO> {
+public record Plane {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[JsonPropertyName("id")]
-	public int Id { get; set; }
+	public uint Id { get; set; }
 
 	[Column("name")]
 	[JsonPropertyName("name")]
@@ -26,20 +27,15 @@ public record Plane : IEntity<Plane, PlaneCreateDTO, PlaneUpdateDTO> {
 
 
 	public Plane() { }
-	public Plane(PlaneCreateDTO dto) : this() {
+	public Plane(PlaneSetupDTO dto) : this() {
 		Name = dto.Name;
 		Type = dto.Type;
 		Status = dto.Status;
 	}
 
 
-	public static Plane CreateFrom(PlaneCreateDTO dto) => new(dto);
-	public void Update(PlaneUpdateDTO dto) {
-		if (dto.Status is not null) Status = dto.Status.Value;
-	}
-
-
-
+	[Serializable]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum Availability {
 		Available,
 		Maintenance,
@@ -48,7 +44,7 @@ public record Plane : IEntity<Plane, PlaneCreateDTO, PlaneUpdateDTO> {
 }
 
 [Serializable]
-public record PlaneCreateDTO {
+public record PlaneSetupDTO : IEntitySetup<Plane> {
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
 
@@ -57,10 +53,22 @@ public record PlaneCreateDTO {
 
 	[JsonPropertyName("status")]
 	public Plane.Availability Status { get; set; }
+
+	public Plane? Create(AppDbContext context, out string error) {
+		error = string.Empty;
+		return new(this);
+	}
 }
 
 [Serializable]
-public record PlaneUpdateDTO {
+public record PlaneUpdateDTO : IEntityUpdate<Plane> {
 	[JsonPropertyName("status")]
 	public Plane.Availability? Status { get; set; }
+
+	public bool TryUpdate(Plane entity, AppDbContext context, out string error) {
+		if (Status is not null) entity.Status = Status.Value;
+
+		error = string.Empty;
+		return true;
+	}
 }

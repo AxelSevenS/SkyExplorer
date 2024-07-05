@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/bills")]
-public class BillController(AppDbContext repo) : Controller<Bill, BillCreateDTO, BillUpdateDTO>(repo) {
+public class BillController(AppDbContext repo) : Controller<Bill, BillSetupDTO, BillUpdateDTO>(repo) {
 	protected override DbSet<Bill> Set => Repository.Bills;
 
 
