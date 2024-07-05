@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 [ApiController]
 [Route("api/planes")]
-public class PlaneController(AppDbContext repo) : Controller<Plane, PlaneCreateDTO, PlaneUpdateDTO>(repo) {
+public class PlaneController(AppDbContext repo) : Controller<Plane, PlaneSetupDTO, PlaneUpdateDTO>(repo) {
 	protected override DbSet<Plane> Set => Repository.Planes;
 
 
