@@ -32,7 +32,7 @@ public record class JwtOptions {
 		return Convert.ToBase64String(passwordHash);
 	}
 
-	public JwtSecurityToken GenerateFrom(User user) {
+	public JwtSecurityToken GenerateFrom(AppUser user) {
 
 		List<Claim> claims =
 		[
