@@ -5,6 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/activities")]
-public class ActivityController(AppDbContext repo) : Controller<Activity, ActivityCreateDTO, ActivityUpdateDTO>(repo) {
+public class ActivityController(AppDbContext repo) : Controller<Activity, ActivitySetupDTO, ActivityUpdateDTO>(repo) {
 	protected override DbSet<Activity> Set => Repository.Activities;
 }

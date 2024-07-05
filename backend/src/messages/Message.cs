@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("messages")]
-public record Message : IEntity<Message, MessageCreateDTO, MessageUpdateDTO> {
+public record Message {
 	[Key]
 	[Column("id")]
 	[JsonPropertyName("id")]
@@ -33,24 +33,17 @@ public record Message : IEntity<Message, MessageCreateDTO, MessageUpdateDTO> {
 
 
 	public Message() { }
-	public Message(MessageCreateDTO dto) : this() {
+	public Message(MessageSetupDTO dto) : this() {
 		Title = dto.Title;
 		Body = dto.Body;
 		SendingDate = dto.SendingDate;
 		SenderId = dto.SenderId;
 		RecipientId = dto.RecipientId;
 	}
-
-
-	public static Message CreateFrom(MessageCreateDTO dto) => new(dto);
-	public void Update(MessageUpdateDTO dto) {
-		if (dto.Title is not null) Title = dto.Title;
-		if (dto.Body is not null) Body = dto.Body;
-	}
 }
 
 [Serializable]
-public record MessageCreateDTO {
+public record MessageSetupDTO : IEntitySetup<Message>{
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
 
@@ -65,13 +58,36 @@ public record MessageCreateDTO {
 
 	[JsonPropertyName("recipientId")]
 	public int RecipientId { get; set; }
+
+	public Message? Create(AppDbContext context, out string error) {
+		if (context.Users.Find(SenderId) is null) {
+			error = "Invalid Sender Id";
+			return null;
+		}
+
+		if (context.Users.Find(RecipientId) is null) {
+			error = "Invalid Recipient Id";
+			return null;
+		}
+
+		error = string.Empty;
+		return new(this);
+	}
 }
 
 [Serializable]
-public record MessageUpdateDTO {
+public record MessageUpdateDTO : IEntityUpdate<Message> {
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
 
 	[JsonPropertyName("body")]
 	public string? Body { get; set; }
+
+	public bool TryUpdate(Message entity, AppDbContext context, out string error) {
+		if (Title is not null) entity.Title = Title;
+		if (Body is not null) entity.Body = Body;
+
+		error = string.Empty;
+		return true;
+	}
 }

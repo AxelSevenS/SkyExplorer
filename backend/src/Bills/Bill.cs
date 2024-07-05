@@ -7,12 +7,16 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("bills")]
-public record Bill : IEntity<Bill, BillCreateDTO, BillUpdateDTO> {
+public record Bill {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[JsonPropertyName("id")]
 	public uint Id { get; set; }
+
+	[Column]
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
 
 	[Column("url")]
 	[JsonPropertyName("url")]
@@ -28,37 +32,47 @@ public record Bill : IEntity<Bill, BillCreateDTO, BillUpdateDTO> {
 
 
 	public Bill() : base() { }
-	public Bill(BillCreateDTO dto) : this() {
+	public Bill(BillSetupDTO dto) : this() {
 		URL = dto.URL;
+		Name = dto.Name;
 		WasAcquitted = dto.WasAcquitted;
-		CreatedAt = DateTime.Now;
-	}
-
-
-	public static Bill CreateFrom(BillCreateDTO dto) => new(dto);
-	public void Update(BillUpdateDTO dto) {
-		if (dto.URL is not null) URL = dto.URL;
-		if (dto.WasAcquitted is not null) WasAcquitted = dto.WasAcquitted.Value;
+		CreatedAt = DateTime.UtcNow;
 	}
 }
 
 [Serializable]
-public class BillCreateDTO {
+public class BillSetupDTO : IEntitySetup<Bill> {
 	[JsonPropertyName("url")]
 	public string URL { get; set; }
+
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
 
 	[JsonPropertyName("wasAcquitted")]
 	public bool WasAcquitted { get; set; }
 
-	[JsonPropertyName("createdAt")]
-	public bool CreatedAt { get; set; }
+
+	public Bill? Create(AppDbContext context, out string error) {
+		error = string.Empty;
+
+		return new(this);
+	}
 }
 
 [Serializable]
-public class BillUpdateDTO {
+public class BillUpdateDTO : IEntityUpdate<Bill> {
 	[JsonPropertyName("url")]
 	public string? URL { get; set; }
 
 	[JsonPropertyName("wasAcquitted")]
 	public bool? WasAcquitted { get; set; }
+
+
+	public bool TryUpdate(Bill entity, AppDbContext context, out string error) {
+		if (URL is not null) entity.URL = URL;
+		if (WasAcquitted is not null) entity.WasAcquitted = WasAcquitted.Value;
+
+		error = string.Empty;
+		return true;
+	}
 }
