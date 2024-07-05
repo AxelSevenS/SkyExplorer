@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User, UserRoles } from '../../models/user.model';
+import { User, UserRoles, UserUpdateDto } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -47,7 +47,7 @@ export class UserPage {
 	) {}
 
 	ngOnInit(): void {
-		this.userService.getUserById(this.requestId)
+		this.userService.getById(this.requestId)
 			.subscribe(user => {
 				if (user instanceof HttpErrorResponse) return;
 
@@ -74,12 +74,12 @@ export class UserPage {
 		if ( ! this.user ) return;
 		if ( ! this.editUserForm.valid ) return;
 
-		let updated = {
+		let updated = new UserUpdateDto({
 			email: this.editUserForm.controls['email'].value,
-			role: this.editUserForm.controls['role'].value
-		};
+			role: this.editUserForm.controls['role'].value,
+		});
 
-		this.userService.updateUserById(this.requestId, updated)
+		this.userService.updateById(this.requestId, updated)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
@@ -102,7 +102,7 @@ export class UserPage {
 	async delete() {
 		if( ! this.user ) return;
 
-		this.userService.deleteUserById(this.user.id)
+		this.userService.deleteById(this.user.id)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
