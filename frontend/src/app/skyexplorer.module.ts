@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -17,22 +16,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 
 import { SkyExplorerRoutingModule } from './skyexplorer-routing.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 
 import { SkyExplorerComponent } from './skyexplorer.component';
 import { SidenavComponent } from './core/components/sidenav/sidenav-component';
 import { NotFoundPage } from './core/pages/not-found-page/not-found.page';
 
-import { AuthenticationModule } from './authentication/authentication.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
-	declarations: [
-		SkyExplorerComponent,
-		SidenavComponent,
-		NotFoundPage,
-	],
 	imports: [
-		SkyExplorerRoutingModule,
-
 		CommonModule,
 		BrowserModule,
 		HttpClientModule,
@@ -50,7 +43,13 @@ import { AuthenticationModule } from './authentication/authentication.module';
 		MatSidenavModule,
 		MatListModule,
 
+		SkyExplorerRoutingModule,
 		AuthenticationModule,
+	],
+	declarations: [
+		SkyExplorerComponent,
+		SidenavComponent,
+		NotFoundPage,
 	],
 	providers: [
 		Storage,

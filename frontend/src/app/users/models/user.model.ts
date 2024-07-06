@@ -60,13 +60,13 @@ export class UserUpdateDto extends EntityUpdateDto {
 		if (this?.password) formData.append('Password', this.password);
 		if (this?.firstName) formData.append('FirstName', this.firstName);
 		if (this?.lastName) formData.append('LastName', this.lastName);
-		if (this?.role) formData.append('Role', this.role);
+		if (this?.role) formData.append('Role', UserRoles[this.role]);
 	}
 }
 
 export enum UserRoles {
-	User = "User",
-	Collaborator = "Collaborator",
-	Staff = "Staff",
-	Admin = "Admin",
+	User = 0,
+	Collaborator = 1,
+	Staff = 2,
+	Admin = 3,
 }

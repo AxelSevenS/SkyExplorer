@@ -6,6 +6,7 @@ import { AuthenticationService } from '../../../authentication/services/authenti
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { first } from 'rxjs';
+import { AuthenticationValidators } from '../../../authentication/validators/authentication-validators';
 
 @Component({
 	selector: 'se-user-page',
@@ -16,18 +17,23 @@ export class UserPage {
 
 	editUserForm: FormGroup = this.formBuilder.group(
 		{
-			email: ['', Validators.required],
-			roles: []
+			email: [''],
+			role: [''],
+			password: ['', AuthenticationValidators.securePasswordValidator],
+			passwordConfirm: ['', AuthenticationValidators.securePasswordValidator],
+		},
+		{
+			validators: AuthenticationValidators.confirmPasswordValidator('password', 'passwordConfirm')
 		}
 	);
 
 	public get isOwner(): boolean { return this._user != null && this._authentication.user?.id === this._user.id }
 	public get isAdmin(): boolean { return this._authentication.user?.role === UserRoles.Admin }
 
-	public get subRoles(): UserRoles[] {
+	public get subRoles(): string[] {
 		if (this._authentication.user == null) return [];
 
-		return this.userService.getSubserviantRoles(this._authentication.user.role);
+		return this.userService.getSubserviantRoles(this._authentication.user.role).map(r => UserRoles[r]);
 	}
 
 	public get authentication(): AuthenticationService { return this._authentication }
@@ -74,10 +80,24 @@ export class UserPage {
 		if ( ! this.user ) return;
 		if ( ! this.editUserForm.valid ) return;
 
-		let updated = new UserUpdateDto({
-			email: this.editUserForm.controls['email'].value,
-			role: this.editUserForm.controls['role'].value,
-		});
+		let updated = new UserUpdateDto();
+
+		let emailInput = this.editUserForm.controls['email'];
+		if (emailInput.value !== this.user.email) {
+			updated.email = emailInput.value;
+		}
+
+		let roleInput = this.editUserForm.controls['role'];
+		if (roleInput.value !== this.user.role) {
+			updated.role = roleInput.value;
+		}
+
+		let passwordInput = this.editUserForm.controls['password'];
+		if (! passwordInput.value) {
+			updated.password = passwordInput.value;
+		}
+
+		if (! updated.email && ! updated.password && ! updated.role) return;
 
 		this.userService.updateById(this.requestId, updated)
 			.subscribe(async res => {
@@ -90,11 +110,6 @@ export class UserPage {
 
 					// await alert.present();
 					return;
-				}
-
-				if (this.requestId == this.authentication.user?.id && this.user?.email != updated.email) {
-					this.authentication.logout();
-					this.router.navigate(['/authentication/login']);
 				}
 			});
 	}

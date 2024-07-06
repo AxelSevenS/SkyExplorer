@@ -16,6 +16,14 @@ mat-sidenav {
 	}
 }
 
+#sidenav-content {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-rows: 0.75fr 3fr 1.25fr;
+	grid-gap: 1rem;
+}
+
 .entry {
 	display: flex;
 	flex-direction: row;

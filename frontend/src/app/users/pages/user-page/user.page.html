@@ -1,94 +1,100 @@
-<ng-template [ngIf]="user" [fullscreen]="true">
-	<div> <!-- ion-header -->
-		<div> <!-- ion-toolbar -->
-			<div> <!-- ion-title -->
-				<ng-template [ngIf]="isOwner" [ngIfElse]="notOwner">Votre Profil</ng-template>
-				<ng-template #notOwner>Profile de {{ user.firstName }} {{ user.lastName }}</ng-template>
-			</div> <!-- ion-title -->
-		</div> <!-- ion-toolbar -->
-	</div> <!-- ion-header -->
+<section>
+@if (user) {
+	<h1>
+		@if (isOwner) {
+			Votre Profil
+		}
+		@else {
+			Profil de {{ user.firstName }} {{ user.lastName }}
+		}
+	</h1>
 
-	<div> <!-- ion-content -->
-		<div *ngIf="user"> <!-- ion-grid -->
-			<div> <!-- ion-row -->
-				<div> <!-- ion-col -->
+	<mat-card>
+		<form class="form-col grid" [formGroup]="editUserForm">
 
-					<form [formGroup]="editUserForm" class="form-col">
+			<mat-card-content>
+				<mat-label>E-mail</mat-label>
+				@if (isOwner) {
+					<mat-form-field>
+						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail" />
+					</mat-form-field>
+				}
+				@else {
+					<span>{{ user.email }}</span>
+				}
 
-						<ng-template [ngIf]="isOwner || isAdmin" [ngIfElse]="cannotEditMail">
-							<div lines="full"> <!-- ion-item -->
-								<div formControlName="email" type="text" label="E-mail" labelPlacement="floating"></div> <!-- ion-input -->
-							</div> <!-- ion-item -->
-						</ng-template>
-						<ng-template #cannotEditMail>
-							<div lines="full"> <!-- ion-item -->
-								<div position="stacked">E-mail</div> <!-- ion-label -->
-								<div>{{ user.email }}</div> <!-- ion-text -->
-							</div> <!-- ion-item -->
-						</ng-template>
+				<mat-label>Prénom</mat-label>
+				<span>{{ user.firstName }}</span>
 
-						<div lines="full"> <!-- ion-item -->
-							<div position="stacked">Prénom</div> <!-- ion-label -->
-							<div>{{ user.firstName }}</div> <!-- ion-text -->
-						</div> <!-- ion-item -->
+				<mat-label>Nom</mat-label>
+				<span>{{ user.lastName }}</span>
 
-						<div lines="full"> <!-- ion-item -->
-							<div position="stacked">Nom</div> <!-- ion-label -->
-							<div>{{ user.lastName }}</div> <!-- ion-text -->
-						</div> <!-- ion-item -->
+				<mat-label>Rôle</mat-label>
+				@if (isAdmin && ! isOwner) {
+					<mat-form-field>
+						<mat-select formControlName="role" [value]="user.role">
+							@for (role of subRoles; track role) {
+								<mat-option [value]="role">{{role}}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				}
+				@else {
+					<span>{{ user.role }}</span>
+				}
 
-						<ng-template [ngIf]="isAdmin && ! isOwner" [ngIfElse]="cannotEditRole">
-							<mat-form-field>
-								<mat-label>Rôle</mat-label>
-								<mat-select formControlName="role" [(value)]="user.role">
-									@for (role of subRoles; track role) {
-										<mat-option [value]="role">{{role}}</mat-option>
-									}
-								</mat-select>
-							</mat-form-field>
-						</ng-template>
-						<ng-template #cannotEditRole>
-							<div lines="full"> <!-- ion-item -->
-								<div position="stacked">Rôle</div> <!-- ion-label -->
-								<div>{{ user.role }}</div> <!-- ion-text -->
-							</div> <!-- ion-item -->
-						</ng-template>
+				@if (isOwner) {
+					<mat-form-field>
+						<mat-label>
+							Nouveau Mot de Passe
+							<mat-icon aria-hidden="false" aria-label="Mot de Passe" >lock</mat-icon>
+						</mat-label>
+						<input matInput formControlName="password" type="password" autocomplete="new-password">
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>
+							Confirmer le Nouveau Mot de Passe
+							<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
+						</mat-label>
+						<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password">
+					</mat-form-field>
+
+					<div class="grid-full-width">
+						@if (editUserForm.controls['password'].errors != null && editUserForm.controls['password'].value) {
+							@if (editUserForm.controls['password'].hasError('PasswordNoUppercase')) {
+								<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoLowercase')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoDigit')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoSpecial')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordTooShort')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
+							}
+						}
+						@if (editUserForm.controls['password'].errors == null && editUserForm.controls['password'].value && editUserForm.hasError('PasswordNoMatch')) {
+							<mat-error class="grid-full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
+						}
+					</div>
+				}
+
+			</mat-card-content>
 
 
-						<div> <!-- ion-grid -->
+			@if (isOwner || isAdmin) {
+				<mat-card-footer>
+					<button class="grid-full-width" color="primary" mat-raised-button (click)="onSubmit()">
+						Sauvegarder
+					</button>
+				</mat-card-footer>
+			}
 
-							<div *ngIf="isOwner"> <!-- ion-row -->
-								<div> <!-- ion-col -->
-									<div [routerLink]="['/edit-password']" expand="block"> <!-- ion-button -->
-										Modifier le Mot de Passe
-									</div> <!-- ion-button -->
-								</div> <!-- ion-col -->
-							</div> <!-- ion-row -->
-
-							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
-								<div> <!-- ion-col -->
-									<div (click)="onSubmit()" expand="block"> <!-- ion-button -->
-										Sauvegarder
-									</div> <!-- ion-button -->
-								</div> <!-- ion-col -->
-							</div> <!-- ion-row -->
-
-							<div *ngIf="isOwner || isAdmin"> <!-- ion-row -->
-								<div> <!-- ion-col -->
-									<div (click)="delete()" color="danger" expand="block"> <!-- ion-button -->
-										<div slot="start" name="trash-outline"></div> <!-- ion-icon -->
-										Supprimer
-									</div> <!-- ion-button -->
-								</div> <!-- ion-col -->
-							</div> <!-- ion-row -->
-
-						</div> <!-- ion-grid -->
-
-					</form>
-
-				</div> <!-- ion-col -->
-			</div> <!-- ion-row -->
-		</div> <!-- ion-grid -->
-	</div> <!-- ion-content -->
-
-</ng-template>
+		</form>
+	</mat-card>
+}
+</section>

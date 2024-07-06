@@ -1,0 +1,19 @@
+<mat-card class="user" appearance="outlined">
+	@if (user != null) {
+		<a [routerLink]="['/users', user.id]">
+			<mat-card-header>
+				<div class="user-avatar" mat-card-avatar></div>
+				<mat-card-title>{{ user.firstName }} {{ user.lastName }}</mat-card-title>
+				<mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+			</mat-card-header>
+		</a>
+		<mat-card-content>
+		</mat-card-content>
+		<mat-card-actions>
+			<button class="user-delete-btn" mat-raised-button (click)="delete()" color="warn">
+				<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+				<mat-label>Supprimer</mat-label>
+			</button>
+		</mat-card-actions>
+	}
+</mat-card>
