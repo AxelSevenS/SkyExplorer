@@ -22,6 +22,7 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 	[HttpPost("auth")]
 	public async Task<ActionResult> Authenticate([FromForm] UserLoginDTO dto) {
 		dto.Password = jwtOptions.HashPassword(dto.Password);
+
 		return await Repository.Users.FirstOrDefaultAsync(
 				u => dto.Email.ToLowerInvariant() == u.Email && // Don't use String.Equals as it cannot be translated to a Query
 				u.Password == dto.Password
@@ -41,6 +42,14 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 			dto.Role = null;
 		}
 
+		if (Repository.Users.Any(u => u.Email == dto.Email && u.Id != id)) {
+			return Conflict("Email already Taken");
+		}
+
+		if (dto.Password is not null) {
+			dto.Password = jwtOptions.HashPassword(dto.Password);
+		}
+
 		return await base.Update(id, dto);
 	}
 
@@ -51,5 +60,15 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 			return error;
 
 		return await base.Delete(id);
+	}
+
+	public override async Task<ActionResult<AppUser>> Add([FromForm] UserRegisterDTO dto) {
+		if (Repository.Users.Any(u => u.Email == dto.Email)) {
+			return Conflict("Email already Taken");
+		}
+
+		dto.Password = jwtOptions.HashPassword(dto.Password);
+
+		return await base.Add(dto);
 	}
 }
