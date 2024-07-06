@@ -11,6 +11,8 @@ export class AuthenticationValidators {
 	};
 
 	static securePasswordValidator: ValidatorFn = ( control: AbstractControl ): ValidationErrors | null => {
+		if (! control.value) return null;
+
 		let errors = {
 			PasswordNoUppercase: ! new RegExp('(?=.*[A-Z])').test(control.value),
 			PasswordNoLowercase: ! new RegExp('(?=.*[a-z])').test(control.value),

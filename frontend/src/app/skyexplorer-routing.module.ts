@@ -8,20 +8,11 @@ import { BillingsPage } from './billings/pages/billings-page/billings.page';
 import { PlanesPage } from './planes/pages/planes-page/planes.page';
 import { FlightsPage } from './flights/pages/flights-page/flights.page';
 import { LoginPage } from './authentication/pages/login-page/login-page';
-import { PasswordEditPage } from './authentication/pages/password-edit-page/password-edit.page';
 
 const routes: Routes = [
 	{
 		path: 'login',
 		component: LoginPage
-	},
-	{
-		path: 'edit-password',
-		component: PasswordEditPage
-	},
-	{
-		path: 'users',
-		loadChildren: () => import('./users/users.module').then(m => m.UsersModule),
 	},
 	{
 		path: '',
@@ -42,6 +33,11 @@ const routes: Routes = [
 			{
 				path: 'flights',
 				component: FlightsPage
+			},
+
+			{
+				path: 'users',
+				loadChildren: () => import('./users/users.module').then(m => m.UsersModule),
 			},
 
 			{ path: '', redirectTo: 'courses', pathMatch: 'full' },

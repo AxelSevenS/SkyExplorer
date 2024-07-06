@@ -1,0 +1,17 @@
+@if (users == null) {
+	<mat-progress-spinner color="primary" mode="indeterminate" />
+}
+@else if (users.length === 0) {
+	<div> <!--0 ion-title -->
+		<h1>Il n'y a aucun Utilisateur, pour l'instant...</h1>
+		<div>Vous pouvez nous rejoindre <a [routerLink]="['/authentication']">ici</a>. N'attendez plus!</div> <!-- ion-text -->
+	</div> <!-- ion-title -->
+}
+@else {
+	@for (user of users; track user.id) {
+		<se-user [user]="user"></se-user>
+	}
+	<!-- <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll> -->
+}

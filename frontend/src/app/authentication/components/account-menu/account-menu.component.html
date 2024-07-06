@@ -1,0 +1,23 @@
+<mat-card class="account-menu">
+	@if (authentication.user === undefined) {
+		<mat-progress-spinner color="primary" mode="indeterminate" />
+	}
+	@else if (authentication.user === null) {
+		<a [routerLink]="['/login']">Se Connecter</a>
+	}
+	@else {
+		<div class="account-info-container">
+			<a [matMenuTriggerFor]="menu" aria-label="Options de Comptes">
+				<img class="account-avatar" mat-card-avatar />
+			</a>
+			<mat-menu #menu="matMenu" xPosition="after">
+				<button mat-menu-item [routerLink]="['/users', authentication.user.id]">Votre Compte</button>
+				<button mat-menu-item (click)="authentication.logout()">Se Déconnecter</button>
+			</mat-menu>
+		</div>
+		<mat-card-header>
+			<mat-card-title>{{ authentication.user.firstName }} {{ authentication.user.lastName }}</mat-card-title>
+			<mat-card-subtitle>{{ authentication.user.email }}</mat-card-subtitle>
+		</mat-card-header>
+	}
+</mat-card>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../../authentication/services/authentication.service';
 
 @Component({
 	selector: 'se-sidenav',
@@ -6,7 +7,5 @@ import { Component, OnInit } from '@angular/core';
 	styleUrls: ['./sidenav-component.scss'],
 })
 export class SidenavComponent implements OnInit {
-	constructor() {}
-
 	ngOnInit() {}
 }

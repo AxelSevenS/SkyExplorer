@@ -18,7 +18,7 @@ export class AuthenticationService {
 	public get state() { return this._state }
 	private _state: LoginState;
 
-	private _user: User | null = null;
+	private _user?: User | null;
 	public get user() { return this._user }
 
 	constructor(
@@ -28,15 +28,17 @@ export class AuthenticationService {
 		this._state = 'loggedOut';
 
 		let jwt = localStorage.getItem(AuthenticationService.storageKey);
-		if (jwt === null) return;
+		if (jwt === null) {
+			this._user = null;
+			return;
+		}
 
-		let user = this.jwtToUser(jwt);
-		if (user === null) {
+		this._user = this.jwtToUser(jwt);
+		if (this._user === null) {
 			localStorage.removeItem(AuthenticationService.storageKey);
 			return;
 		}
 
-		this._user = user;
 		this._state = 'loggedIn';
 
 		this.userService.eventRemoved
@@ -52,7 +54,7 @@ export class AuthenticationService {
 
 				this.logout();
 
-				this.router.navigate(['/authentication'])
+				this.router.navigate(['/login'])
 					.then(() => {
 						window.location.reload();
 					});
@@ -72,7 +74,7 @@ export class AuthenticationService {
 					}
 
 					this._user = this.jwtToUser(res);
-					if (this._user === null) throw new HttpErrorResponse({ error: 400 });
+					if (this._user == null) throw new HttpErrorResponse({ error: 400 });
 
 					localStorage.setItem(AuthenticationService.storageKey, res);
 					this._state = 'loggedIn';
@@ -86,6 +88,7 @@ export class AuthenticationService {
 	}
 
 	logout(): void {
+		console.log("test");
 		this._user = null;
 		this._state = 'loggedOut';
 		localStorage.removeItem(AuthenticationService.storageKey);

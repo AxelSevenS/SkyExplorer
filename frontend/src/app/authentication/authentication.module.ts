@@ -1,42 +1,49 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LoginPage } from './pages/login-page/login-page';
-import { PasswordEditPage } from './pages/password-edit-page/password-edit.page';
-import { UsersModule } from '../users/users.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
 import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+
+import { UsersModule } from '../users/users.module';
+
+import { LoginPage } from './pages/login-page/login-page';
+import { AccountMenuComponent } from './components/account-menu/account-menu.component';
 
 
 
 @NgModule({
-	declarations: [
-		LoginPage,
-		PasswordEditPage,
-	],
   imports: [
 		CommonModule,
 		FormsModule,
+		ReactiveFormsModule,
+		RouterModule,
 
-		MatCardModule,
 		MatSelectModule,
+		MatMenuModule,
+		MatCardModule,
 		MatFormFieldModule,
 		MatButtonModule,
 		MatInputModule,
-		ReactiveFormsModule,
 		MatProgressSpinnerModule,
 		MatIconModule,
 
 		UsersModule,
   ],
+	declarations: [
+		LoginPage,
+		AccountMenuComponent,
+	],
 	exports: [
 		LoginPage,
-		PasswordEditPage,
+		AccountMenuComponent,
 	],
 })
 export class AuthenticationModule { }
