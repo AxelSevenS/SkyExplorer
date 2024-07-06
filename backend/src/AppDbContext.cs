@@ -18,7 +18,8 @@ public class AppDbContext(DbContextOptions options, JwtOptions jwtOptions) : DbC
 		modelBuilder.Entity<AppUser>().HasData(
 			new AppUser {
 				Id = 1,
-				Email = "AdminUser",
+				Email = "admin@sky-explorer.fr",
+				FirstName = "Admin",
 				Password = jwtOptions.HashPassword("""p4&nY7]S<m'l3H£59?:^^WG*p&6YPN0wt$L9]gr8"UcjcvE):7"""),
 				Role = AppUser.Roles.Admin
 			}
