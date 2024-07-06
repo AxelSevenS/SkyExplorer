@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 
 [Table("users")]
 public record AppUser {
+
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,11 +16,15 @@ public record AppUser {
 	[Required]
 	[Column("email")]
 	[JsonPropertyName("email")]
-	public string Email { get; set; } = string.Empty;
+	public string Email {
+		get => email;
+		set => email = value.ToLowerInvariant();
+	}
+	private string email = string.Empty;
 
 	[Required]
 	[Column("password")]
-	[JsonPropertyName("password")]
+	[JsonIgnore]
 	public string Password { get; set; } = string.Empty;
 
 	[Required]
