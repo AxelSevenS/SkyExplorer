@@ -1,0 +1,40 @@
+@import '../../../../variables.scss';
+
+mat-sidenav {
+	width: 200px;
+	height: 100%;
+	margin: 0;
+	border: 1px solid #555;
+	background-color: $primary;
+
+	& * {
+		color: $primary-contrast;
+	}
+
+	&-container {
+		height: 100%;
+	}
+}
+
+#sidenav-content {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-rows: 0.75fr 3fr 1.25fr;
+	grid-gap: 1rem;
+}
+
+.entry {
+	display: flex;
+	flex-direction: row;
+	gap: 1.5px;
+	justify-content: space-around;
+}
+
+a.active {
+	background-color: get-color(primary, 700);
+
+	& * {
+		color: get-color(primary, 700-contrast);
+	}
+}

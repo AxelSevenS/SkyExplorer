@@ -1,0 +1,100 @@
+<section>
+@if (user) {
+	<h1>
+		@if (isOwner) {
+			Votre Profil
+		}
+		@else {
+			Profil de {{ user.firstName }} {{ user.lastName }}
+		}
+	</h1>
+
+	<mat-card>
+		<form class="form-col grid" [formGroup]="editUserForm">
+
+			<mat-card-content>
+				<mat-label>E-mail</mat-label>
+				@if (isOwner) {
+					<mat-form-field>
+						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail" />
+					</mat-form-field>
+				}
+				@else {
+					<span>{{ user.email }}</span>
+				}
+
+				<mat-label>Prénom</mat-label>
+				<span>{{ user.firstName }}</span>
+
+				<mat-label>Nom</mat-label>
+				<span>{{ user.lastName }}</span>
+
+				<mat-label>Rôle</mat-label>
+				@if (isAdmin && ! isOwner) {
+					<mat-form-field>
+						<mat-select formControlName="role" [value]="user.role">
+							@for (role of subRoles; track role) {
+								<mat-option [value]="role">{{role}}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				}
+				@else {
+					<span>{{ user.role }}</span>
+				}
+
+				@if (isOwner) {
+					<mat-form-field>
+						<mat-label>
+							Nouveau Mot de Passe
+							<mat-icon aria-hidden="false" aria-label="Mot de Passe" >lock</mat-icon>
+						</mat-label>
+						<input matInput formControlName="password" type="password" autocomplete="new-password">
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>
+							Confirmer le Nouveau Mot de Passe
+							<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
+						</mat-label>
+						<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password">
+					</mat-form-field>
+
+					<div class="grid-full-width">
+						@if (editUserForm.controls['password'].errors != null && editUserForm.controls['password'].value) {
+							@if (editUserForm.controls['password'].hasError('PasswordNoUppercase')) {
+								<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoLowercase')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoDigit')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordNoSpecial')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
+							}
+							@if (editUserForm.controls['password'].hasError('PasswordTooShort')) {
+								<mat-error class="grid-full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
+							}
+						}
+						@if (editUserForm.controls['password'].errors == null && editUserForm.controls['password'].value && editUserForm.hasError('PasswordNoMatch')) {
+							<mat-error class="grid-full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
+						}
+					</div>
+				}
+
+			</mat-card-content>
+
+
+			@if (isOwner || isAdmin) {
+				<mat-card-footer>
+					<button class="grid-full-width" color="primary" mat-raised-button (click)="onSubmit()">
+						Sauvegarder
+					</button>
+				</mat-card-footer>
+			}
+
+		</form>
+	</mat-card>
+}
+</section>

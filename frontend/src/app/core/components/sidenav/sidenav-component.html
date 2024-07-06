@@ -1,0 +1,39 @@
+<mat-sidenav-container autosize>
+	<mat-sidenav id="sidenav" mode="side" opened>
+		<div id="sidenav-content">
+			<div id="sidenav-header">
+
+			</div>
+			<mat-nav-list id="sidenav-links">
+				<a mat-list-item routerLink="./courses" routerLinkActive="active">
+					<span class="entry">
+						<mat-icon>school</mat-icon>
+						<span>Courses</span>
+					</span>
+				</a>
+				<a mat-list-item routerLink="./planes" routerLinkActive="active">
+					<span class="entry">
+						<mat-icon>flight</mat-icon>
+						<span>Planes</span>
+					</span>
+				</a>
+				<a mat-list-item routerLink="./flights" routerLinkActive="active">
+					<span class="entry">
+						<mat-icon>flight_takeoff</mat-icon>
+						<span>Flights</span>
+					</span>
+				</a>
+				<a mat-list-item routerLink="./billings" routerLinkActive="active">
+					<span class="entry">
+						<mat-icon>receipt</mat-icon>
+						<span>Billings</span>
+					</span>
+				</a>
+			</mat-nav-list>
+			<se-account-menu id="sidenav-footer"/>
+		</div>
+	</mat-sidenav>
+	<mat-sidenav-content>
+		<router-outlet />
+	</mat-sidenav-content>
+</mat-sidenav-container>

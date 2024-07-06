@@ -1,35 +1,54 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { SkyExplorerModule } from './skyexplorer.module';
-import { SkyExplorerComponent } from './skyexplorer.component';
-import { NotFoundPage } from './not-found/not-found.page';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+import { NotFoundPage } from './core/pages/not-found-page/not-found.page';
+import { SidenavComponent } from './core/components/sidenav/sidenav-component';
+import { CoursesPage } from './courses/pages/courses-page/courses.page';
+import { BillingsPage } from './billings/pages/billings-page/billings.page';
+import { PlanesPage } from './planes/pages/planes-page/planes.page';
+import { FlightsPage } from './flights/pages/flights-page/flights.page';
+import { LoginPage } from './authentication/pages/login-page/login-page';
 
 const routes: Routes = [
 	{
-		path: 'dashboard',
-		loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+		path: 'login',
+		component: LoginPage
 	},
 	{
-		path: 'auth',
-		loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule),
+		path: '',
+		component: SidenavComponent,
+		children: [
+			{
+				path: 'courses',
+				component: CoursesPage
+			},
+			{
+				path: 'billings',
+				component: BillingsPage
+			},
+			{
+				path: 'planes',
+				component: PlanesPage
+			},
+			{
+				path: 'flights',
+				component: FlightsPage
+			},
+
+			{
+				path: 'users',
+				loadChildren: () => import('./users/users.module').then(m => m.UsersModule),
+			},
+
+			{ path: '', redirectTo: 'courses', pathMatch: 'full' },
+		]
 	},
-	{
-		path: 'users',
-		loadChildren: () => import('./user/user.module').then(m => m.UserModule),
-	},
-	{ path: '', redirectTo: 'auth', pathMatch: 'full' },
+
 	{ path: '**', component: NotFoundPage, }
 ];
+
 @NgModule({
-	imports: [
-		SkyExplorerModule,
-		RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: false })
-	],
-	// exports: [RouterModule],
-	bootstrap: [SkyExplorerComponent],
-	providers: [
-		provideAnimationsAsync()
-	],
+	imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: false })],
+	exports: [RouterModule],
 })
 export class SkyExplorerRoutingModule {}

@@ -1,0 +1,32 @@
+@import '../../../../variables.scss';
+
+mat-card.account-menu {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	background-color: transparent/* get-color(primary, 400) */;
+}
+
+.account {
+
+	&-info {
+
+		&-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			text-align: center;
+		}
+	}
+
+	&-avatar {
+		height: 90px;
+		width: 90px;
+		margin: 0;
+	}
+}

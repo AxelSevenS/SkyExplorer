@@ -7,6 +7,10 @@
 
 @include mat.all-component-themes(theme.$SkyExplorer-theme);
 
+a {
+	text-decoration: none;
+	color: inherit;
+}
 
 html, body {
 	height: 100%;
@@ -27,4 +31,36 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5px;
+}
+
+.grid-full-width {
+	grid-column: 1 / -1;
+}
+
+.grid-full-height {
+	grid-row: 1 / -1;
+}
+
+section {
+	margin: 5vh 6vw;
+}
+
+form.grid {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+	padding: 1rem;
+
+	& > mat-card-content {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-gap: 3px;
+		grid-auto-rows: minmax(100px, auto);
+		width: 100%;
+	}
 }
