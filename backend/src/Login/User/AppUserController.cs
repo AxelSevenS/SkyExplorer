@@ -22,19 +22,22 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 	[HttpPost("auth")]
 	public async Task<ActionResult> Authenticate([FromForm] UserLoginDTO dto) {
 		dto.Password = jwtOptions.HashPassword(dto.Password);
-		return await Repository.Users.FirstOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password) switch {
-			AppUser user => Ok(JsonSerializer.Serialize(jwtOptions.GenerateFrom(user).Write())),
-			null => NotFound(),
-		};
+		return await Repository.Users.FirstOrDefaultAsync(
+				u => dto.Email.ToLowerInvariant() == u.Email && // Don't use String.Equals as it cannot be translated to a Query
+				u.Password == dto.Password
+			) switch {
+				AppUser user => Ok(JsonSerializer.Serialize(jwtOptions.GenerateFrom(user).Write())),
+				null => NotFound(),
+			};
 	}
 
 
 	[Authorize]
 	public override async Task<ActionResult<AppUser>> Update(uint id, [FromForm] UserUpdateDTO dto) {
-		if (! VerifyOwnershipOrRole(id, SkyExplorer.AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out AppUser.Roles userRole))
+		if (! VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out AppUser.Roles userRole))
 			return error;
 
-		if (userRole < SkyExplorer.AppUser.Roles.Admin) {
+		if (userRole < AppUser.Roles.Admin) {
 			dto.Role = null;
 		}
 
@@ -44,7 +47,7 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 	[Authorize]
 	public override async Task<ActionResult<AppUser>> Delete(uint id) {
 		// In this case the User's owner is... himself so we check for Admin status or self-deleting
-		if (! VerifyOwnershipOrRole(id, SkyExplorer.AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out _))
+		if (! VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out _))
 			return error;
 
 		return await base.Delete(id);
