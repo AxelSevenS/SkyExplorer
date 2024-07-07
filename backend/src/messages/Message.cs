@@ -63,10 +63,10 @@ public record MessageSetupDTO : IEntitySetup<Message>{
 	public DateTime SendingDate { get; set; }
 
 	[JsonPropertyName("senderId")]
-	public int SenderId { get; set; }
+	public uint SenderId { get; set; }
 
 	[JsonPropertyName("recipientId")]
-	public int RecipientId { get; set; }
+	public uint RecipientId { get; set; }
 
 	public Message? Create(AppDbContext context, out string error) {
 		AppUser? sender = context.Users.Find(SenderId);

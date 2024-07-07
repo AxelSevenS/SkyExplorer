@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/flights")]
-public class FlightController(AppDbContext repo) : Controller<Flight, FlightSetupDTO, FlightUpdateDTO>(repo) {
+public class FlightController(AppDbContext context) : Controller<Flight, FlightSetupDTO, FlightUpdateDTO>(context) {
 	protected override DbSet<Flight> Set => Repository.Flights;
 	protected override IQueryable<Flight> GetQuery => Set.Include(c => c.Plane).Where(f => f.Overseer.Role >= AppUser.Roles.Collaborator && f.User.Role == AppUser.Roles.User);
 

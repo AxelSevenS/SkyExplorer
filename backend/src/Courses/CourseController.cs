@@ -5,9 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/courses")]
-public class CourseController(AppDbContext repo) : Controller<Course, CourseSetupDTO, CourseUpdateDTO>(repo) {
+public class CourseController(AppDbContext context) : Controller<Course, CourseSetupDTO, CourseUpdateDTO>(context) {
 	protected override DbSet<Course> Set => Repository.Courses;
-	protected override IQueryable<Course> GetQuery => Set.Include(c => c.Flight).ThenInclude(f => f.Plane);
+	protected override IQueryable<Course> GetQuery => Set
+		.Include(c => c.Flight).ThenInclude(f => f.Plane)
+		.Include(c => c.Flight).ThenInclude(f => f.Overseer)
+		.Include(c => c.Flight).ThenInclude(f => f.User);
 
 
 	[HttpGet("forUser/{userId}")]

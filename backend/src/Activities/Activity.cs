@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("activities")]
@@ -16,11 +17,11 @@ public record Activity : IEntity {
 
 
 	[Column("flight_id")]
-	[JsonPropertyName("flightId")]
+	[JsonIgnore]
 	public uint FlightId { get; set; }
 
 	[ForeignKey(nameof(FlightId))]
-	[JsonIgnore]
+	[JsonPropertyName("flight")]
 	public Flight Flight { get; set; }
 
 
@@ -45,7 +46,12 @@ public class ActivitySetupDTO : IEntitySetup<Activity> {
 	public string? Title { get; set; }
 
 	public Activity? Create(AppDbContext context, out string error) {
-		Flight? flight = context.Flights.Find(FlightId);
+		Flight? flight = context.Flights
+			.Include(f => f.User)
+			.Include(f => f.Overseer)
+			.Include(f => f.Plane)
+			.First(f => f.Id == FlightId);
+
 		if (flight is null) {
 			error = "Invalid Flight Id";
 			return null;
