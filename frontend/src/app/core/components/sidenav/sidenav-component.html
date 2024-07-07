@@ -1,14 +1,14 @@
 <mat-sidenav-container autosize>
 	<mat-sidenav id="sidenav" mode="side" opened>
-		<div id="sidenav-content">
-			<div id="sidenav-header">
-
+		<div id="sidenav__content">
+			<div id="sidenav__header">
+				<!-- TODO: add site logo -->
 			</div>
-			<mat-nav-list id="sidenav-links">
+			<mat-nav-list id="sidenav__links">
 				<a mat-list-item routerLink="./courses" routerLinkActive="active">
 					<span class="entry">
 						<mat-icon>school</mat-icon>
-						<span>Courses</span>
+						<span>Cours</span>
 					</span>
 				</a>
 				<a mat-list-item routerLink="./planes" routerLinkActive="active">
@@ -30,7 +30,7 @@
 					</span>
 				</a>
 			</mat-nav-list>
-			<se-account-menu id="sidenav-footer"/>
+			<se-account-menu id="sidenav__footer"/>
 		</div>
 	</mat-sidenav>
 	<mat-sidenav-content>

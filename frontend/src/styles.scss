@@ -33,13 +33,6 @@ body {
 	gap: 1.5px;
 }
 
-.grid-full-width {
-	grid-column: 1 / -1;
-}
-
-.grid-full-height {
-	grid-row: 1 / -1;
-}
 
 section {
 	margin: 5vh 6vw;
@@ -56,11 +49,19 @@ form.grid {
 	width: 100%;
 	padding: 1rem;
 
-	& > mat-card-content {
+	& .grid__container {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
 		grid-gap: 3px;
-		grid-auto-rows: minmax(100px, auto);
 		width: 100%;
+
+		& .grid__child {
+			&--full-width {
+				grid-column: 1 / -1;
+			}
+
+			&--full-height {
+				grid-row: 1 / -1;
+			}
+		}
 	}
 }
