@@ -13,15 +13,16 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 
 
 	[HttpGet]
-	public virtual Task<List<T>> GetAll() =>
-		Set.ToListAsync();
+	public virtual async Task<ActionResult<List<T>>> GetAll() =>
+		Ok(await Set.ToListAsync());
 
 	[HttpGet("{id}")]
-	public virtual ActionResult<T> GetById(uint id) =>
-		Set.Find(id) switch {
-			T flight => Ok(flight),
-			null => NotFound(),
-		};
+	public virtual async Task<ActionResult<T>> GetById(uint id) =>
+		await Set
+			.FindAsync(id) switch {
+				T flight => Ok(flight),
+				null => NotFound(),
+			};
 
 
 	[HttpPost]
@@ -75,7 +76,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 	/// <param name="neededRole"></param>
 	/// <returns>True if the user is authenticated and holds the authorization(s), False if the user is not authenticated or doesn't hold the authorization(s)</returns>
 	protected bool VerifyRole(AppUser.Roles neededRole, out AppUser.Roles role) {
-		role = SkyExplorer.AppUser.Roles.User;
+		role = AppUser.Roles.User;
 		if (
 			HttpContext.User.FindFirst(JwtOptions.RoleClaim)?.Value is string roleClaim &&
 			Enum.TryParse(roleClaim, true, out role)
@@ -89,16 +90,15 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 	/// <summary>
 	/// Verifies wether the current authenticated user has the given authorizations, if not <c>result</c> will contain a StatusCodeResult corresponding to the error.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
 	/// <param name="neededRole">The authorizations the authenticated user needs to posess to validate the check</param>
 	/// <param name="result">The StatusCodeResult corresponding to the error, if the function returns False</param>
 	/// <param name="userId">The Id of the currently authenticated user, if the function returns True</param>
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c>, otherwise False.
 	/// </returns>
-	protected bool VerifyRole<T>(AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) where T : class {
+	protected bool VerifyRole(AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) {
 		result = null!;
-		userRole = SkyExplorer.AppUser.Roles.User;
+		userRole = AppUser.Roles.User;
 
 		if (! TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
@@ -115,13 +115,12 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 	/// <summary>
 	/// Verifies wether the current authenticated user has the given id.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
 	/// <param name="authId">The Id that the authenticated user needs to have to be deemed "Owner" of the resource</param>
 	/// <param name="result">The StatusCodeResult corresponding to the error if the verification was unsuccessful</param>
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
 	/// </returns>
-	protected bool VerifyOwnership<T>(uint authId, out ActionResult<T> result) {
+	protected bool VerifyOwnership(uint authId, out ActionResult<T> result) {
 		if (! TryGetAuthenticatedUserId(out uint currentId)) {
 			result = Unauthorized();
 			return false;
@@ -163,16 +162,15 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 	/// <summary>
 	/// Verifies wether the current authenticated user has the given authorizations, if not <c>result</c> will contain a StatusCodeResult corresponding to the error.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
 	/// <param name="authId">The Id that the authenticated user needs to have to be deemed "Owner" of the resource</param>
 	/// <param name="neededRole">The authorizations the authenticated user needs to posess to validate the check and override the Ownership check</param>
 	/// <param name="result">The StatusCodeResult corresponding to the error if the verification was unsuccessful</param>
 	/// <returns>
 	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
 	/// </returns>
-	protected bool VerifyOwnershipOrRole<T>(uint authId, AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) where T : class {
+	protected bool VerifyOwnershipOrRole(uint authId, AppUser.Roles neededRole, out ActionResult<T> result, out uint userId, out AppUser.Roles userRole) {
 		result = null!;
-		userRole = SkyExplorer.AppUser.Roles.User;
+		userRole = AppUser.Roles.User;
 
 		if (! TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
