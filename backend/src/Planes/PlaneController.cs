@@ -21,12 +21,7 @@ public class PlaneController(AppDbContext repo) : Controller<Plane, PlaneSetupDT
 	[HttpPut("status/{id}")]
 	public async Task<ActionResult<Plane>> GetPlaneStatus(int id) {
 		return await Repository.Planes.FindAsync(id) switch {
-			Plane p => p.Status switch {
-				Plane.Availability.Available => Ok(Plane.Availability.Unavailable),
-				Plane.Availability.Unavailable => Ok(Plane.Availability.Available),
-				Plane.Availability.Maintenance => Ok(Plane.Availability.Unavailable),
-				_ => BadRequest(),
-			},
+			Plane p => Ok(p.Status),
 			_ => NotFound()
 		};
 	}
