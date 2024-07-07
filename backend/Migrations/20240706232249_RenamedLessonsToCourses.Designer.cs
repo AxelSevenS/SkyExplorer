@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SkyExplorer;
@@ -11,9 +12,11 @@ using SkyExplorer;
 namespace SkyExplorer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240706232249_RenamedLessonsToCourses")]
+    partial class RenamedLessonsToCourses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,7 +164,8 @@ namespace SkyExplorer.Migrations
 
                     b.Property<long>("FlightId")
                         .HasColumnType("bigint")
-                        .HasColumnName("flight_id");
+                        .HasColumnName("flight_id")
+                        .HasAnnotation("Relational:JsonPropertyName", "flightId");
 
                     b.Property<string>("Goals")
                         .IsRequired()
@@ -220,7 +224,8 @@ namespace SkyExplorer.Migrations
 
                     b.Property<long>("PlaneId")
                         .HasColumnType("bigint")
-                        .HasColumnName("plane_id");
+                        .HasColumnName("plane_id")
+                        .HasAnnotation("Relational:JsonPropertyName", "planeId");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
@@ -238,19 +243,17 @@ namespace SkyExplorer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("flights");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "flight");
                 });
 
             modelBuilder.Entity("SkyExplorer.Message", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("id")
                         .HasAnnotation("Relational:JsonPropertyName", "id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .HasColumnType("text")
@@ -312,8 +315,6 @@ namespace SkyExplorer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("planes");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "plane");
                 });
 
             modelBuilder.Entity("SkyExplorer.Activity", b =>

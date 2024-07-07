@@ -1,0 +1,41 @@
+<div class="timeline__container">
+	<div class="timeline__grid">
+		<!-- Empty top-left corner cell -->
+		<div></div>
+
+		<!-- Day headers -->
+		@for (day of weekDays; track day) {
+			<div class="day__header">
+				<mat-card-title>
+					{{ day }}
+				</mat-card-title>
+			</div>
+		}
+
+		<!-- Hours column -->
+		@for (hour of hours; track hour) {
+			<div class="hour__label">
+				<div class="hour__label-content">
+					{{ hour }}:00
+				</div>
+			</div>
+			<!-- Courses for each day at the current hour -->
+			@for (day of weekDays; track day) {
+				<ng-container *ngIf="! isCourseOccupied(day, hour) && getCourseAtTime(day, hour) as course; else noCourse">
+					<div [ngStyle]="{'grid-row': 'span ' + course.duration.toString()}">
+						<mat-card class="timeline__card" [ngStyle]="{'background-color': stringToColor(course.name)}">
+							<mat-card-content>
+								{{ course.name }}
+							</mat-card-content>
+						</mat-card>
+					</div>
+				</ng-container>
+				<ng-template #noCourse>
+					<ng-container *ngIf="! isCourseOccupied(day, hour)">
+						<div></div>
+					</ng-container>
+				</ng-template>
+			}
+		}
+	</div>
+</div>

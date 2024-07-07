@@ -7,19 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
+public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class, IEntity where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
 	protected readonly AppDbContext Repository = repository;
 	protected abstract DbSet<T> Set { get; }
+
+	protected virtual IQueryable<T> GetQuery => Set;
 
 
 	[HttpGet]
 	public virtual async Task<ActionResult<List<T>>> GetAll() =>
-		Ok(await Set.ToListAsync());
+		Ok(await GetQuery.ToListAsync());
 
 	[HttpGet("{id}")]
 	public virtual async Task<ActionResult<T>> GetById(uint id) =>
-		await Set
-			.FindAsync(id) switch {
+		await GetQuery
+			.FirstAsync(e => e.Id == id) switch {
 				T flight => Ok(flight),
 				null => NotFound(),
 			};
@@ -41,7 +43,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext reposito
 
 	[HttpPatch("{id}")]
 	public virtual async Task<ActionResult<T>> Update(uint id, [FromForm] TUpdateDTO dto) {
-		T? found = Set.Find(id);
+		T? found = GetQuery.FirstOrDefault(e => e.Id == id);
 		if (found is null) {
 			return NotFound();
 		}

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 [Table("planes")]
-public record Plane {
+public record Plane : IEntity {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -30,7 +30,7 @@ public record Plane {
 	public Plane(PlaneSetupDTO dto) : this() {
 		Name = dto.Name;
 		Type = dto.Type;
-		Status = dto.Status;
+		Status = dto.Status ?? Availability.Available;
 	}
 
 
@@ -52,7 +52,7 @@ public record PlaneSetupDTO : IEntitySetup<Plane> {
 	public string Type { get; set; }
 
 	[JsonPropertyName("status")]
-	public Plane.Availability Status { get; set; }
+	public Plane.Availability? Status { get; set; }
 
 	public Plane? Create(AppDbContext context, out string error) {
 		error = string.Empty;
