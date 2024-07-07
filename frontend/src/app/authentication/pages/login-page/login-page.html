@@ -7,18 +7,18 @@
 	<input type="checkbox" id="toggle-btn" name="toggle-btn"/>
 	<label for="toggle-btn"></label>
 
-	<div class="card-3d-container">
-		<div class="card-3d-wrapper">
+	<div class="card__container">
+		<div class="card__wrapper">
 
-			<mat-card class="card-front">
+			<mat-card class="card--front">
 				<form class="grid" [formGroup]="loginForm" (ngSubmit)="login()">
 
 					<mat-card-header>
 						<mat-card-title>Se Connecter</mat-card-title>
 					</mat-card-header>
 
-					<mat-card-content>
-						<mat-form-field class="grid-full-width">
+					<mat-card-content class="grid__container">
+						<mat-form-field class="grid__child--full-width">
 							<mat-label>
 								Adresse E-mail
 								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
@@ -26,7 +26,7 @@
 							<input matInput formControlName="email" type="text" autocomplete="email" required>
 						</mat-form-field>
 
-						<mat-form-field class="grid-full-width">
+						<mat-form-field class="grid__child--full-width">
 							<mat-label>
 								Mot de Passe
 								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
@@ -42,15 +42,15 @@
 				</form>
 			</mat-card>
 
-			<mat-card class="card-back">
+			<mat-card class="card--back">
 				<form class="grid" [formGroup]="registerForm" (ngSubmit)="register()">
 
 					<mat-card-header>
 						<mat-card-title>S'Inscrire</mat-card-title>
 					</mat-card-header>
 
-					<mat-card-content>
-						<mat-form-field class="grid-full-width">
+					<mat-card-content class="grid__container">
+						<mat-form-field class="grid__child--full-width">
 							<mat-label>
 								Adresse E-mail
 								<mat-icon aria-hidden="false" aria-label="Adresse E-mail">mail</mat-icon>
@@ -73,7 +73,7 @@
 						<mat-form-field>
 							<mat-label>
 								Mot de Passe
-								<mat-icon aria-hidden="false" aria-label="Mot de Passe" >lock</mat-icon>
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
 							</mat-label>
 							<input matInput formControlName="password" type="password" autocomplete="new-password" required>
 						</mat-form-field>
@@ -85,26 +85,26 @@
 							<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password" required>
 						</mat-form-field>
 
-						<div class="grid-full-width">
+						<div class="grid__child--full-width">
 							@if (registerForm.controls['password'].errors != null && registerForm.controls['password'].touched) {
 								@if (registerForm.controls['password'].hasError('PasswordNoUppercase')) {
 									<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
 								}
 								@if (registerForm.controls['password'].hasError('PasswordNoLowercase')) {
-									<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
 								}
 								@if (registerForm.controls['password'].hasError('PasswordNoDigit')) {
-									<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
 								}
 								@if (registerForm.controls['password'].hasError('PasswordNoSpecial')) {
-									<mat-error class="grid-full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
 								}
 								@if (registerForm.controls['password'].hasError('PasswordTooShort')) {
-									<mat-error class="grid-full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
 								}
 							}
 							@if (registerForm.controls['password'].errors == null && registerForm.controls['password'].touched && registerForm.hasError('PasswordNoMatch')) {
-								<mat-error class="grid-full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
+								<mat-error class="grid__child--full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
 							}
 						</div>
 					</mat-card-content>
