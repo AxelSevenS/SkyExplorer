@@ -16,20 +16,20 @@ public record Flight : IEntity {
 
 
 	[Column("user_id")]
-	[JsonPropertyName("userId")]
+	[JsonIgnore]
 	public uint UserId { get; set; }
 
 	[ForeignKey(nameof(UserId))]
-	[JsonIgnore]
+	[JsonPropertyName("user")]
 	public AppUser User { get; set; }
 
 
 	[Column("overseer_id")]
-	[JsonPropertyName("overseerId")]
+	[JsonIgnore]
 	public uint OverseerId { get; set; }
 
 	[ForeignKey(nameof(OverseerId))]
-	[JsonIgnore]
+	[JsonPropertyName("overseer")]
 	public AppUser Overseer { get; set; }
 
 
@@ -101,23 +101,23 @@ public class FlightSetupDTO : IEntitySetup<Flight> {
 	public DateTime DateTime { get; set; }
 
 
-	public Flight? Create(AppDbContext repo, out string error) {
-		AppUser? user = repo.Users.Find(UserId);
+	public Flight? Create(AppDbContext context, out string error) {
+		AppUser? user = context.Users.Find(UserId);
 		if (user is null) {
 			error = "Invalid User Id";
 			return null;
 		}
-		AppUser? overseer = repo.Users.Find(OverseerId);
+		AppUser? overseer = context.Users.Find(OverseerId);
 		if (overseer is null) {
 			error = "Invalid Overseer Id";
 			return null;
 		}
-		Bill? bill = repo.Bills.Find(BillId);
+		Bill? bill = context.Bills.Find(BillId);
 		if (bill is null) {
 			error = "Invalid Bill Id";
 			return null;
 		}
-		Plane? plane = repo.Planes.Find(PlaneId);
+		Plane? plane = context.Planes.Find(PlaneId);
 		if (plane is null) {
 			error = "Invalid Plane Id";
 			return null;
@@ -147,9 +147,9 @@ public class FlightUpdateDTO : IEntityUpdate<Flight> {
 	public DateTime? DateTime { get; set; }
 
 
-	public bool TryUpdate(Flight entity, AppDbContext repo, out string error) {
+	public bool TryUpdate(Flight entity, AppDbContext context, out string error) {
 		if (OverseerId is not null) {
-			AppUser? overseer = repo.Users.Find(OverseerId);
+			AppUser? overseer = context.Users.Find(OverseerId);
 			if (overseer is null) {
 				error = "Invalid Overseer Id";
 				return false;
@@ -158,7 +158,7 @@ public class FlightUpdateDTO : IEntityUpdate<Flight> {
 		}
 
 		if (BillId is not null) {
-			Bill? bill = repo.Bills.Find(BillId);
+			Bill? bill = context.Bills.Find(BillId);
 			if (bill is null) {
 				error = "Invalid Bill Id";
 				return false;
@@ -167,7 +167,7 @@ public class FlightUpdateDTO : IEntityUpdate<Flight> {
 		}
 
 		if (PlaneId is not null) {
-			Plane? plane = repo.Planes.Find(PlaneId);
+			Plane? plane = context.Planes.Find(PlaneId);
 			if (plane is null) {
 				error = "Invalid Plane Id";
 				return false;

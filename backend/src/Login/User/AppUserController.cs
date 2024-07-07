@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/users")]
-public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Controller<AppUser, UserRegisterDTO, UserUpdateDTO>(repo) {
+public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Controller<AppUser, UserRegisterDTO, UserUpdateDTO>(context) {
 	protected override DbSet<AppUser> Set => Repository.Users;
 
 

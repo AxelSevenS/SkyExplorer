@@ -47,7 +47,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("activities");
+                    b.ToTable("activities", (string)null);
                 });
 
             modelBuilder.Entity("SkyExplorer.AppUser", b =>
@@ -93,7 +93,7 @@ namespace SkyExplorer.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
 
                     b.HasData(
                         new
@@ -140,7 +140,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("bills");
+                    b.ToTable("bills", (string)null);
                 });
 
             modelBuilder.Entity("SkyExplorer.Course", b =>
@@ -179,7 +179,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("courses");
+                    b.ToTable("courses", (string)null);
                 });
 
             modelBuilder.Entity("SkyExplorer.Flight", b =>
@@ -237,7 +237,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("flights");
+                    b.ToTable("flights", (string)null);
 
                     b.HasAnnotation("Relational:JsonPropertyName", "flight");
                 });
@@ -279,7 +279,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("messages");
+                    b.ToTable("messages", (string)null);
                 });
 
             modelBuilder.Entity("SkyExplorer.Plane", b =>
@@ -311,7 +311,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("planes");
+                    b.ToTable("planes", (string)null);
 
                     b.HasAnnotation("Relational:JsonPropertyName", "plane");
                 });

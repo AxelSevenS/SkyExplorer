@@ -61,8 +61,13 @@ public record CourseSetupDTO : IEntitySetup<Course> {
 	[JsonPropertyName("notes")]
 	public string? Notes { get; set; }
 
-	public Course? Create(AppDbContext repo, out string error) {
-		Flight? flight = repo.Flights.Include(f => f.Plane).FirstOrDefault(f => f.Id == FlightId);
+	public Course? Create(AppDbContext context, out string error) {
+		Flight? flight = context.Flights
+			.Include(f => f.User)
+			.Include(f => f.Overseer)
+			.Include(f => f.Plane)
+			.FirstOrDefault(f => f.Id == FlightId);
+
 		if (flight is null) {
 			error = "Invalid Flight Id";
 			return null;
@@ -89,7 +94,15 @@ public record CourseUpdateDTO : IEntityUpdate<Course> {
 
 
 	public bool TryUpdate(Course entity, AppDbContext context, out string error) {
-		if (FlightId is not null) entity.FlightId = FlightId.Value;
+		if (FlightId is not null) {
+			Flight? flight = context.Flights.Find(FlightId);
+			if (flight is null) {
+				error = "Invalid Flight Id";
+				return false;
+			}
+			entity.Flight = flight;
+		}
+
 		if (Goals is not null) entity.Goals = Goals;
 		if (AchievedGoals is not null) entity.AchievedGoals = AchievedGoals;
 		if (Notes is not null) entity.Notes = Notes;

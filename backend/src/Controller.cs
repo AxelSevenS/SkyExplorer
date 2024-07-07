@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext repository) : ControllerBase where T : class, IEntity where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
-	protected readonly AppDbContext Repository = repository;
+public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context) : ControllerBase where T : class, IEntity where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
+	protected readonly AppDbContext Repository = context;
 	protected abstract DbSet<T> Set { get; }
 
 	protected virtual IQueryable<T> GetQuery => Set;
