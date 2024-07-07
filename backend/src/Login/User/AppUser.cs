@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 [Table("users")]
 [Index(nameof(Email), IsUnique = true)]
-public record AppUser {
+public record AppUser : IEntity {
 
 	[Key]
 	[Column("id")]

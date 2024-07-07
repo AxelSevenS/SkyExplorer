@@ -3,10 +3,11 @@ namespace SkyExplorer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-[Table("lessons")]
-public record Lesson {
+[Table("courses")]
+public record Course : IEntity {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,11 +16,11 @@ public record Lesson {
 
 
 	[Column("flight_id")]
-	[JsonPropertyName("flightId")]
+	[JsonIgnore]
 	public uint FlightId { get; set; }
 
 	[ForeignKey(nameof(FlightId))]
-	[JsonIgnore]
+	[JsonPropertyName("flight")]
 	public Flight Flight { get; set; }
 
 
@@ -32,22 +33,22 @@ public record Lesson {
 	public string AchievedGoals { get; set; }
 
 
-	[Column("note")]
-	[JsonPropertyName("note")]
-	public string Note { get; set; }
+	[Column("notes")]
+	[JsonPropertyName("notes")]
+	public string Notes { get; set; }
 
 
-	public Lesson() : base() { }
-	public Lesson(LessonSetupDTO dto, AppDbContext context) : this() {
-		Flight = context.Flights.Find(dto.FlightId)!;
-		Goals = dto.Goals ?? string.Empty;
-		AchievedGoals = dto.AchievedGoals ?? string.Empty;
-		Note = dto.Note ?? string.Empty;
+	public Course() : base() { }
+	public Course(Flight flight, string goals, string achievedGoals, string notes) : this() {
+		Flight = flight;
+		Goals = goals;
+		AchievedGoals = achievedGoals;
+		Notes = notes;
 	}
 }
 
 [Serializable]
-public record LessonSetupDTO : IEntitySetup<Lesson> {
+public record CourseSetupDTO : IEntitySetup<Course> {
 	[JsonPropertyName("flightId")]
 	public uint FlightId { get; set; }
 
@@ -57,22 +58,25 @@ public record LessonSetupDTO : IEntitySetup<Lesson> {
 	[JsonPropertyName("achievedGoals")]
 	public string? AchievedGoals { get; set; }
 
-	[JsonPropertyName("note")]
-	public string? Note { get; set; }
+	[JsonPropertyName("notes")]
+	public string? Notes { get; set; }
 
-	public Lesson? Create(AppDbContext context, out string error) {
-		if (context.Flights.Find(FlightId) is null) {
+	public Course? Create(AppDbContext repo, out string error) {
+		Flight? flight = repo.Flights.Include(f => f.Plane).FirstOrDefault(f => f.Id == FlightId);
+		if (flight is null) {
 			error = "Invalid Flight Id";
 			return null;
 		}
 
 		error = string.Empty;
-		return new(this, context);
+		return new(flight, Goals ?? string.Empty, AchievedGoals ?? string.Empty, Notes ?? string.Empty);
 	}
 }
 
 [Serializable]
-public record LessonUpdateDTO : IEntityUpdate<Lesson> {
+public record CourseUpdateDTO : IEntityUpdate<Course> {
+	[JsonPropertyName("flightId")]
+	public uint? FlightId { get; set; }
 
 	[JsonPropertyName("goals")]
 	public string? Goals { get; set; }
@@ -80,14 +84,15 @@ public record LessonUpdateDTO : IEntityUpdate<Lesson> {
 	[JsonPropertyName("achievedGoals")]
 	public string? AchievedGoals { get; set; }
 
-	[JsonPropertyName("note")]
-	public string? Note { get; set; }
+	[JsonPropertyName("notes")]
+	public string? Notes { get; set; }
 
 
-	public bool TryUpdate(Lesson entity, AppDbContext context, out string error) {
+	public bool TryUpdate(Course entity, AppDbContext context, out string error) {
+		if (FlightId is not null) entity.FlightId = FlightId.Value;
 		if (Goals is not null) entity.Goals = Goals;
 		if (AchievedGoals is not null) entity.AchievedGoals = AchievedGoals;
-		if (Note is not null) entity.Note = Note;
+		if (Notes is not null) entity.Notes = Notes;
 
 		error = string.Empty;
 		return true;
