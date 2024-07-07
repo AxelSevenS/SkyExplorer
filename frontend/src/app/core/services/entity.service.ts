@@ -10,6 +10,10 @@ import { EntityCreateDto, EntityUpdateDto } from '../models/entity.model';
 })
 export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpdateDto extends EntityUpdateDto> {
 
+	protected abstract get endpointSuffix(): string;
+	public get endpoint() { return `${environment.host}/api/${this.endpointSuffix}`; }
+
+
 	public get eventAdded() { return this._eventAdded };
 	private _eventAdded: Subject<T> = new Subject<T>;
 
@@ -23,13 +27,11 @@ export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpda
 		protected http: HttpClient
 	) { }
 
-	protected abstract getEndpointSuffix(): string;
-	public getEndpoint() { return `${environment.host}/api/${this.getEndpointSuffix()}`; }
 
 
 
 	getAll(): Observable<T[] | HttpErrorResponse> {
-		return this.http.get<T[]>(this.getEndpoint())
+		return this.http.get<T[]>(this.endpoint)
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -37,7 +39,7 @@ export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpda
 	}
 
 	getById(id: number): Observable<T | HttpErrorResponse> {
-		return this.http.get<T>(`${this.getEndpoint()}/${id}`)
+		return this.http.get<T>(`${this.endpoint}/${id}`)
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -50,7 +52,7 @@ export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpda
 
 		const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
 
-		let observable = this.http.post<T>(this.getEndpoint(), formData, {headers: headers})
+		let observable = this.http.post<T>(this.endpoint, formData, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -71,7 +73,7 @@ export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpda
 
 		const headers = new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}` });
 
-		let observable = this.http.patch<T>(`${this.getEndpoint()}/${id}`, formData, {headers: headers})
+		let observable = this.http.patch<T>(`${this.endpoint}/${id}`, formData, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -89,7 +91,7 @@ export abstract class EntityService<T, TCreateDto extends EntityCreateDto, TUpda
 	deleteById(id: number): Observable<T | HttpErrorResponse> {
 		const headers = new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}` });
 
-		let observable = this.http.delete<T>(`${this.getEndpoint()}/${id}`, {headers: headers})
+		let observable = this.http.delete<T>(`${this.endpoint}/${id}`, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),

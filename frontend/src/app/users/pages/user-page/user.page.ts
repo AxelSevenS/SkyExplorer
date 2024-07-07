@@ -53,15 +53,7 @@ export class UserPage {
 	) {}
 
 	ngOnInit(): void {
-		this.userService.getById(this.requestId)
-			.subscribe(user => {
-				if (user instanceof HttpErrorResponse) return;
-
-				this._user = user;
-
-				this.editUserForm.controls['email'].setValue(user.email);
-				this.editUserForm.controls['role'].setValue(user.role);
-			});
+		this.updateUser();
 
 		this.userService.eventRemoved
 			.subscribe(user => {
@@ -73,6 +65,25 @@ export class UserPage {
 			.subscribe(user => {
 				if (this._user?.id != user.id) return;
 				this._user = user;
+			});
+
+		this.router.events
+			.subscribe(e => {
+				this.updateUser();
+			});
+	}
+
+	private updateUser(): void {
+		if (this.user?.id === this.requestId) return;
+
+		this.userService.getById(this.requestId)
+			.subscribe(user => {
+				if (user instanceof HttpErrorResponse) return;
+
+				this._user = user;
+
+				this.editUserForm.controls['email'].setValue(user.email);
+				this.editUserForm.controls['role'].setValue(user.role);
 			});
 	}
 
@@ -103,9 +114,9 @@ export class UserPage {
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
-					//   header: 'Erreur lors de la Modification de l\'Utilisateur',
-					//   message: `La modification de l\'Utilisateur à échoué (erreur ${res.statusText})`,
-					//   buttons: ['Ok'],
+					// 	header: 'Erreur lors de la Modification de l\'Utilisateur',
+					// 	message: `La modification de l\'Utilisateur à échoué (erreur ${res.statusText})`,
+					// 	buttons: ['Ok'],
 					// });
 
 					// await alert.present();
@@ -115,15 +126,15 @@ export class UserPage {
 	}
 
 	async delete() {
-		if( ! this.user ) return;
+		if(! this.user) return;
 
 		this.userService.deleteById(this.user.id)
 			.subscribe(async res => {
 				if (res instanceof HttpErrorResponse) {
 					// const alert = await this.alertController.create({
-					//   header: 'Erreur lors de la Suppression de l\'Utilisateur',
-					//   message: 'La suppression de l\'Utilisateur a échoué',
-					//   buttons: ['Ok'],
+					// 	header: 'Erreur lors de la Suppression de l\'Utilisateur',
+					// 	message: 'La suppression de l\'Utilisateur a échoué',
+					// 	buttons: ['Ok'],
 					// });
 
 					// await alert.present();
