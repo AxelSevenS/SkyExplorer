@@ -9,15 +9,13 @@ import { EntityService } from '../../core/services/entity.service';
 })
 export class UserService extends EntityService<User, UserCreateDto, UserUpdateDto> {
 
+	protected override get endpointSuffix(): string { return 'users' }
+
+
 	constructor(
 		protected override http: HttpClient
 	) {
 		super(http);
-	}
-
-
-	protected override getEndpointSuffix(): string {
-		return 'users'
 	}
 
 
@@ -52,7 +50,7 @@ export class UserService extends EntityService<User, UserCreateDto, UserUpdateDt
 
 		const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
 
-		return this.http.post<string>(`${this.getEndpoint()}/auth`, formData, {headers: headers})
+		return this.http.post<string>(`${this.endpoint}/auth`, formData, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
