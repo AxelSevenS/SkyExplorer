@@ -16,12 +16,21 @@ mat-sidenav {
 	}
 }
 
-#sidenav__content {
-	width: 100%;
-	height: 100%;
-	display: grid;
-	grid-template-rows: 0.75fr 3fr 1.25fr;
-	grid-gap: 1rem;
+#sidenav {
+	&__header {
+		& > img {
+			width: 100%;
+			padding: 1.5em;
+			box-sizing: border-box;
+		}
+	}
+	&__content {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		grid-template-rows: 0.75fr 3fr 1.25fr;
+		grid-gap: 1rem;
+	}
 }
 
 .entry {

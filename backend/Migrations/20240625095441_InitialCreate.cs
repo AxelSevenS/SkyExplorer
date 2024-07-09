@@ -51,7 +51,7 @@ namespace SkyExplorer.Migrations
                     overseer_id = table.Column<long>(type: "bigint", nullable: false),
                     bill_id = table.Column<long>(type: "bigint", nullable: false),
                     plane_id = table.Column<long>(type: "bigint", nullable: false),
-                    flight_type = table.Column<string>(type: "text", nullable: false),
+                    flight_type = table.Column<int>(type: "integer", nullable: false),
                     duration = table.Column<TimeSpan>(type: "interval", nullable: false),
                     date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

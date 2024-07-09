@@ -1,0 +1,25 @@
+
+<section class="dashboard__content">
+	<div class="dashboard__content__header">
+			<h1>Dashboard</h1>
+	</div>
+
+	<div class="dashboard__content__body">
+		<div class="dashboard__content__body__calendar">
+			<div class="dashboard__content__body__calendar__header">
+				<h2>Prochain cours</h2>
+			</div>
+
+			<div class="dashboard__content__body__calendar__body">
+				<div class="dashboard__content__body__calendar__body__item">
+					@for (nextcourse of nextCourses; track nextCourses) {
+						<span class="grid__child--field">{{ nextCourse.name }}</span>
+						<span class="grid__child--field">{{ nextCourse.date }}</span>
+						<span class="grid__child--field">{{ nextCourse.time }}</span>
+						<span class="grid__child--field">{{ nextCourse.teacher }}</span>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

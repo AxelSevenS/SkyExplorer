@@ -1,6 +1,6 @@
-import { EntityCreateDto, EntityUpdateDto } from "../../core/models/entity.model";
+import { IEntity, EntitySetupDto, EntityUpdateDto } from "../../core/models/entity.model";
 
-export interface User {
+export interface User extends IEntity {
 	id: number,
 	email: string,
 	firstName: string,
@@ -8,7 +8,7 @@ export interface User {
 	role: UserRoles,
 }
 
-export class UserCreateDto extends EntityCreateDto {
+export class UserCreateDto extends EntitySetupDto {
 	email: string;
 	password: string;
 	firstName: string;

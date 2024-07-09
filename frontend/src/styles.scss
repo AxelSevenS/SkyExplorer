@@ -7,6 +7,13 @@
 
 @include mat.all-component-themes(theme.$SkyExplorer-theme);
 
+:root {
+	--mdc-filled-text-field-container-color: white;
+
+	--mdc-protected-button-container-height: 40px;
+	--mat-protected-button-horizontal-padding: 50px;
+}
+
 a {
 	text-decoration: none;
 	color: inherit;
@@ -35,7 +42,12 @@ body {
 
 
 section {
-	margin: 5vh 6vw;
+	padding: 5vh 6vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	box-sizing: border-box;
 }
 
 form.grid {
@@ -54,6 +66,12 @@ form.grid {
 		grid-gap: 3px;
 		width: 100%;
 
+		& > * {
+			display: flex;
+			justify-content: start;
+			align-items: center;
+		}
+
 		& .grid__child {
 			&--full-width {
 				grid-column: 1 / -1;
@@ -64,4 +82,67 @@ form.grid {
 			}
 		}
 	}
+
+
+	mat-card-title {
+		font-style: bold;
+		font-family: sky-explorer;
+	}
 }
+
+
+mat-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	// width: 30%;
+	// height: 70%;
+	border: 0.5px solid #24265A;
+	box-shadow: 0 0 0.5px 0 rgba(0, 0, 0, 0.2);
+	border-radius: 1rem;
+	padding: 1rem;
+}
+
+mat-label {
+	color: #24265A;
+	font-size: 1rem;
+	font-family: "Russo One", sans-serif;
+}
+
+mat-datepicker-toggle {
+	color: get-color(accent, 500);
+}
+
+mat-form-field {
+	& mat-hint {
+		color: get-color(accent, 500);
+	}
+}
+
+.mat-mdc-text-field-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.mat-card-title-create-form {
+	margin-bottom:1rem;
+	font-size: 2.5rem;
+	color: #24265A;
+	font-family: "Russo One", sans-serif;
+
+	&-subtitle{
+		font-size: 1.5rem;
+		color: #24265A;
+		font-family: "Russo One", sans-serif;
+		margin-bottom: 1rem;
+
+
+	}
+}
+
+// .mat-mdc-text-field-wrapper {
+// 	//border: black 1px 1px 0px 1px solid;
+// 	border-radius: 10px;
+// 	box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+// }

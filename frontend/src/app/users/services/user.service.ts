@@ -8,7 +8,6 @@ import { EntityService } from '../../core/services/entity.service';
 	providedIn: 'root'
 })
 export class UserService extends EntityService<User, UserCreateDto, UserUpdateDto> {
-
 	protected override get endpointSuffix(): string { return 'users' }
 
 
@@ -41,6 +40,14 @@ export class UserService extends EntityService<User, UserCreateDto, UserUpdateDt
 		}
 
 		return roles;
+	}
+
+	getByRole(role: UserRoles): Observable<User[] | HttpErrorResponse> {
+		return this.http.get<User[]>(`${this.endpoint}/byRole/${role}`)
+			.pipe(
+				share(),
+				catchError( (err: HttpErrorResponse) => of(err) ),
+			);
 	}
 
 	authenticateUserByEmailAndPassword(email: string, password: string): Observable<string | HttpErrorResponse> {

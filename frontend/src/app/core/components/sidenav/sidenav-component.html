@@ -2,9 +2,15 @@
 	<mat-sidenav id="sidenav" mode="side" opened>
 		<div id="sidenav__content">
 			<div id="sidenav__header">
-				<!-- TODO: add site logo -->
+				 <img src="../../../../assets/logo.png" alt="">
 			</div>
 			<mat-nav-list id="sidenav__links">
+				<a mat-list-item routerLink="./dashboard" routerLinkActive="active">
+					<span class="entry">
+						<mat-icon>dashboard</mat-icon>
+						<span>Dashboard</span>
+					</span>
+				</a>
 				<a mat-list-item routerLink="./courses" routerLinkActive="active">
 					<span class="entry">
 						<mat-icon>school</mat-icon>
@@ -23,7 +29,7 @@
 						<span>Flights</span>
 					</span>
 				</a>
-				<a mat-list-item routerLink="./billings" routerLinkActive="active">
+				<a mat-list-item routerLink="./bills" routerLinkActive="active">
 					<span class="entry">
 						<mat-icon>receipt</mat-icon>
 						<span>Billings</span>

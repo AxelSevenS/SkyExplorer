@@ -1,0 +1,9 @@
+<section>
+	<se-course-timeline></se-course-timeline>
+
+	@if (authentication.user && authentication.user.role >= UserRoles.Collaborator) {
+		<button mat-raised-button color="primary" [routerLink]="['/courses/create']">
+			Ajouter
+		</button>
+	}
+</section>

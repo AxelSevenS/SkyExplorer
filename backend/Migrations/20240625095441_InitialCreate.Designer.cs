@@ -160,9 +160,9 @@ namespace SkyExplorer.Migrations
                         .HasColumnName("goals")
                         .HasAnnotation("Relational:JsonPropertyName", "goals");
 
-                    b.Property<string>("Note")
+                    b.Property<int>("Note")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("integer")
                         .HasColumnName("note")
                         .HasAnnotation("Relational:JsonPropertyName", "note");
 

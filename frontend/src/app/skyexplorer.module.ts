@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,7 @@ import { SidenavComponent } from './core/components/sidenav/sidenav-component';
 import { NotFoundPage } from './core/pages/not-found-page/not-found.page';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { DashboardPage } from './core/pages/dashboard-page/dashboard.page';
 
 @NgModule({
 	imports: [
@@ -49,11 +50,16 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 	declarations: [
 		SkyExplorerComponent,
 		SidenavComponent,
+		DashboardPage,
 		NotFoundPage,
 	],
 	providers: [
 		Storage,
 		provideAnimationsAsync(),
+		{
+			provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+			useValue: {appearance: 'outline'}
+		}
 	],
 	bootstrap: [SkyExplorerComponent]
 })

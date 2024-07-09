@@ -15,6 +15,8 @@ import { AuthenticationValidators } from '../../../authentication/validators/aut
 })
 export class UserPage {
 
+	UserRoles = UserRoles;
+
 	editUserForm: FormGroup = this.formBuilder.group(
 		{
 			email: [''],
@@ -27,13 +29,10 @@ export class UserPage {
 		}
 	);
 
-	public get isOwner(): boolean { return this._user != null && this._authentication.user?.id === this._user.id }
-	public get isAdmin(): boolean { return this._authentication.user?.role === UserRoles.Admin }
-
-	public get subRoles(): string[] {
+	public get subRoles(): UserRoles[] {
 		if (this._authentication.user == null) return [];
 
-		return this.userService.getSubserviantRoles(this._authentication.user.role).map(r => UserRoles[r]);
+		return this.userService.getSubserviantRoles(this._authentication.user.role);
 	}
 
 	public get authentication(): AuthenticationService { return this._authentication }
@@ -83,7 +82,7 @@ export class UserPage {
 				this._user = user;
 
 				this.editUserForm.controls['email'].setValue(user.email);
-				this.editUserForm.controls['role'].setValue(user.role);
+				this.editUserForm.controls['role'].setValue(UserRoles[user.role]);
 			});
 	}
 

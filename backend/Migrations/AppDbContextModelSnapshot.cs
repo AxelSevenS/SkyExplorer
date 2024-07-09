@@ -34,8 +34,7 @@ namespace SkyExplorer.Migrations
 
                     b.Property<long>("FlightId")
                         .HasColumnType("bigint")
-                        .HasColumnName("flight_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "flightId");
+                        .HasColumnName("flight_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -47,7 +46,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("activities", (string)null);
+                    b.ToTable("activities");
                 });
 
             modelBuilder.Entity("SkyExplorer.AppUser", b =>
@@ -93,7 +92,9 @@ namespace SkyExplorer.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "sender");
 
                     b.HasData(
                         new
@@ -140,7 +141,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("bills", (string)null);
+                    b.ToTable("bills");
                 });
 
             modelBuilder.Entity("SkyExplorer.Course", b =>
@@ -159,6 +160,12 @@ namespace SkyExplorer.Migrations
                         .HasColumnName("achieved_goals")
                         .HasAnnotation("Relational:JsonPropertyName", "achievedGoals");
 
+                    b.Property<string>("AcquiredSkills")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("acquired_skills")
+                        .HasAnnotation("Relational:JsonPropertyName", "acquiredSkills");
+
                     b.Property<long>("FlightId")
                         .HasColumnType("bigint")
                         .HasColumnName("flight_id");
@@ -168,6 +175,12 @@ namespace SkyExplorer.Migrations
                         .HasColumnType("text")
                         .HasColumnName("goals")
                         .HasAnnotation("Relational:JsonPropertyName", "goals");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name")
+                        .HasAnnotation("Relational:JsonPropertyName", "name");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -179,7 +192,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("courses", (string)null);
+                    b.ToTable("courses");
                 });
 
             modelBuilder.Entity("SkyExplorer.Flight", b =>
@@ -207,16 +220,9 @@ namespace SkyExplorer.Migrations
                         .HasColumnName("duration")
                         .HasAnnotation("Relational:JsonPropertyName", "duration");
 
-                    b.Property<string>("FlightType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("flight_type")
-                        .HasAnnotation("Relational:JsonPropertyName", "flightType");
-
                     b.Property<long>("OverseerId")
                         .HasColumnType("bigint")
-                        .HasColumnName("overseer_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "overseerId");
+                        .HasColumnName("overseer_id");
 
                     b.Property<long>("PlaneId")
                         .HasColumnType("bigint")
@@ -224,8 +230,7 @@ namespace SkyExplorer.Migrations
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("user_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "userId");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id");
 
@@ -237,7 +242,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("flights", (string)null);
+                    b.ToTable("flights");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "flight");
                 });
@@ -257,15 +262,13 @@ namespace SkyExplorer.Migrations
                         .HasColumnName("body")
                         .HasAnnotation("Relational:JsonPropertyName", "body");
 
-                    b.Property<int>("RecipientId")
-                        .HasColumnType("integer")
-                        .HasColumnName("recipient_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "recipientId");
+                    b.Property<long>("RecipientId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("recipient_id");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sender_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "senderId");
+                    b.Property<long>("SenderId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sender_id");
 
                     b.Property<DateTime>("SendingDate")
                         .HasColumnType("timestamp with time zone")
@@ -279,7 +282,11 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("messages", (string)null);
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("messages");
                 });
 
             modelBuilder.Entity("SkyExplorer.Plane", b =>
@@ -311,7 +318,7 @@ namespace SkyExplorer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("planes", (string)null);
+                    b.ToTable("planes");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "plane");
                 });
@@ -371,6 +378,25 @@ namespace SkyExplorer.Migrations
                     b.Navigation("Plane");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SkyExplorer.Message", b =>
+                {
+                    b.HasOne("SkyExplorer.AppUser", "Recipient")
+                        .WithMany()
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SkyExplorer.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
                 });
 #pragma warning restore 612, 618
         }
