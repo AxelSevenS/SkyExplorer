@@ -1,0 +1,112 @@
+<section>
+	@if (authentication.user && authentication.user.role > UserRoles.User) {
+		<img src="../../../../assets/vue-avion.png" alt="image" class="course-picture">
+
+		<div>
+			<mat-card-title class="mat-card-title-create-form">Créer un Cours</mat-card-title>
+			<div class="subtitle"></div>
+
+			<mat-card>
+				<form class="grid create-course" [formGroup]="publishForm" (ngSubmit)="publish()">
+
+					<mat-card-content class="grid__container">
+						<mat-form-field class="grid__child--full-width ">
+							<mat-label>Intitulé du Cours</mat-label>
+
+							<input class="create-text-input" matInput formControlName="courseName" type="text" autocomplete="Intitulé du Cours" required>
+							@if (publishForm.controls['courseName'].errors) {
+								<mat-error>Nom de cours <strong>invalide</strong></mat-error>
+							}
+						</mat-form-field>
+
+						<mat-form-field>
+							<mat-label>Élève</mat-label>
+
+							<mat-select matInput formControlName="student" [value]="studentId" required>
+								@if (students.length == 0) {
+									<mat-option disabled>Aucun Elèves Disponible</mat-option>
+								}
+								@else {
+									@for (student of students; track student) {
+										<mat-option [value]="student.id">{{student.firstName}} {{student.lastName}}</mat-option>
+									}
+								}
+							</mat-select>
+						</mat-form-field>
+						@if (authentication.user.role > UserRoles.Collaborator) {
+							<mat-form-field>
+								<mat-label>Professeur</mat-label>
+
+								<mat-select matInput formControlName="teacher" [value]="teacherId" required>
+									@if (teachers?.length == 0) {
+										<mat-option disabled>Aucun Professeur Disponible</mat-option>
+									}
+									@else {
+										@for (teacher of teachers; track teacher) {
+											<mat-option [value]="teacher.id">{{teacher.firstName}} {{teacher.lastName}}</mat-option>
+										}
+									}
+								</mat-select>
+							</mat-form-field>
+						}
+
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Avion</mat-label>
+
+							<mat-select matInput formControlName="plane" [value]="planeId" required>
+								@if (planes.length == 0) {
+									<mat-option disabled>Aucun Avion Disponible</mat-option>
+								}
+								@else {
+									@for (plane of planes; track plane) {
+										<mat-option [value]="plane.id">{{plane.name}}</mat-option>
+									}
+								}
+							</mat-select>
+						</mat-form-field>
+
+						<mat-form-field id="date-picker__field">
+							<mat-label>Date</mat-label>
+
+							<input matInput formControlName="date" [matDatepicker]="picker" required>
+							<mat-hint>JJ/MM/AAAA</mat-hint>
+							<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+							<mat-datepicker #picker></mat-datepicker>
+						</mat-form-field>
+						<mat-form-field>
+							<mat-label>Heure</mat-label>
+
+							<input type="time" matInput formControlName="time" required>
+						</mat-form-field>
+
+
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Durée</mat-label>
+
+							<input type="time" matInput formControlName="duration" required>
+						</mat-form-field>
+
+						<mat-card-title class="mat-card-title-create-form-subtitle">Facturation</mat-card-title>
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Nom de la facture</mat-label>
+							<input type="text" matInput formControlName="name">
+						</mat-form-field>
+
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>url</mat-label>
+							<input type="url" matInput formControlName="url">
+						</mat-form-field>
+					</mat-card-content>
+
+					<mat-card-footer>
+						<button mat-raised-button color="primary" class="button-create-form">
+							Valider
+						</button>
+					</mat-card-footer>
+
+				</form>
+			</mat-card>
+
+		</div>
+	}
+</section>

@@ -3,10 +3,12 @@ namespace SkyExplorer;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("activities")]
-public record Activity {
+public record Activity : IEntity {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,11 +17,11 @@ public record Activity {
 
 
 	[Column("flight_id")]
-	[JsonPropertyName("flightId")]
+	[JsonIgnore]
 	public uint FlightId { get; set; }
 
 	[ForeignKey(nameof(FlightId))]
-	[JsonIgnore]
+	[JsonPropertyName("flight")]
 	public Flight Flight { get; set; }
 
 
@@ -29,14 +31,14 @@ public record Activity {
 
 
 	public Activity() : base() { }
-	public Activity(ActivitySetupDTO dto) : this() {
-		FlightId = dto.FlightId;
-		Title = dto.Title ?? string.Empty;
+	public Activity(Flight flight, string title) : this() {
+		Flight = flight;
+		Title = title;
 	}
 }
 
 [Serializable]
-public class ActivitySetupDTO : IEntitySetup<Activity> {
+public record ActivitySetupDTO : IEntitySetup<Activity> {
 	[JsonPropertyName("flightId")]
 	public uint FlightId { get; set; }
 
@@ -44,18 +46,24 @@ public class ActivitySetupDTO : IEntitySetup<Activity> {
 	public string? Title { get; set; }
 
 	public Activity? Create(AppDbContext context, out string error) {
-		if (context.Flights.Find(FlightId) is null) {
+		Flight? flight = context.Flights
+			.Include(f => f.User)
+			.Include(f => f.Overseer)
+			.Include(f => f.Plane)
+			.First(f => f.Id == FlightId);
+
+		if (flight is null) {
 			error = "Invalid Flight Id";
 			return null;
 		}
 
 		error = string.Empty;
-		return new(this);
+		return new(flight, Title ?? string.Empty);
 	}
 }
 
 [Serializable]
-public class ActivityUpdateDTO : IEntityUpdate<Activity> {
+public record ActivityUpdateDTO : IEntityUpdate<Activity> {
 	[JsonPropertyName("title")]
 	public string Title { get; set; }
 

@@ -6,7 +6,7 @@ public class AppDbContext(DbContextOptions options, JwtOptions jwtOptions) : DbC
 	public DbSet<AppUser> Users { get; set; }
 	public DbSet<Plane> Planes { get; set; }
 	public DbSet<Message> Messages { get; set; }
-	public DbSet<Lesson> Lessons { get; set; }
+	public DbSet<Course> Courses { get; set; }
 	public DbSet<Activity> Activities { get; set; }
 	public DbSet<Flight> Flights { get; set; }
 	public DbSet<Bill> Bills { get; set; }

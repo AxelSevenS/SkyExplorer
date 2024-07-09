@@ -34,8 +34,7 @@ namespace SkyExplorer.Migrations
 
                     b.Property<long>("FlightId")
                         .HasColumnType("bigint")
-                        .HasColumnName("flight_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "flightId");
+                        .HasColumnName("flight_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -95,6 +94,8 @@ namespace SkyExplorer.Migrations
 
                     b.ToTable("users");
 
+                    b.HasAnnotation("Relational:JsonPropertyName", "sender");
+
                     b.HasData(
                         new
                         {
@@ -143,6 +144,57 @@ namespace SkyExplorer.Migrations
                     b.ToTable("bills");
                 });
 
+            modelBuilder.Entity("SkyExplorer.Course", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id")
+                        .HasAnnotation("Relational:JsonPropertyName", "id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AchievedGoals")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("achieved_goals")
+                        .HasAnnotation("Relational:JsonPropertyName", "achievedGoals");
+
+                    b.Property<string>("AcquiredSkills")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("acquired_skills")
+                        .HasAnnotation("Relational:JsonPropertyName", "acquiredSkills");
+
+                    b.Property<long>("FlightId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("flight_id");
+
+                    b.Property<string>("Goals")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("goals")
+                        .HasAnnotation("Relational:JsonPropertyName", "goals");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name")
+                        .HasAnnotation("Relational:JsonPropertyName", "name");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("notes")
+                        .HasAnnotation("Relational:JsonPropertyName", "notes");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlightId");
+
+                    b.ToTable("courses");
+                });
+
             modelBuilder.Entity("SkyExplorer.Flight", b =>
                 {
                     b.Property<long>("Id")
@@ -168,26 +220,17 @@ namespace SkyExplorer.Migrations
                         .HasColumnName("duration")
                         .HasAnnotation("Relational:JsonPropertyName", "duration");
 
-                    b.Property<string>("FlightType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("flight_type")
-                        .HasAnnotation("Relational:JsonPropertyName", "flightType");
-
                     b.Property<long>("OverseerId")
                         .HasColumnType("bigint")
-                        .HasColumnName("overseer_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "overseerId");
+                        .HasColumnName("overseer_id");
 
                     b.Property<long>("PlaneId")
                         .HasColumnType("bigint")
-                        .HasColumnName("plane_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "planeId");
+                        .HasColumnName("plane_id");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("user_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "userId");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id");
 
@@ -200,9 +243,11 @@ namespace SkyExplorer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("flights");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "flight");
                 });
 
-            modelBuilder.Entity("SkyExplorer.Lesson", b =>
+            modelBuilder.Entity("SkyExplorer.Message", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,60 +257,18 @@ namespace SkyExplorer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("AchievedGoals")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("achieved_goals")
-                        .HasAnnotation("Relational:JsonPropertyName", "achievedGoals");
-
-                    b.Property<long>("FlightId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("flight_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "flightId");
-
-                    b.Property<string>("Goals")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("goals")
-                        .HasAnnotation("Relational:JsonPropertyName", "goals");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("note")
-                        .HasAnnotation("Relational:JsonPropertyName", "note");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlightId");
-
-                    b.ToTable("lessons");
-                });
-
-            modelBuilder.Entity("SkyExplorer.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasAnnotation("Relational:JsonPropertyName", "id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Body")
                         .HasColumnType("text")
                         .HasColumnName("body")
                         .HasAnnotation("Relational:JsonPropertyName", "body");
 
-                    b.Property<int>("RecipientId")
-                        .HasColumnType("integer")
-                        .HasColumnName("recipient_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "recipientId");
+                    b.Property<long>("RecipientId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("recipient_id");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sender_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "senderId");
+                    b.Property<long>("SenderId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sender_id");
 
                     b.Property<DateTime>("SendingDate")
                         .HasColumnType("timestamp with time zone")
@@ -278,6 +281,10 @@ namespace SkyExplorer.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "title");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("messages");
                 });
@@ -312,9 +319,22 @@ namespace SkyExplorer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("planes");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "plane");
                 });
 
             modelBuilder.Entity("SkyExplorer.Activity", b =>
+                {
+                    b.HasOne("SkyExplorer.Flight", "Flight")
+                        .WithMany()
+                        .HasForeignKey("FlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Flight");
+                });
+
+            modelBuilder.Entity("SkyExplorer.Course", b =>
                 {
                     b.HasOne("SkyExplorer.Flight", "Flight")
                         .WithMany()
@@ -360,15 +380,23 @@ namespace SkyExplorer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SkyExplorer.Lesson", b =>
+            modelBuilder.Entity("SkyExplorer.Message", b =>
                 {
-                    b.HasOne("SkyExplorer.Flight", "Flight")
+                    b.HasOne("SkyExplorer.AppUser", "Recipient")
                         .WithMany()
-                        .HasForeignKey("FlightId")
+                        .HasForeignKey("RecipientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Flight");
+                    b.HasOne("SkyExplorer.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
                 });
 #pragma warning restore 612, 618
         }

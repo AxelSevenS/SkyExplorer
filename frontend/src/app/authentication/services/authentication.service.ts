@@ -88,7 +88,6 @@ export class AuthenticationService {
 	}
 
 	logout(): void {
-		console.log("test");
 		this._user = null;
 		this._state = 'loggedOut';
 		localStorage.removeItem(AuthenticationService.storageKey);

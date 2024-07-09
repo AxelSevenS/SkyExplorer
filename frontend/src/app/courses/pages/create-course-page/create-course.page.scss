@@ -1,0 +1,43 @@
+@import "../../../../variables.scss";
+
+:host > section {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.grid {
+	&__container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+}
+
+#date-picker__field {
+	& mat-hint {
+		color: get-color(accent, 500);
+	}
+}
+
+
+
+
+.button-create-form {
+
+	margin-top: 2rem auto;
+	color: white;
+}
+
+.subtitle {
+	height: 1px;
+	width: 25%;
+	background-color: #24265A;
+	margin: 0rem 0rem 2rem 1rem;
+}
+.course-picture {
+	width: 30vw;
+	height: auto;
+}
+

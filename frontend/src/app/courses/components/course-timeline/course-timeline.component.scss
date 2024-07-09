@@ -1,0 +1,101 @@
+@import '../../../../variables.scss';
+
+$gap: 1em;
+$half-gap: calc($gap / 2);
+$line-width: 1px;
+
+:host {
+	width: 100%;
+}
+
+.timeline {
+	&__container {
+		padding-bottom: 20px;
+	}
+
+	&__grid {
+		// width: fit-content;
+		display: grid;
+		grid-template-rows: 1fr;
+		grid-auto-rows: min(4.25vh, 3rem);
+		gap: $gap;
+		overflow: hidden;
+		overflow-x: auto;
+
+		& > * {
+			position: relative;
+			min-width: 5vw; // Added to prevent squishing
+
+			// Prevent shrinking
+			flex-shrink: 0;
+
+			&::before, &::after {
+				position: absolute;
+				content: "";
+				background-color: #ccc;
+			}
+
+			&::before {
+				top: -$half-gap;
+				left: -$half-gap;
+
+				width: $line-width;
+				height: calc(100% + $half-gap * 2);
+			}
+
+			&::after {
+				top: -$half-gap;
+				left: -$half-gap;
+
+				width: calc(100% + $half-gap * 2);
+				height: $line-width;
+			}
+		}
+	}
+
+	&__card {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&, & {
+			color: get-color(primary, 500-contrast);
+		}
+	}
+}
+
+.day {
+
+	&__header {
+		&--content {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+		}
+	}
+}
+
+.hour__label-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-weight: bold;
+}
+
+
+mat-card-title {
+  font-size: 1.2em;
+	line-height: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+mat-card-content {
+  font-size: 1em;
+  text-align: center;
+}

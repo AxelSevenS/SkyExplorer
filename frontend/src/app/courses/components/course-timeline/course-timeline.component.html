@@ -1,0 +1,67 @@
+@if (data[timelineOffset]) {
+	<div class="timeline__container">
+		<div class="timeline__grid" [ngStyle]="{'grid-template-columns': '0.5fr repeat(' + data[timelineOffset].days.length + ', 1fr)'}">
+			<!-- Empty top-left corner cell -->
+			<div></div>
+
+			<!-- Day headers -->
+			@for (day of data[timelineOffset].days; track day) {
+				<div class="day__header">
+					<mat-card-title class="day__header--content" *ngIf="day.date as date">
+						{{ date.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}
+					</mat-card-title>
+				</div>
+			}
+
+			<!-- Hours column -->
+			@for (hour of hours; track hour) {
+				<div class="hour__label">
+					<div class="hour__label-content">
+						{{ hour }}:00
+					</div>
+				</div>
+				<!-- Courses for each day at the current hour -->
+				@for (day of data[timelineOffset].days; track $index) {
+					<ng-container *ngIf="! isCourseOccupied($index, hour) && getCourseAtTime($index, hour) as course; else noCourse">
+						<div [ngStyle]="{'grid-row': 'span ' + getDuration(course.duration, hour).toString()}">
+							<mat-card class="timeline__card" [ngStyle]="{'background-color': stringToColor(course.name)}">
+								<mat-card-content>
+									<span>
+										{{ course.name }}
+									</span>
+									<span>
+										{{ course.plane }}
+									</span>
+								</mat-card-content>
+							</mat-card>
+						</div>
+					</ng-container>
+					<ng-template #noCourse>
+						<ng-container *ngIf="! isCourseOccupied($index, hour)">
+							<div></div>
+						</ng-container>
+					</ng-template>
+				}
+			}
+		</div>
+	</div>
+
+	<mat-form-field>
+		<mat-label>Page:</mat-label>
+		<input matInput [(ngModel)]="timelineOffset">
+	</mat-form-field>
+	<button mat-icon-button (click)="timelineOffset = timelineOffset - 1;">
+		<mat-icon>chevron_left</mat-icon>
+	</button>
+	<button mat-icon-button (click)="timelineOffset = timelineOffset + 1;">
+		<mat-icon>chevron_right</mat-icon>
+	</button>
+
+	<mat-form-field>
+		<mat-label>Affichage</mat-label>
+		<mat-select matInput [(value)]="displayMode">
+			<mat-option [value]="DisplayMode.Weekly">Par Semaine</mat-option>
+			<mat-option [value]="DisplayMode.Monthly">Par Mois</mat-option>
+		</mat-select>
+	</mat-form-field>
+}

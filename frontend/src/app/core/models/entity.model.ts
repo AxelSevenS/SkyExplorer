@@ -1,4 +1,8 @@
-export abstract class EntityCreateDto {
+export interface IEntity {
+	get id(): number;
+}
+
+export abstract class EntitySetupDto {
 	abstract populate(formData: FormData): void;
 }
 

@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 [Table("messages")]
-public record Message {
+public record Message : IEntity {
 	[Key]
 	[Column("id")]
 	[JsonPropertyName("id")]
-	public int Id { get; set; }
+	public uint Id { get; set; }
 
 	[Column("title")]
 	[JsonPropertyName("title")]
@@ -24,21 +24,30 @@ public record Message {
 	public DateTime SendingDate { get; set; }
 
 	[Column("sender_id")]
-	[JsonPropertyName("senderId")]
-	public int SenderId { get; set; }
+	[JsonIgnore]
+	public uint SenderId { get; set; }
+
+	[ForeignKey(nameof(SenderId))]
+	[JsonPropertyName("sender")]
+	public AppUser Sender { get; set; }
+
 
 	[Column("recipient_id")]
-	[JsonPropertyName("recipientId")]
-	public int RecipientId { get; set; }
+	[JsonIgnore]
+	public uint RecipientId { get; set; }
+
+	[ForeignKey(nameof(RecipientId))]
+	[JsonPropertyName("recipient")]
+	public AppUser Recipient { get; set; }
 
 
 	public Message() { }
-	public Message(MessageSetupDTO dto) : this() {
-		Title = dto.Title;
-		Body = dto.Body;
-		SendingDate = dto.SendingDate;
-		SenderId = dto.SenderId;
-		RecipientId = dto.RecipientId;
+	public Message(string title, string body, DateTime sendingDate, AppUser sender, AppUser recipient) : this() {
+		Title = title;
+		Body = body;
+		SendingDate = sendingDate;
+		Sender = sender;
+		Recipient = recipient;
 	}
 }
 
@@ -54,24 +63,26 @@ public record MessageSetupDTO : IEntitySetup<Message>{
 	public DateTime SendingDate { get; set; }
 
 	[JsonPropertyName("senderId")]
-	public int SenderId { get; set; }
+	public uint SenderId { get; set; }
 
 	[JsonPropertyName("recipientId")]
-	public int RecipientId { get; set; }
+	public uint RecipientId { get; set; }
 
 	public Message? Create(AppDbContext context, out string error) {
-		if (context.Users.Find(SenderId) is null) {
+		AppUser? sender = context.Users.Find(SenderId);
+		if (sender is null) {
 			error = "Invalid Sender Id";
 			return null;
 		}
 
-		if (context.Users.Find(RecipientId) is null) {
+		AppUser? recipient = context.Users.Find(RecipientId);
+		if (recipient is null) {
 			error = "Invalid Recipient Id";
 			return null;
 		}
 
 		error = string.Empty;
-		return new(this);
+		return new(Title ?? string.Empty, Body ?? string.Empty, SendingDate, sender, recipient);
 	}
 }
 

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("bills")]
-public record Bill {
+public record Bill : IEntity {
 	[Key]
 	[Column("id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -41,7 +41,7 @@ public record Bill {
 }
 
 [Serializable]
-public class BillSetupDTO : IEntitySetup<Bill> {
+public record BillSetupDTO : IEntitySetup<Bill> {
 	[JsonPropertyName("url")]
 	public string URL { get; set; }
 
@@ -60,9 +60,12 @@ public class BillSetupDTO : IEntitySetup<Bill> {
 }
 
 [Serializable]
-public class BillUpdateDTO : IEntityUpdate<Bill> {
+public record BillUpdateDTO : IEntityUpdate<Bill> {
 	[JsonPropertyName("url")]
 	public string? URL { get; set; }
+
+	[JsonPropertyName("name")]
+	public string? Name { get; set; }
 
 	[JsonPropertyName("wasAcquitted")]
 	public bool? WasAcquitted { get; set; }
@@ -71,7 +74,7 @@ public class BillUpdateDTO : IEntityUpdate<Bill> {
 	public bool TryUpdate(Bill entity, AppDbContext context, out string error) {
 		if (URL is not null) entity.URL = URL;
 		if (WasAcquitted is not null) entity.WasAcquitted = WasAcquitted.Value;
-
+		if (Name is not null) entity.Name = Name;
 		error = string.Empty;
 		return true;
 	}

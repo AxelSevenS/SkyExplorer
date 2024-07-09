@@ -1,5 +1,6 @@
 namespace SkyExplorer;
 
+using System;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/users")]
-public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Controller<AppUser, UserRegisterDTO, UserUpdateDTO>(repo) {
+public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : RegularController<AppUser, UserRegisterDTO, UserUpdateDTO>(context) {
 	protected override DbSet<AppUser> Set => Repository.Users;
 
 
@@ -71,4 +72,19 @@ public class AppUserController(AppDbContext repo, JwtOptions jwtOptions) : Contr
 
 		return await base.Add(dto);
 	}
+
+
+	[HttpGet("byRole/{role}")]
+	public async Task<ActionResult<AppUser>> GetByRole(AppUser.Roles role) {
+		return Ok(await GetQuery
+			.Where(u => u.Role == role)
+			.ToListAsync());
+	}
+
+	[HttpGet("count/{role}")]
+	public async Task<ActionResult<int>> CountByRole(AppUser.Roles role) {
+		return Ok(await GetQuery
+			.CountAsync(u => u.Role == role));
+	}
 }
+
