@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 [ApiController]
 [Route("api/planes")]
-public class PlaneController(AppDbContext context) : Controller<Plane, PlaneSetupDTO, PlaneUpdateDTO>(context) {
+public class PlaneController(AppDbContext context) : RegularController<Plane, PlaneSetupDTO, PlaneUpdateDTO>(context) {
 	protected override DbSet<Plane> Set => Repository.Planes;
 
 
@@ -24,5 +24,12 @@ public class PlaneController(AppDbContext context) : Controller<Plane, PlaneSetu
 			Plane p => Ok(p.Status),
 			_ => NotFound()
 		};
+
+	
+
+	}
+	[HttpPut("count")]
+	public async Task<ActionResult<int>> GetPlaneCount() {
+		return await Repository.Planes.CountAsync();
 	}
 }

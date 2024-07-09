@@ -1,0 +1,33 @@
+.dashboard__content {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 100vh;
+    height: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+}
+
+.dashboard__content__body__calendar{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 25vh;
+    height: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid black;
+}
+
+.dashboard__content__body__calendar__header{
+    text-align: center;
+}

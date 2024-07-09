@@ -1,10 +1,10 @@
 <mat-card class="user" appearance="outlined">
-	@if (user != null) {
-		<a [routerLink]="['/users', user.id]">
+	@if (entity) {
+		<a [routerLink]="['/users', entity.id]">
 			<mat-card-header>
 				<div class="user__avatar" mat-card-avatar></div>
-				<mat-card-title>{{ user.firstName }} {{ user.lastName }}</mat-card-title>
-				<mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+				<mat-card-title>{{ entity.firstName }} {{ entity.lastName }}</mat-card-title>
+				<mat-card-subtitle>{{ entity.email }}</mat-card-subtitle>
 			</mat-card-header>
 		</a>
 		<mat-card-content>

@@ -3,11 +3,11 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 import { NotFoundPage } from './core/pages/not-found-page/not-found.page';
 import { SidenavComponent } from './core/components/sidenav/sidenav-component';
-import { CoursesPage } from './courses/pages/courses-page/courses.page';
-import { BillingsPage } from './billings/pages/billings-page/billings.page';
+import { BillsPage } from './bills/pages/bills-page/bills.page';
 import { PlanesPage } from './planes/pages/planes-page/planes.page';
 import { FlightsPage } from './flights/pages/flights-page/flights.page';
 import { LoginPage } from './authentication/pages/login-page/login-page';
+import { DashboardPage } from './core/pages/dashboard-page/dashboard.page';
 
 const routes: Routes = [
 	{
@@ -19,12 +19,16 @@ const routes: Routes = [
 		component: SidenavComponent,
 		children: [
 			{
+				path: 'dashboard',
+				loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+			},
+			{
 				path: 'courses',
 				loadChildren: () => import('./courses/courses.module').then(m => m.CoursesModule),
 			},
 			{
-				path: 'billings',
-				component: BillingsPage
+				path: 'bills',
+				component: BillsPage
 			},
 			{
 				path: 'planes',

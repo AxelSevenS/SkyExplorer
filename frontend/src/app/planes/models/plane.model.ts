@@ -1,13 +1,13 @@
-import { EntityCreateDto, EntityUpdateDto } from "../../core/models/entity.model";
+import { IEntity, EntitySetupDto, EntityUpdateDto } from "../../core/models/entity.model";
 
-export interface Plane {
+export interface Plane extends IEntity {
 	id: number,
 	name: string;
 	type: string;
 	status: PlaneStatus;
 }
 
-export class PlaneCreateDto extends EntityCreateDto {
+export class PlaneCreateDto extends EntitySetupDto {
 	name: string;
 	type: string;
 	status: PlaneStatus;

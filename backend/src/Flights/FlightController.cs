@@ -1,19 +1,28 @@
 namespace SkyExplorer;
 
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/flights")]
-public class FlightController(AppDbContext context) : Controller<Flight, FlightSetupDTO, FlightUpdateDTO>(context) {
-	protected override DbSet<Flight> Set => Repository.Flights;
-	protected override IQueryable<Flight> GetQuery => Set.Include(c => c.Plane).Where(f => f.Overseer.Role >= AppUser.Roles.Collaborator && f.User.Role == AppUser.Roles.User);
+public class FlightController(AppDbContext context) : TimeFrameController<Flight, FlightSetupDTO, FlightUpdateDTO>(context) {
+	private static readonly Expression<Func<Flight, DateTime>> GetFlightDateTime = f => f.DateTime;
 
+	protected override DbSet<Flight> Set => Repository.Flights;
+	protected override IQueryable<Flight> GetQuery => Set
+		.Include(c => c.Plane)
+		.Include(c => c.User)
+		.Include(c => c.Overseer)
+		.Include(c => c.Bill);
+
+	protected override Expression<Func<Flight, DateTime>> GetDateTime => GetFlightDateTime;
 
 	[HttpGet("time")]
-	public async Task<ActionResult<TimeSpan>> GetFlightTime() {
+	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] int offset = 0) {
 		return Ok(GetQuery
+			.InTimeFrame(f => f.DateTime, timeFrame, offset)
 			.Select(f => f.Duration)
 			.ToList()
 			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
@@ -21,36 +30,15 @@ public class FlightController(AppDbContext context) : Controller<Flight, FlightS
 	}
 
 	[HttpGet("time/{userId}")]
-	public async Task<ActionResult<TimeSpan>> GetFlightTimeForUser(uint userId) {
+	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTimeForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] int offset = 0) {
 		return Ok(GetQuery
 			.Where(f => f.UserId == userId)
+			.InTimeFrame(f => f.DateTime, timeFrame, offset)
 			.Select(f => f.Duration)
 			.ToList()
 			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
 		);
 	}
 
-	[HttpGet("time/weekly")]
-	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTime([FromQuery] int offset = 0) {
-		(DateOnly monday, DateOnly sunday) = Utility.GetWeekSpan(offset);
-
-		return Ok(GetQuery
-			.Where(f => DateOnly.FromDateTime(f.DateTime) >= monday && DateOnly.FromDateTime(f.DateTime) <= sunday)
-			.Select(f => f.Duration)
-			.ToList()
-			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
-		);
-	}
-	[HttpGet("time/weekly/{userId}")]
-	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTimeForUser(uint userId, [FromQuery] int offset = 0) {
-		(DateOnly monday, DateOnly sunday) = Utility.GetWeekSpan(offset);
-
-		return Ok(GetQuery
-			.Where(f => f.UserId == userId && DateOnly.FromDateTime(f.DateTime) >= monday && DateOnly.FromDateTime(f.DateTime) <= sunday)
-			.Select(f => f.Duration)
-			.ToList()
-			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
-		);
-	}
-
+	
 }

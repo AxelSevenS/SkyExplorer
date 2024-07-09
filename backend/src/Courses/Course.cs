@@ -15,6 +15,11 @@ public record Course : IEntity {
 	public uint Id { get; set; }
 
 
+	[Column("name")]
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
+
+
 	[Column("flight_id")]
 	[JsonIgnore]
 	public uint FlightId { get; set; }
@@ -37,9 +42,13 @@ public record Course : IEntity {
 	[JsonPropertyName("notes")]
 	public string Notes { get; set; }
 
+	[Column("acquired_skills")]
+	[JsonPropertyName("acquiredSkills")]
+	public string AcquiredSkills { get; set; } = string.Empty;
 
 	public Course() : base() { }
-	public Course(Flight flight, string goals, string achievedGoals, string notes) : this() {
+	public Course(string name, Flight flight, string goals, string achievedGoals, string notes) : this() {
+		Name = name;
 		Flight = flight;
 		Goals = goals;
 		AchievedGoals = achievedGoals;
@@ -49,6 +58,9 @@ public record Course : IEntity {
 
 [Serializable]
 public record CourseSetupDTO : IEntitySetup<Course> {
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
+
 	[JsonPropertyName("flightId")]
 	public uint FlightId { get; set; }
 
@@ -74,12 +86,15 @@ public record CourseSetupDTO : IEntitySetup<Course> {
 		}
 
 		error = string.Empty;
-		return new(flight, Goals ?? string.Empty, AchievedGoals ?? string.Empty, Notes ?? string.Empty);
+		return new(Name, flight, Goals ?? string.Empty, AchievedGoals ?? string.Empty, Notes ?? string.Empty);
 	}
 }
 
 [Serializable]
 public record CourseUpdateDTO : IEntityUpdate<Course> {
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
+
 	[JsonPropertyName("flightId")]
 	public uint? FlightId { get; set; }
 
@@ -92,6 +107,8 @@ public record CourseUpdateDTO : IEntityUpdate<Course> {
 	[JsonPropertyName("notes")]
 	public string? Notes { get; set; }
 
+	[JsonPropertyName("acquiredSkills")]
+	public string? AcquiredSkills { get; set; }
 
 	public bool TryUpdate(Course entity, AppDbContext context, out string error) {
 		if (FlightId is not null) {
@@ -103,9 +120,12 @@ public record CourseUpdateDTO : IEntityUpdate<Course> {
 			entity.Flight = flight;
 		}
 
+		if (Name is not null) entity.Name = Name;
+
 		if (Goals is not null) entity.Goals = Goals;
 		if (AchievedGoals is not null) entity.AchievedGoals = AchievedGoals;
 		if (Notes is not null) entity.Notes = Notes;
+		if (AcquiredSkills is not null) entity.AcquiredSkills = AcquiredSkills;
 
 		error = string.Empty;
 		return true;

@@ -18,8 +18,21 @@ export class CourseService extends EntityService<Course, CourseCreateDto, Course
 		super(http);
 	}
 
-	getWeekly(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
-		let url = new URL(`${this.endpoint}/weekly/${userId}`);
+	getWeeklyForStudent(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
+		let url = new URL(`${this.endpoint}/student/${userId}`);
+		url.searchParams.append('timeFrame', "Weekly");
+		url.searchParams.append('offset', offset.toString());
+
+		return this.http.get<Course[]>( url.toString() )
+			.pipe(
+				share(),
+				catchError( (err: HttpErrorResponse) => of(err) ),
+			);
+	}
+
+	getWeeklyForTeacher(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
+		let url = new URL(`${this.endpoint}/teache/${userId}`);
+		url.searchParams.append('timeFrame', "Weekly");
 		url.searchParams.append('offset', offset.toString());
 
 		return this.http.get<Course[]>( url.toString() )

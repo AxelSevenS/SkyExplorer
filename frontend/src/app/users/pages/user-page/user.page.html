@@ -1,7 +1,7 @@
 <section>
 @if (user) {
 	<h1>
-		@if (isOwner) {
+		@if (authentication.user && authentication.user.id == user.id) {
 			Votre Profil
 		}
 		@else {
@@ -13,53 +13,40 @@
 		<form class="grid" id="edit-user__form" [formGroup]="editUserForm">
 
 			<mat-card-content class="grid__container">
-				<mat-label class="grid__child--label">
-					E-mail
-				</mat-label>
-				@if (isOwner) {
-					<mat-form-field class="grid__child--field">
-						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail" />
+				@if (authentication.user && authentication.user.id == user.id) {
+					<mat-form-field class="grid__child--full-width">
+						<mat-label>E-mail</mat-label>
+						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail"/>
 					</mat-form-field>
 				}
 				@else {
-					<span class="grid__child--field">
-						{{ user.email }}
-					</span>
+					<mat-label class="grid__child--label">E-mail</mat-label>
+					<span class="grid__child--field">{{ user.email }}</span>
 				}
 
-				<mat-label class="grid__child--label">
-					Prénom
-				</mat-label>
-				<span class="grid__child--field">
-					{{ user.firstName }}
-				</span>
+				<mat-label class="grid__child--label">Prénom</mat-label>
+				<span class="grid__child--field">{{ user.firstName }}</span>
 
-				<mat-label class="grid__child--label">
-					Nom
-				</mat-label>
-				<span class="grid__child--field">
-					{{ user.lastName }}
-				</span>
+				<mat-label class="grid__child--label">Nom</mat-label>
+				<span class="grid__child--field">{{ user.lastName }}</span>
 
-				<mat-label class="grid__child--label">
-					Rôle
-				</mat-label>
-				@if (isAdmin && ! isOwner) {
-					<mat-form-field class="grid__child--field">
-						<mat-select formControlName="role" [value]="user.role">
+				@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id != user.id)) {
+					<mat-form-field class="grid__child--full-width">
+						<mat-label>Rôle</mat-label>
+						<mat-select matInput formControlName="role">
 							@for (role of subRoles; track role) {
-								<mat-option [value]="role">{{role}}</mat-option>
+								<mat-option [value]="role">{{ UserRoles[role] }}</mat-option>
 							}
 						</mat-select>
 					</mat-form-field>
 				}
 				@else {
-					<span class="grid__child--field">
-						{{ user.role }}
-					</span>
+					<mat-label class="grid__child--label">Rôle</mat-label>
+					<span class="grid__child--field">{{ user.role }}</span>
 				}
 
-				@if (isOwner) {
+
+				@if (authentication.user && authentication.user.id == user.id) {
 					<mat-form-field class="grid__child--half">
 						<mat-label>
 							Nouveau Mot de Passe
@@ -102,7 +89,7 @@
 			</mat-card-content>
 
 
-			@if (isOwner || isAdmin) {
+			@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id == user.id)) {
 				<mat-card-footer>
 					<button class="grid__child--full-width" color="primary" mat-raised-button (click)="onSubmit()">
 						Sauvegarder

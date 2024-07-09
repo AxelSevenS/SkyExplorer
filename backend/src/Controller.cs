@@ -14,10 +14,6 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 	protected virtual IQueryable<T> GetQuery => Set;
 
 
-	[HttpGet]
-	public virtual async Task<ActionResult<List<T>>> GetAll() =>
-		Ok(await GetQuery.ToListAsync());
-
 	[HttpGet("{id}")]
 	public virtual async Task<ActionResult<T>> GetById(uint id) =>
 		await GetQuery
@@ -36,15 +32,14 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 
 		EntityEntry<T> entry = await Set.AddAsync(entity);
 
-		Repository.SaveChanges();
+		await Repository.SaveChangesAsync();
 		return Ok(entry.Entity);
 	}
 
 
 	[HttpPatch("{id}")]
 	public virtual async Task<ActionResult<T>> Update(uint id, [FromForm] TUpdateDTO dto) {
-		T? found = GetQuery.FirstOrDefault(e => e.Id == id);
-		if (found is null) {
+		if (GetQuery.FirstOrDefault(e => e.Id == id) is not T found) {
 			return NotFound();
 		}
 
@@ -52,7 +47,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 			return BadRequest(error);
 		}
 
-		Repository.SaveChanges();
+		await Repository.SaveChangesAsync();
 		return Ok(found);
 	}
 
@@ -66,7 +61,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 
 		Set.Remove(found);
 
-		Repository.SaveChanges();
+		await Repository.SaveChangesAsync();
 		return Ok(found);
 	}
 
