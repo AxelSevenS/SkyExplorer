@@ -3,6 +3,8 @@ import { CourseService } from '../../services/course.service';
 import { Course, CourseCreateDto, CourseUpdateDto } from '../../models/course.model';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { EntityViewComponent } from '../../../core/components/entity-view/entity-view.component';
+import { UserRoles } from '../../../users/models/user.model';
+import moment from 'moment';
 
 @Component({
 	selector: 'se-course',
@@ -10,6 +12,10 @@ import { EntityViewComponent } from '../../../core/components/entity-view/entity
 	styleUrls: ['./course.component.scss'],
 })
 export class CourseComponent extends EntityViewComponent<Course, CourseCreateDto, CourseUpdateDto> {
+	UserRoles = UserRoles;
+
+	moment = moment;
+
 	constructor(
 		public override authentication: AuthenticationService,
 		protected override entityService: CourseService,

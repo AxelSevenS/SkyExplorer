@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CourseService } from '../../services/course.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Course } from '../../models/course.model';
 
 
 export enum CoursePeriod {
@@ -107,16 +108,11 @@ export class CourseTimelineComponent {
 					if (time < this.hours[0] || time > this.hours[this.hours.length - 1]) continue;
 
 					courseData.days[day].courses[time] = {
-						name: course.name,
-						plane: course.flight.plane.name,
-						duration: duration.getHours()
+						course: course,
+						duration: Math.min(duration.getHours(), this.hours.length - this.hours.indexOf(time))
 					};
 				}
 			})
-	}
-
-	getDuration(maxDuration: number, hour: number): number {
-		return Math.min(maxDuration, this.hours.length - this.hours.indexOf(hour))
 	}
 
   getCourseAtTime(day: number, time: number): CourseData | null {
@@ -161,7 +157,6 @@ type PeriodCourseData = {
 };
 
 type CourseData = {
-	name: string;
-	plane: string;
+	course: Course;
 	duration: number;
 };
