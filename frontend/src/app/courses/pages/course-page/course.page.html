@@ -10,7 +10,7 @@
 					@if (authentication.user && authentication.user.id == course.flight.overseer.id || authentication.user?.role == UserRoles.Admin) {
 						<mat-form-field class="grid__child--full-width">
 							<mat-label>Intitulé du Cours</mat-label>
-							<input matInput formControlName="courseName" type="text" value="Sexe">
+							<input matInput formControlName="courseName" type="text">
 							@if (editCourseForm.controls['courseName'].errors) {
 								<mat-error>Nom de cours <strong>invalide</strong></mat-error>
 							}
@@ -42,7 +42,7 @@
 						<span class="grid__child--field">{{ course.flight.overseer.firstName }}  {{ course.flight.overseer.lastName }}</span>
 					}
 
-					<mat-form-field>
+					<mat-form-field class="grid__child--half">
 						<mat-label>Date</mat-label>
 
 						<input matInput formControlName="date" [matDatepicker]="picker">
@@ -51,7 +51,7 @@
 						<mat-datepicker #picker></mat-datepicker>
 					</mat-form-field>
 
-					<mat-form-field>
+					<mat-form-field class="grid__child--half">
 						<mat-label>Heure</mat-label>
 
 						<input type="time" matInput formControlName="time">
@@ -77,9 +77,9 @@
 						<input type="url" matInput formControlName="billUrl">
 					</mat-form-field>
 
+					<mat-checkbox matInput  class="grid__child--full-width" formControlName="wasAcquitted" [value]="wasAcquitted.toString()">Acquitté</mat-checkbox>
 				</mat-card-content>
 
-				<mat-checkbox matInput formControlName="wasAcquitted" [value]="wasAcquitted.toString()">Acquited</mat-checkbox>
 				<mat-card-footer>
 					<button mat-raised-button color="primary" class="button-create-form">Valider</button>
 				</mat-card-footer>

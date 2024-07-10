@@ -68,7 +68,7 @@ form.grid {
 
 		& > * {
 			display: flex;
-			justify-content: start;
+			justify-content: flex-start;
 			align-items: center;
 		}
 
@@ -86,7 +86,7 @@ form.grid {
 
 	mat-card-title {
 		font-style: bold;
-		font-family: sky-explorer;
+		font-family: "Russo One", sans-serif;
 	}
 }
 
@@ -117,6 +117,10 @@ mat-form-field {
 	& mat-hint {
 		color: get-color(accent, 500);
 	}
+}
+
+div.mat-mdc-menu-content {
+	padding: initial;
 }
 
 .mat-mdc-text-field-wrapper {

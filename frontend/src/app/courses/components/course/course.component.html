@@ -1,19 +1,24 @@
 <mat-card class="course" appearance="outlined">
 	@if (entity) {
-		<a [routerLink]="['/courses', entity.id]">
-			<mat-card-header>
-				<div class="course__avatar" mat-card-avatar></div>
-				<mat-card-title>{{ entity.name }}</mat-card-title>
-				<mat-card-subtitle>{{ entity.flight.plane.name }}</mat-card-subtitle>
-			</mat-card-header>
-		</a>
 		<mat-card-content>
+			<a [routerLink]="['/courses', entity.id]">
+				<!-- <mat-card-header> -->
+					<mat-card-title>{{ entity.name }}</mat-card-title>
+					<mat-card-subtitle>Avion: {{ entity.flight.plane.name }}</mat-card-subtitle>
+				<!-- </mat-card-header> -->
+			</a>
+			<mat-card-title>{{ entity.flight.overseer.lastName }}</mat-card-title>
+			<!-- <span>{{ moment(entity.flight.dateTime) }}</span> -->
+			<mat-card-title>{{ moment(entity.flight.dateTime).toDate().toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</mat-card-title>
+			<mat-card-subtitle>Durée: {{ entity.flight.duration }}</mat-card-subtitle>
 		</mat-card-content>
 		<mat-card-actions>
-			<button class="course__delete-btn" mat-raised-button (click)="delete()" color="warn">
-				<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
-				<mat-label>Supprimer</mat-label>
-			</button>
+			@if (authentication.user && (authentication.user.role >= UserRoles.Collaborator || entity.flight.overseer.id == authentication.user.id)) {
+				<button class="course__delete-btn" mat-raised-button (click)="delete()" color="warn">
+					<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+					<mat-label>Supprimer</mat-label>
+				</button>
+			}
 		</mat-card-actions>
 	}
 </mat-card>

@@ -22,18 +22,23 @@
 				</div>
 				<!-- Courses for each day at the current hour -->
 				@for (day of data[timelineOffset].days; track $index) {
-					<ng-container *ngIf="! isCourseOccupied($index, hour) && getCourseAtTime($index, hour) as course; else noCourse">
-						<div [ngStyle]="{'grid-row': 'span ' + getDuration(course.duration, hour).toString()}">
-							<mat-card class="timeline__card" [ngStyle]="{'background-color': stringToColor(course.name)}">
-								<mat-card-content>
-									<span>
-										{{ course.name }}
-									</span>
-									<span>
-										{{ course.plane }}
-									</span>
-								</mat-card-content>
-							</mat-card>
+					<ng-container *ngIf="! isCourseOccupied($index, hour) && getCourseAtTime($index, hour) as data; else noCourse">
+						<div [ngStyle]="{'grid-row': 'span ' + data.duration}">
+							<a [matMenuTriggerFor]="coursePreview" aria-label="Options de Comptes">
+								<mat-card class="timeline__card" [ngStyle]="{'background-color': stringToColor(data.course.name)}">
+									<mat-card-content>
+										<span>
+											{{ data.course.name }}
+										</span>
+										<span>
+											{{ data.course.flight.plane.name }}
+										</span>
+									</mat-card-content>
+								</mat-card>
+								</a>
+								<mat-menu #coursePreview="matMenu" xPosition="after" yPosition="above">
+									<se-course [entity]="data.course"></se-course>
+								</mat-menu>
 						</div>
 					</ng-container>
 					<ng-template #noCourse>
