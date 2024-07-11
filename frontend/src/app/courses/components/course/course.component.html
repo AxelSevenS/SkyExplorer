@@ -1,15 +1,15 @@
 @if (entity) {
 <mat-card class="entity course" [ngStyle]="{'background-color': stringToColor(entity.name.substring(0, 5))}">
-	<mat-card-header>
+	<!-- <mat-card-header> -->
 		<a [matMenuTriggerFor]="coursePreview" aria-label="Options de Cours">
 			<mat-card-title>
 				{{ entity.name }}
 			</mat-card-title>
 		</a>
-	</mat-card-header>
-	<mat-card-content>
+	<!-- </mat-card-header>
+	<mat-card-content> -->
 		{{ entity.flight.plane.name }}
-	</mat-card-content>
+	<!-- </mat-card-content> -->
 </mat-card>
 <mat-menu #coursePreview="matMenu" xPosition="after" yPosition="above">
 	<mat-card class="course__menu" appearance="outlined">

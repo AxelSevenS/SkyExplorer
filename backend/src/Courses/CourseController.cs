@@ -34,20 +34,6 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 	}
 
 
-	[HttpGet("tesqsdqsdt/{userId}")]
-	public async Task<ActionResult<List<Course>>> GetForUserSdq(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0) {
-		return Ok(await GetQuery
-			.Where(c =>
-				c.Flight.UserId == userId && c.Flight.User.Role == AppUser.Roles.User ||
-				c.Flight.OverseerId == userId && c.Flight.Overseer.Role == AppUser.Roles.Collaborator
-			)
-			.InTimeFrame(c => c.Flight.DateTime, timeFrame, offset)
-			.OrderByDescending(c => c.Flight.DateTime)
-			.ToListAsync()
-		);
-	}
-
-
 	[HttpGet("time")]
 	public async Task<ActionResult<TimeSpan>> GetTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0){
 		return Ok(GetQuery
