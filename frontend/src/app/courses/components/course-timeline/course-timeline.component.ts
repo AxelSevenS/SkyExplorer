@@ -12,7 +12,6 @@ import { UserRoles } from '../../../users/models/user.model';
 	styleUrls: ['./course-timeline.component.scss']
 })
 export class CourseTimelineComponent implements OnInit {
-	DisplayMode = CoursePeriod;
 	hours: number[] = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 	data: { [key in number]: PeriodCourseData} = {};
@@ -22,7 +21,7 @@ export class CourseTimelineComponent implements OnInit {
 		this._displayMode = value;
 		this.updateTimelineData();
 	}
-	private _displayMode: CoursePeriod = CoursePeriod.Weekly;
+	private _displayMode: CoursePeriod = 'Weekly';
 
 
 	get timelineOffset() { return this._timelineOffset; }
@@ -80,12 +79,12 @@ export class CourseTimelineComponent implements OnInit {
 		let timeFrame = 7;
 		let timeBasis = 0;
 
-		if (this._displayMode == CoursePeriod.Weekly) {
+		if (this._displayMode == 'Weekly') {
 			today.setDate(today.getDate() + this.timelineOffset * 7);
 			timeFrame = 7;
 			timeBasis = (today.getDay() + 6) % 7;
 		}
-		else if (this._displayMode == CoursePeriod.Monthly) {
+		else if (this._displayMode == 'Monthly') {
 			today.setMonth(today.getMonth() + this.timelineOffset);
 
 			let endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -116,7 +115,7 @@ export class CourseTimelineComponent implements OnInit {
 
 
 		// get the course data for the week
-		this.courseService.getWeeklyForUser(this.authentication.user.id, this.timelineOffset)
+		this.courseService.getForUser(this.authentication.user.id, this.timelineOffset, 'Weekly', )
 			.subscribe(courses => {
 				if (courses instanceof HttpErrorResponse) return;
 
@@ -203,7 +202,4 @@ type CourseData = {
 	duration: number;
 };
 
-export enum CoursePeriod {
-	Weekly = 'weekly',
-	Monthly = 'monthly'
-};
+export type CoursePeriod = 'Weekly' | 'Monthly';

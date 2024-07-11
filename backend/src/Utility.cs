@@ -9,12 +9,10 @@ public static class Utility {
 		Expression<Func<TSource, DateTime>> time,
 		TimeFrame timeFrame,
 		int offset = 0,
-		bool utc = true) where TSource : class
-	{
+		bool utc = true) where TSource : class {
 		DateTime now = utc ? DateTime.UtcNow : DateTime.Now;
 
-		switch (timeFrame)
-		{
+		switch (timeFrame) {
 			case TimeFrame.Daily:
 				DateTime today = now.Date.AddDays(offset);
 				DateTime tomorrow = today.AddDays(1);
@@ -41,11 +39,62 @@ public static class Utility {
 		}
 	}
 
+	public static IQueryable<TSource> InDateFrame<TSource>(
+		this IQueryable<TSource> source,
+		Expression<Func<TSource, DateTime>> time,
+		DateFrame dateFrame,
+		int offset = 0,
+		bool utc = true) where TSource : class {
+		DateTime now = utc ? DateTime.UtcNow : DateTime.Now;
+
+		switch (dateFrame) {
+			case DateFrame.Past:
+				return source.Where(BuildPastExpression(time, now, offset));
+
+			case DateFrame.Future:
+				return source.Where(BuildFutureExpression(time, now, offset));
+
+			case DateFrame.Today:
+				DateTime todayStart = now.Date;
+				DateTime tomorrowStart = todayStart.AddDays(1);
+				return source.Where(BuildBetweenExpression(time, todayStart, tomorrowStart));
+
+			case DateFrame.AllTime:
+			default:
+				return source;
+		}
+	}
+
+	private static Expression<Func<TSource, bool>> BuildPastExpression<TSource>(
+		Expression<Func<TSource, DateTime>> time,
+		DateTime now,
+		int offset) {
+		var parameter = time.Parameters[0];
+		var property = time.Body;
+
+		var pastConstant = Expression.Constant(now.AddDays(offset), typeof(DateTime));
+		var lessThan = Expression.LessThan(property, pastConstant);
+
+		return Expression.Lambda<Func<TSource, bool>>(lessThan, parameter);
+	}
+
+	private static Expression<Func<TSource, bool>> BuildFutureExpression<TSource>(
+		Expression<Func<TSource, DateTime>> time,
+		DateTime now,
+		int offset) {
+		var parameter = time.Parameters[0];
+		var property = time.Body;
+
+		var futureConstant = Expression.Constant(now.AddDays(offset), typeof(DateTime));
+		var greaterThanOrEqual = Expression.GreaterThanOrEqual(property, futureConstant);
+
+		return Expression.Lambda<Func<TSource, bool>>(greaterThanOrEqual, parameter);
+	}
+
 	private static Expression<Func<TSource, bool>> BuildBetweenExpression<TSource>(
 		Expression<Func<TSource, DateTime>> time,
 		DateTime start,
-		DateTime end)
-	{
+		DateTime end) {
 		ParameterExpression parameter = time.Parameters[0];
 		Expression property = time.Body;
 
@@ -60,22 +109,19 @@ public static class Utility {
 		return Expression.Lambda<Func<TSource, bool>>(andExpression, parameter);
 	}
 
-	private static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
-	{
+	private static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek) {
 		int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
-		return dt.AddDays(- diff).Date;
+		return dt.AddDays(-diff).Date;
 	}
+}
 
-	// public static (DateOnly monday, DateOnly sunday) GetWeekSpan(int offset = 0, bool utc = true) {
-	// 	DateOnly now = DateOnly.FromDateTime(utc ? DateTime.UtcNow : DateTime.Now).AddDays(offset * 7);
-
-	// 	int todayWeekDay = ((int)now.DayOfWeek + 6) % 7; // Get today's weekday in Monday-first time
-
-	// 	DateOnly monday = now.AddDays(-todayWeekDay);
-	// 	DateOnly sunday = monday.AddDays(6);
-
-	// 	return (monday, sunday);
-	// }
+[Serializable]
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum DateFrame {
+	AllTime,
+	Past,
+	Future,
+	Today,
 }
 
 [Serializable]
@@ -86,4 +132,19 @@ public enum TimeFrame {
 	Monthly,
 	Weekly,
 	Daily
+}
+
+[Serializable]
+// [JsonConverter(typeof(JsonStringEnumConverter))]
+public record class CourseQuerySettings {
+	[JsonPropertyName("timeFrame")]
+	public TimeFrame TimeFrame = TimeFrame.AllTime;
+
+	[JsonPropertyName("dateFrame")]
+	public DateFrame DateFrame = DateFrame.AllTime;
+
+	[JsonPropertyName("offset")]
+	public int Offset = 0;
+
+	public CourseQuerySettings() { }
 }
