@@ -1,50 +1,41 @@
-:host {
-	div.mat-mdc-menu-content {
-		padding: initial;
-		width:5rem;
-		height: 5rem;
-		border:1px solid #24265a;
-		background-color: #24265a;
-	}
+:host > mat-card {
+	height: 100%;
+	width: 100%;
 }
 
-.bill {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	margin: 20px;
-	padding: 20px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	background-color: #fff;
-	width: 15%;
-	height: 20%;
-	transition: all 0.3s;
+// :host {
+// 	div.mat-mdc-menu-content {
+// 		padding: initial;
+// 		width:5rem;
+// 		height: 5rem;
+// 		border:1px solid #24265a;
+// 		background-color: #24265a;
+// 	}
+// }
 
-	&:hover {
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		background-color: #24265a;
-		transition: all 0.5s ease-in-out;
-		border-radius: 20px;
-		color: white;
-	}
-}
-mat-card-title {
-	&:hover {
-		cursor: pointer;
-		color: white;
-	}
-}
+// .bill {
+// 	&:hover {
+// 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+// 		background-color: #24265a;
+// 		transition: all 0.5s ease-in-out;
+// 		border-radius: 20px;
+// 		color: white;
+// 	}
+// }
+// mat-card-title {
+// 	&:hover {
+// 		cursor: pointer;
+// 		color: white;
+// 	}
+// }
 
-.bill-menu {
-	& > a {
-		color: #24265a;
-		text-decoration: none;
+// .bill-menu {
+// 	& > a {
+// 		color: #24265a;
+// 		text-decoration: none;
 
-		&:hover {
-			color: white;
-		}
-	}
-}
+// 		&:hover {
+// 			color: white;
+// 		}
+// 	}
+// }

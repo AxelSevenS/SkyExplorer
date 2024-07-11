@@ -11,6 +11,7 @@ import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { CourseComponent } from '../courses/components/course/course.component';
 import { CoursesModule } from '../courses/courses.module';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -23,6 +24,7 @@ import { CoursesModule } from '../courses/courses.module';
     MatIcon,
     MatMenuModule,
     MatSelectModule,
+		MatButtonModule,
   ],
   exports: [
     BillListPage,
