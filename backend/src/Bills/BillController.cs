@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/bills")]
-public class BillController(AppDbContext context) : RegularController<Bill, BillSetupDTO, BillUpdateDTO>(context) {
+public class BillController(AppDbContext context) : RegularController<Bill, BillSetupDto, BillUpdateDto>(context) {
 	protected override DbSet<Bill> Set => Repository.Bills;
 
 	[HttpGet("search")]

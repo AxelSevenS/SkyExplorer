@@ -9,11 +9,13 @@
 	</a>
 	<mat-card-content>
 	</mat-card-content>
+	@if (authentication.user && authentication.user.role == UserRoles.Admin) {
 	<mat-card-actions>
 		<button class="user__delete-btn" mat-raised-button (click)="delete()" color="warn">
 			<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
 			<mat-label>Supprimer</mat-label>
 		</button>
 	</mat-card-actions>
+	}
 </mat-card>
 }

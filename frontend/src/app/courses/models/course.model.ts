@@ -1,4 +1,4 @@
-import { IEntity, EntitySetupDto, EntityUpdateDto } from "../../core/models/entity.model";
+import { IEntity, EntityCreateDto, EntityUpdateDto } from "../../core/models/entity.model";
 import { Flight } from "../../flights/models/flight.model";
 
 export interface Course extends IEntity {
@@ -11,7 +11,7 @@ export interface Course extends IEntity {
 	acquiredSkills: string,
 }
 
-export class CourseCreateDto extends EntitySetupDto {
+export class CourseCreateDto extends EntityCreateDto {
 	name: string;
 	flightId: number;
 	goals?: string;

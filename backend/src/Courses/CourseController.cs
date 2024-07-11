@@ -1,12 +1,13 @@
 namespace SkyExplorer;
 
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/courses")]
-public class CourseController(AppDbContext context) : TimeFrameController<Course, CourseSetupDTO, CourseUpdateDTO>(context) {
+public class CourseController(AppDbContext context) : TimeFrameController<Course, CourseSetupDto, CourseUpdateDto>(context) {
 	private static readonly Expression<Func<Course, DateTime>> GetCourseDateTime = c => c.Flight.DateTime;
 
 	protected override DbSet<Course> Set => Repository.Courses;
@@ -19,20 +20,15 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 	protected override Expression<Func<Course, DateTime>> GetDateTime => GetCourseDateTime;
 
 
-	[HttpGet("student/{userId}")]
-	public async Task<ActionResult<List<Course>>> GetForStudent(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0) {
+	[HttpGet("user/{userId}")]
+	public async Task<ActionResult<List<Course>>> GetForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0) {
 		return Ok(await GetQuery
-			.Where(c => c.Flight.UserId == userId)
+			.Where(c =>
+				c.Flight.UserId == userId && c.Flight.User.Role == AppUser.Roles.User ||
+				c.Flight.OverseerId == userId && c.Flight.Overseer.Role == AppUser.Roles.Collaborator
+			)
 			.InTimeFrame(c => c.Flight.DateTime, timeFrame, offset)
-			.ToListAsync()
-		);
-	}
-
-	[HttpGet("teacher/{userId}")]
-	public async Task<ActionResult<List<Course>>> GetForTeacher(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0) {
-		return Ok(await GetQuery
-			.Where(c => c.Flight.OverseerId == userId)
-			.InTimeFrame(c => c.Flight.DateTime, timeFrame, offset)
+			.OrderByDescending(c => c.Flight.DateTime)
 			.ToListAsync()
 		);
 	}
@@ -69,6 +65,38 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 			.Select(c => new { c.Goals, c.AchievedGoals })
 			.ToListAsync()
 		);
+	}
+
+
+	[Authorize]
+	public override async Task<ActionResult<Course>> Update(uint id, [FromForm] CourseUpdateDto dto) {
+		Course? found = await Repository.Courses
+			.Include(c => c.Flight)
+			.FirstOrDefaultAsync(c => c.Id == id);
+		if (found is null) return NotFound();
+
+		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+
+		return await base.Update(id, dto);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Course>> Delete(uint id) {
+		Course? found = await Repository.Courses
+			.Include(c => c.Flight)
+			.FirstOrDefaultAsync(c => c.Id == id);
+		if (found is null) return NotFound();
+
+		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+
+		return await base.Delete(id);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Course>> Add([FromForm] CourseSetupDto dto) {
+		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+
+		return await base.Add(dto);
 	}
 
 

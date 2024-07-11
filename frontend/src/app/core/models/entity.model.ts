@@ -2,7 +2,7 @@ export interface IEntity {
 	get id(): number;
 }
 
-export abstract class EntitySetupDto {
+export abstract class EntityCreateDto {
 	abstract populate(formData: FormData): void;
 }
 

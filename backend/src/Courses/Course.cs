@@ -57,7 +57,7 @@ public record Course : IEntity {
 }
 
 [Serializable]
-public record CourseSetupDTO : IEntitySetup<Course> {
+public record CourseSetupDto : IEntitySetup<Course> {
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
 
@@ -91,7 +91,7 @@ public record CourseSetupDTO : IEntitySetup<Course> {
 }
 
 [Serializable]
-public record CourseUpdateDTO : IEntityUpdate<Course> {
+public record CourseUpdateDto : IEntityUpdate<Course> {
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
 

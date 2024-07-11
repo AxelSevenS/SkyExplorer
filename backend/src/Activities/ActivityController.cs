@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/activities")]
-public class ActivityController(AppDbContext context) : RegularController<Activity, ActivitySetupDTO, ActivityUpdateDTO>(context) {
+public class ActivityController(AppDbContext context) : RegularController<Activity, ActivitySetupDto, ActivityUpdateDto>(context) {
 	protected override DbSet<Activity> Set => Repository.Activities;
 	protected override IQueryable<Activity> GetQuery => Set
 		.Include(a => a.Flight)

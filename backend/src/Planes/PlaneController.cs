@@ -1,12 +1,13 @@
 namespace SkyExplorer;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 [ApiController]
 [Route("api/planes")]
-public class PlaneController(AppDbContext context) : RegularController<Plane, PlaneSetupDTO, PlaneUpdateDTO>(context) {
+public class PlaneController(AppDbContext context) : RegularController<Plane, PlaneSetupDto, PlaneUpdateDto>(context) {
 	protected override DbSet<Plane> Set => Repository.Planes;
 
 
@@ -25,11 +26,33 @@ public class PlaneController(AppDbContext context) : RegularController<Plane, Pl
 			_ => NotFound()
 		};
 
-	
+
 
 	}
 	[HttpPut("count")]
 	public async Task<ActionResult<int>> GetPlaneCount() {
 		return await Repository.Planes.CountAsync();
+	}
+
+
+	[Authorize]
+	public override async Task<ActionResult<Plane>> Update(uint id, [FromForm] PlaneUpdateDto dto) {
+		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+
+		return await base.Update(id, dto);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Plane>> Delete(uint id) {
+		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+
+		return await base.Delete(id);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Plane>> Add([FromForm] PlaneSetupDto dto) {
+		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+
+		return await base.Add(dto);
 	}
 }

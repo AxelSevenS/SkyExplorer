@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/messages")]
-public class MessageController(AppDbContext context) : TimeFrameController<Message, MessageSetupDTO, MessageUpdateDTO>(context) {
+public class MessageController(AppDbContext context) : TimeFrameController<Message, MessageSetupDto, MessageUpdateDto>(context) {
 	private static readonly Expression<Func<Message, DateTime>> GetMessageDateTime = m => m.SendingDate;
 
 	protected override DbSet<Message> Set => Repository.Messages;

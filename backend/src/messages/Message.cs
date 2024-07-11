@@ -52,7 +52,7 @@ public record Message : IEntity {
 }
 
 [Serializable]
-public record MessageSetupDTO : IEntitySetup<Message>{
+public record MessageSetupDto : IEntitySetup<Message>{
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
 
@@ -87,7 +87,7 @@ public record MessageSetupDTO : IEntitySetup<Message>{
 }
 
 [Serializable]
-public record MessageUpdateDTO : IEntityUpdate<Message> {
+public record MessageUpdateDto : IEntityUpdate<Message> {
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
 

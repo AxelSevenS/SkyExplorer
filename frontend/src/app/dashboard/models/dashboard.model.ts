@@ -1,4 +1,4 @@
-import { EntitySetupDto, EntityUpdateDto } from "../../core/models/entity.model";
+import { EntityCreateDto, EntityUpdateDto } from "../../core/models/entity.model";
 import { Flight } from "../../flights/models/flight.model";
 
 export interface Course {
@@ -11,7 +11,7 @@ export interface Course {
 		acquiredSkills: string;
 }
 
-export class CourseCreateDto extends EntitySetupDto {
+export class CourseCreateDto extends EntityCreateDto {
 		name: string;
 		byFlightId: number;
 		goals?: string;

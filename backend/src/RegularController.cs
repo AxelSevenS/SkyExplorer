@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class RegularController<T, TSetupDTO, TUpdateDTO>(AppDbContext context) : Controller<T, TSetupDTO, TUpdateDTO>(context) where T : class, IEntity where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
+public abstract class RegularController<T, TSetupDto, TUpdateDto>(AppDbContext context) : Controller<T, TSetupDto, TUpdateDto>(context) where T : class, IEntity where TSetupDto : class, IEntitySetup<T> where TUpdateDto : class, IEntityUpdate<T> {
 	[HttpGet]
 	public virtual async Task<ActionResult<List<T>>> GetAll() =>
 		Ok(await GetQuery.ToListAsync());

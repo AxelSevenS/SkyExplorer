@@ -32,7 +32,7 @@ public record Bill : IEntity {
 
 
 	public Bill() : base() { }
-	public Bill(BillSetupDTO dto) : this() {
+	public Bill(BillSetupDto dto) : this() {
 		URL = dto.URL;
 		Name = dto.Name;
 		WasAcquitted = dto.WasAcquitted;
@@ -41,7 +41,7 @@ public record Bill : IEntity {
 }
 
 [Serializable]
-public record BillSetupDTO : IEntitySetup<Bill> {
+public record BillSetupDto : IEntitySetup<Bill> {
 	[JsonPropertyName("url")]
 	public string URL { get; set; }
 
@@ -60,7 +60,7 @@ public record BillSetupDTO : IEntitySetup<Bill> {
 }
 
 [Serializable]
-public record BillUpdateDTO : IEntityUpdate<Bill> {
+public record BillUpdateDto : IEntityUpdate<Bill> {
 	[JsonPropertyName("url")]
 	public string? URL { get; set; }
 

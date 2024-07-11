@@ -1,4 +1,4 @@
-import { EntitySetupDto, EntityUpdateDto, IEntity } from "../../core/models/entity.model";
+import { EntityCreateDto, EntityUpdateDto, IEntity } from "../../core/models/entity.model";
 
 export interface Bill extends IEntity {
 	id: number,
@@ -10,7 +10,7 @@ export interface Bill extends IEntity {
 	createdAt: Date,
 }
 
-export class BillCreateDto extends EntitySetupDto {
+export class BillCreateDto extends EntityCreateDto {
 	url: string;
 	name: string;
 	wasAcquitted: boolean;

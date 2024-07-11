@@ -22,4 +22,7 @@ export class PlaneComponent extends EntityViewComponent<Plane, PlaneCreateDto, P
 	) {
 		super(authentication, entityService)
 	}
+
+
+	protected override onUpdate(): void { }
 }
