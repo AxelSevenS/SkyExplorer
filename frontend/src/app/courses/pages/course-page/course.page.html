@@ -1,10 +1,12 @@
 <section>
 	@if (entity) {
-		<mat-card-title><h1>le Cours</h1></mat-card-title>
+		@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+			<mat-card-title><h1>Modifier le Cours</h1></mat-card-title>
+		}
 		<div class="line"></div>
 
 		<mat-card>
-			<form class="grid " [formGroup]="editCourseForm" (ngSubmit)="onSubmit()">
+			<form class="grid" [formGroup]="editCourseForm" (ngSubmit)="onSubmit()">
 
 				<mat-card-content class="grid__container">
 					@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {

@@ -1,6 +1,8 @@
 @if (entity) {
 <section>
-	<mat-card-title class="mat-card-title-create-form"><h1>Modifier l'Avion</h1></mat-card-title>
+	@if (authentication.user && authentication.user.role >= UserRoles.Staff) {
+	<mat-card-title>Modifier l'Avion</mat-card-title>
+	}
 	<div class="line"></div>
 
 	<mat-card>

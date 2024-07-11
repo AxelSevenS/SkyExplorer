@@ -1,25 +1,33 @@
 
 <section class="dashboard__content">
-	<div class="dashboard__content__header">
-			<h1>Dashboard</h1>
-	</div>
+	<mat-card-title>Dashboard</mat-card-title>
+	<div class="line"></div>
 
-	<div class="dashboard__content__body">
-		<div class="dashboard__content__body__calendar">
-			<div class="dashboard__content__body__calendar__header">
-				<h2>Prochain cours</h2>
-			</div>
+	<div class="grid__container">
+		<mat-card class="upcoming-courses">
+			<mat-card-title>Prochain Cours</mat-card-title>
+			<div class="line"></div>
 
-			<div class="dashboard__content__body__calendar__body">
-				<div class="dashboard__content__body__calendar__body__item">
-					@for (nextcourse of nextCourses; track nextCourses) {
-						<span class="grid__child--field">{{ nextCourse.name }}</span>
-						<span class="grid__child--field">{{ nextCourse.date }}</span>
-						<span class="grid__child--field">{{ nextCourse.time }}</span>
-						<span class="grid__child--field">{{ nextCourse.teacher }}</span>
-					}
-				</div>
-			</div>
-		</div>
+			<mat-card-content class="upcoming-courses__content">
+				@for (course of upcomingCourses; track course) {
+					<se-course [entity]="course" />
+				}
+			</mat-card-content>
+		</mat-card>
+
+		<mat-card class="title">
+			<mat-card-title>Dashboard</mat-card-title>
+			<div class="line"></div>
+		</mat-card>
+
+		<mat-card class="summary">
+			<mat-card-title>Résumé</mat-card-title>
+			<div class="line"></div>
+		</mat-card>
+
+		<mat-card class="fleet">
+			<mat-card-title>Flotte Disponible</mat-card-title>
+			<div class="line"></div>
+		</mat-card>
 	</div>
 </section>

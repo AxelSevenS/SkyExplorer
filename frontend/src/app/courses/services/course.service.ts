@@ -18,6 +18,17 @@ export class CourseService extends EntityService<Course, CourseCreateDto, Course
 		super(http);
 	}
 
+	getForUser(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
+		let url = new URL(`${this.endpoint}/user/${userId}`);
+		url.searchParams.append('offset', offset.toString());
+
+		return this.http.get<Course[]>( url.toString() )
+			.pipe(
+				share(),
+				catchError( (err: HttpErrorResponse) => of(err) ),
+			);
+	}
+
 	getWeeklyForUser(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
 		let url = new URL(`${this.endpoint}/user/${userId}`);
 		url.searchParams.append('timeFrame', "Weekly");
@@ -30,8 +41,8 @@ export class CourseService extends EntityService<Course, CourseCreateDto, Course
 			);
 	}
 
-	getWeeklyForTeacher(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
-		let url = new URL(`${this.endpoint}/teacher/${userId}`);
+	getWeekly(offset: number = 0): Observable<Course[] | HttpErrorResponse> {
+		let url = new URL(this.endpoint);
 		url.searchParams.append('timeFrame', "Weekly");
 		url.searchParams.append('offset', offset.toString());
 
