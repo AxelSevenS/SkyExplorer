@@ -3,7 +3,6 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 import { NotFoundPage } from './core/pages/not-found-page/not-found.page';
 import { SidenavComponent } from './core/components/sidenav/sidenav-component';
-import { FlightsPage } from './flights/pages/flights-page/flights.page';
 import { LoginPage } from './authentication/pages/login-page/login-page';
 
 const routes: Routes = [

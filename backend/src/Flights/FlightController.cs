@@ -2,6 +2,7 @@ namespace SkyExplorer;
 
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,4 +44,32 @@ public class FlightController(AppDbContext context) : TimeFrameController<Flight
 	}
 
 
+	[Authorize]
+	public override async Task<ActionResult<Flight>> Update(uint id, [FromForm] FlightUpdateDto dto) {
+		Flight? found = await Repository.Flights
+			.FirstOrDefaultAsync(c => c.Id == id);
+		if (found is null) return NotFound();
+
+		if (! VerifyOwnershipOrRole(found.OverseerId, AppUser.Roles.Staff, out ActionResult<Flight> result, out _, out _)) return result;
+
+		return await base.Update(id, dto);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Flight>> Delete(uint id) {
+		Flight? found = await Repository.Flights
+			.FirstOrDefaultAsync(c => c.Id == id);
+		if (found is null) return NotFound();
+
+		if (! VerifyOwnershipOrRole(found.OverseerId, AppUser.Roles.Staff, out ActionResult<Flight> result, out _, out _)) return result;
+
+		return await base.Delete(id);
+	}
+
+	[Authorize]
+	public override async Task<ActionResult<Flight>> Add([FromForm] FlightSetupDto dto) {
+		if (! VerifyRole(AppUser.Roles.Collaborator, out _)) return Unauthorized();
+
+		return await base.Add(dto);
+	}
 }

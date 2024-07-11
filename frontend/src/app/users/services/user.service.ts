@@ -43,7 +43,9 @@ export class UserService extends EntityService<User, UserCreateDto, UserUpdateDt
 	}
 
 	getByRole(role: UserRoles): Observable<User[] | HttpErrorResponse> {
-		return this.http.get<User[]>(`${this.endpoint}/byRole/${role}`)
+		const headers = new HttpHeaders({ 'Authorization': this.bearerAuth });
+
+		return this.http.get<User[]>(`${this.endpoint}/byRole/${role}`, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),

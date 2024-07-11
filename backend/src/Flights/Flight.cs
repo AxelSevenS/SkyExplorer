@@ -1,12 +1,14 @@
 namespace SkyExplorer;
 
-using System;
+// using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("flights")]
+[Index(nameof(BillId), IsUnique = true)]
 public record Flight : IEntity {
 	[Key]
 	[Column("id")]
@@ -74,7 +76,6 @@ public record Flight : IEntity {
 
 
 
-[Flags]
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum FlightType : ushort {
 	Lesson,

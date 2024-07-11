@@ -135,7 +135,6 @@ public enum TimeFrame {
 }
 
 [Serializable]
-// [JsonConverter(typeof(JsonStringEnumConverter))]
 public record class CourseQuerySettings {
 	[JsonPropertyName("timeFrame")]
 	public TimeFrame TimeFrame = TimeFrame.AllTime;

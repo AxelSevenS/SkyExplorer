@@ -14,6 +14,16 @@ public record Bill : IEntity {
 	[JsonPropertyName("id")]
 	public uint Id { get; set; }
 
+
+	[Column("user_id")]
+	[JsonIgnore]
+	public uint UserId { get; set; }
+
+	[ForeignKey(nameof(UserId))]
+	[JsonPropertyName("user")]
+	public AppUser User { get; set; }
+
+
 	[Column]
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
@@ -32,16 +42,20 @@ public record Bill : IEntity {
 
 
 	public Bill() : base() { }
-	public Bill(BillSetupDto dto) : this() {
-		URL = dto.URL;
-		Name = dto.Name;
-		WasAcquitted = dto.WasAcquitted;
+	public Bill(AppUser user, string url, string name, bool wasAcquitted) : this() {
+		User = user;
+		URL = url;
+		Name = name;
+		WasAcquitted = wasAcquitted;
 		CreatedAt = DateTime.UtcNow;
 	}
 }
 
 [Serializable]
 public record BillSetupDto : IEntitySetup<Bill> {
+	[JsonPropertyName("userId")]
+	public uint UserId { get; set; }
+
 	[JsonPropertyName("url")]
 	public string URL { get; set; }
 
@@ -53,14 +67,22 @@ public record BillSetupDto : IEntitySetup<Bill> {
 
 
 	public Bill? Create(AppDbContext context, out string error) {
-		error = string.Empty;
+		AppUser? user = context.Users.Find(UserId);
+		if (user is null) {
+			error = "Invalid User Id";
+			return null;
+		}
 
-		return new(this);
+		error = string.Empty;
+		return new(user, URL, Name, WasAcquitted);
 	}
 }
 
 [Serializable]
 public record BillUpdateDto : IEntityUpdate<Bill> {
+	[JsonPropertyName("userId")]
+	public uint? UserId { get; set; }
+
 	[JsonPropertyName("url")]
 	public string? URL { get; set; }
 
@@ -72,9 +94,18 @@ public record BillUpdateDto : IEntityUpdate<Bill> {
 
 
 	public bool TryUpdate(Bill entity, AppDbContext context, out string error) {
+		if (UserId is not null) {
+			if (context.Users.Find(UserId) is not AppUser user) {
+				error = "Invalid User Id";
+				return false;
+			}
+			entity.User = user;
+		}
+
 		if (URL is not null) entity.URL = URL;
 		if (WasAcquitted is not null) entity.WasAcquitted = WasAcquitted.Value;
 		if (Name is not null) entity.Name = Name;
+
 		error = string.Empty;
 		return true;
 	}

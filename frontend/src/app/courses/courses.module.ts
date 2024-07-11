@@ -21,6 +21,7 @@ import { CourseComponent } from './components/course/course.component';
 import { CourseListPage } from './pages/course-list-page/course-list.page';
 import { CoursePage } from './pages/course-page/course.page';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   imports: [
@@ -29,7 +30,7 @@ import { MatMenuModule } from '@angular/material/menu';
     CommonModule,
 		FormsModule,
 		ReactiveFormsModule,
-
+		MatProgressSpinnerModule,
 		MatCardModule,
 		MatToolbarModule,
 		MatFormFieldModule,

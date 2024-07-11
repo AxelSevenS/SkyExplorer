@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [Table("courses")]
+[Index(nameof(FlightId), IsUnique = true)]
 public record Course : IEntity {
 	[Key]
 	[Column("id")]

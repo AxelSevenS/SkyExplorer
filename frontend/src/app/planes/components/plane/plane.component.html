@@ -1,22 +1,25 @@
-@if (entity) {
-<mat-card class="entity plane" appearance="outlined">
-	<mat-card-title>
-		<a [routerLink]="['/planes', entity.id]">
-			<mat-card-title>{{ entity.name }}</mat-card-title>
-		</a>
-	</mat-card-title>
-	<mat-card-content>
-		<mat-card-subtitle>Type: {{ entity.type }}</mat-card-subtitle>
-		<mat-card-subtitle>Disponibilité: {{ entity.status }}</mat-card-subtitle>
-	</mat-card-content>
+@if (entity === undefined) {
+	<mat-spinner color="primary"></mat-spinner>
+}
+@else if (entity) {
+	<mat-card class="entity plane" appearance="outlined">
+		<mat-card-title>
+			<a [routerLink]="['/planes', entity.id]">
+				<mat-card-title>{{ entity.name }}</mat-card-title>
+			</a>
+		</mat-card-title>
+		<mat-card-content>
+			<mat-card-subtitle>Type: {{ entity.type }}</mat-card-subtitle>
+			<mat-card-subtitle>Disponibilité: {{ entity.status }}</mat-card-subtitle>
+		</mat-card-content>
 
-	@if (authentication.user && (authentication.user.role >= UserRoles.Staff)) {
-	<mat-card-actions>
-			<button class="plane__delete-btn" mat-raised-button (click)="delete()" color="warn">
-				<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
-				<mat-label>Supprimer</mat-label>
-			</button>
-	</mat-card-actions>
-	}
-</mat-card>
+		@if (authentication.user && (authentication.user.role >= UserRoles.Staff)) {
+			<mat-card-actions>
+				<button class="plane__delete-btn" mat-raised-button (click)="delete()" color="warn">
+					<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+					<mat-label>Supprimer</mat-label>
+				</button>
+			</mat-card-actions>
+		}
+	</mat-card>
 }

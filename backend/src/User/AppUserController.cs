@@ -10,6 +10,18 @@ using Microsoft.EntityFrameworkCore;
 [Route("api/users")]
 public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : RegularController<AppUser, UserRegisterDto, UserUpdateDto>(context) {
 	protected override DbSet<AppUser> Set => Repository.Users;
+	protected override IQueryable<AppUser> GetQuery {
+		get {
+			if (! TryGetAuthenticatedUserId(out uint requesterId)) {
+				return Enumerable.Empty<AppUser>().AsQueryable();
+			}
+
+			if (VerifyRole(AppUser.Roles.Staff, out AppUser.Roles role)) return Repository.Users;
+
+			return Repository.Users
+				.Where(u => u.Role <= AppUser.Roles.Collaborator || u.Id == requesterId);
+		}
+	}
 
 
 	/// <summary>
@@ -74,13 +86,15 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 	}
 
 
+	[Authorize]
 	[HttpGet("byRole/{role}")]
-	public async Task<ActionResult<AppUser>> GetByRole(AppUser.Roles role) {
-		return Ok(await GetQuery
+	public ActionResult<AppUser> GetByRole(AppUser.Roles role) {
+		return Ok(GetQuery
 			.Where(u => u.Role == role)
-			.ToListAsync());
+			.ToList());
 	}
 
+	[Authorize]
 	[HttpGet("count/{role}")]
 	public async Task<ActionResult<int>> CountByRole(AppUser.Roles role) {
 		return Ok(await GetQuery

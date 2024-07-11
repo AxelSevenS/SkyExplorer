@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CourseComponent } from '../courses/components/course/course.component';
 import { CoursesModule } from '../courses/courses.module';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 
 
@@ -25,6 +26,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatMenuModule,
     MatSelectModule,
 		MatButtonModule,
+		MatProgressSpinner,
+
   ],
   exports: [
     BillListPage,

@@ -55,7 +55,7 @@ export class PlanePage extends EntityViewComponent<Plane, PlaneCreateDto, PlaneU
 	}
 
 	protected override onUpdate(): void {
-		this.editPlaneForm.controls['status'].setValue(PlaneStatus[this.entity?.status ?? 0]);
+		this.editPlaneForm.controls['status'].setValue(this.entity?.status);
 	}
 
 

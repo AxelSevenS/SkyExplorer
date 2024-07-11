@@ -1,21 +1,24 @@
-@if (entity) {
-<mat-card class="entity user" appearance="outlined">
-	<a [routerLink]="['/users', entity.id]">
-		<mat-card-header>
-			<div class="user__avatar" mat-card-avatar></div>
-			<mat-card-title>{{ entity.firstName }} {{ entity.lastName }}</mat-card-title>
-			<mat-card-subtitle>{{ entity.email }}</mat-card-subtitle>
-		</mat-card-header>
-	</a>
-	<mat-card-content>
-	</mat-card-content>
-	@if (authentication.user && authentication.user.role == UserRoles.Admin) {
-	<mat-card-actions>
-		<button class="user__delete-btn" mat-raised-button (click)="delete()" color="warn">
-			<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
-			<mat-label>Supprimer</mat-label>
-		</button>
-	</mat-card-actions>
-	}
-</mat-card>
+@if (entity === undefined) {
+	LOAD
+}
+@else if (entity && authentication.user && (authentication.user.role >= UserRoles.Staff || authentication.user.id === entity.id || entity.role <= UserRoles.Collaborator)) {
+	<mat-card class="entity user" appearance="outlined">
+		<a [routerLink]="['/users', entity.id]">
+			<mat-card-header>
+				<div class="user__avatar" mat-card-avatar></div>
+				<mat-card-title>{{ entity.firstName }} {{ entity.lastName }}</mat-card-title>
+				<mat-card-subtitle>{{ entity.email }}</mat-card-subtitle>
+			</mat-card-header>
+		</a>
+		<mat-card-content>
+		</mat-card-content>
+		@if (authentication.user && authentication.user.role == UserRoles.Admin) {
+			<mat-card-actions>
+				<button class="user__delete-btn" mat-raised-button (click)="delete()" color="warn">
+					<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+					<mat-label>Supprimer</mat-label>
+				</button>
+			</mat-card-actions>
+		}
+	</mat-card>
 }

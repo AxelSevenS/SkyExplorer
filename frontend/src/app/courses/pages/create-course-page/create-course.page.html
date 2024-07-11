@@ -1,5 +1,5 @@
-<section class="book-spread">
-	@if (authentication.user && authentication.user.role > UserRoles.User) {
+@if (authentication.user && authentication.user.role >= UserRoles.Collaborator) {
+	<section class="book-spread">
 		<img src="../../../../assets/vue-avion.png" alt="image" class="course-picture">
 
 		<div class="book-spread__page">
@@ -22,28 +22,28 @@
 						<mat-form-field>
 							<mat-label>Élève</mat-label>
 
-							<mat-select matInput formControlName="student" [value]="studentId" required>
-								@if (students.length == 0) {
-									<mat-option disabled>Aucun Elèves Disponible</mat-option>
+							<mat-select matInput formControlName="user" [value]="userId" required>
+								@if (users.length == 0) {
+									<mat-option disabled>Aucun Elève Disponible</mat-option>
 								}
 								@else {
-									@for (student of students; track student) {
-										<mat-option [value]="student.id">{{student.firstName}} {{student.lastName}}</mat-option>
+									@for (user of users; track user) {
+										<mat-option [value]="user.id">{{user.firstName}} {{user.lastName}}</mat-option>
 									}
 								}
 							</mat-select>
 						</mat-form-field>
-						@if (authentication.user.role > UserRoles.Collaborator) {
+						@if (authentication.user.role >= UserRoles.Staff) {
 							<mat-form-field>
-								<mat-label>Professeur</mat-label>
+								<mat-label>Superviseur</mat-label>
 
-								<mat-select matInput formControlName="teacher" [value]="teacherId" required>
-									@if (teachers?.length == 0) {
-										<mat-option disabled>Aucun Professeur Disponible</mat-option>
+								<mat-select matInput formControlName="overseer" [value]="overseerId" required>
+									@if (overseers?.length == 0) {
+										<mat-option disabled>Aucun Superviseur Disponible</mat-option>
 									}
 									@else {
-										@for (teacher of teachers; track teacher) {
-											<mat-option [value]="teacher.id">{{teacher.firstName}} {{teacher.lastName}}</mat-option>
+										@for (overseer of overseers; track overseer) {
+											<mat-option [value]="overseer.id">{{overseer.firstName}} {{overseer.lastName}}</mat-option>
 										}
 									}
 								</mat-select>
@@ -86,16 +86,18 @@
 							<input type="time" matInput formControlName="duration" required>
 						</mat-form-field>
 
-						<mat-card-title class="mat-card-title-create-form-subtitle">Facturation</mat-card-title>
-						<mat-form-field class="grid__child--full-width">
-							<mat-label>Nom de la facture</mat-label>
-							<input type="text" matInput formControlName="billName" required>
-						</mat-form-field>
+						@if (authentication.user.role >= UserRoles.Staff) {
+							<mat-card-title class="mat-card-title-create-form-subtitle">Facturation</mat-card-title>
+							<mat-form-field class="grid__child--full-width">
+								<mat-label>Nom de la facture</mat-label>
+								<input type="text" matInput formControlName="billName" required>
+							</mat-form-field>
 
-						<mat-form-field class="grid__child--full-width">
-							<mat-label>url</mat-label>
-							<input type="url" matInput formControlName="billUrl" required>
-						</mat-form-field>
+							<mat-form-field class="grid__child--full-width">
+								<mat-label>url</mat-label>
+								<input type="url" matInput formControlName="billUrl" required>
+							</mat-form-field>
+						}
 					</mat-card-content>
 
 					<mat-card-footer>
@@ -108,5 +110,8 @@
 			</mat-card>
 
 		</div>
-	}
-</section>
+	</section>
+}
+@else {
+	<mat-card-title>Vous n'avez pas accès à cette page</mat-card-title>
+}

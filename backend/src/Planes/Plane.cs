@@ -35,7 +35,7 @@ public record Plane : IEntity {
 
 
 	[Serializable]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
+	// [JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum Availability {
 		Available,
 		Maintenance,
