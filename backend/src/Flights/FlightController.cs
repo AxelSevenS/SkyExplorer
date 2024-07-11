@@ -20,9 +20,10 @@ public class FlightController(AppDbContext context) : TimeFrameController<Flight
 	protected override Expression<Func<Flight, DateTime>> GetDateTime => GetFlightDateTime;
 
 	[HttpGet("time")]
-	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] int offset = 0) {
+	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] DateFrame dateFrame = DateFrame.AllTime, [FromQuery] int offset = 0) {
 		return Ok(GetQuery
 			.InTimeFrame(f => f.DateTime, timeFrame, offset)
+			.InDateFrame(f => f.DateTime, dateFrame, offset)
 			.Select(f => f.Duration)
 			.ToList()
 			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
@@ -30,10 +31,11 @@ public class FlightController(AppDbContext context) : TimeFrameController<Flight
 	}
 
 	[HttpGet("time/{userId}")]
-	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTimeForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] int offset = 0) {
+	public async Task<ActionResult<TimeSpan>> GetWeeklyFlightTimeForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] DateFrame dateFrame = DateFrame.AllTime, [FromQuery] int offset = 0) {
 		return Ok(GetQuery
 			.Where(f => f.UserId == userId)
 			.InTimeFrame(f => f.DateTime, timeFrame, offset)
+			.InDateFrame(f => f.DateTime, dateFrame, offset)
 			.Select(f => f.Duration)
 			.ToList()
 			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))

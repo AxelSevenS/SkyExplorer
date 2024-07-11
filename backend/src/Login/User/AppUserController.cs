@@ -36,7 +36,7 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 
 	[Authorize]
 	public override async Task<ActionResult<AppUser>> Update(uint id, [FromForm] UserUpdateDto dto) {
-		if (! VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out AppUser.Roles userRole))
+		if (!VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out AppUser.Roles userRole))
 			return error;
 
 		if (userRole < AppUser.Roles.Admin) {
@@ -57,7 +57,7 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 	[Authorize]
 	public override async Task<ActionResult<AppUser>> Delete(uint id) {
 		// In this case the User's owner is... himself so we check for Admin status or self-deleting
-		if (! VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out _))
+		if (!VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out _))
 			return error;
 
 		return await base.Delete(id);

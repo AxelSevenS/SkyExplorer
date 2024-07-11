@@ -36,7 +36,7 @@ export class DashboardPage {
 
 		const courseObservable = this.authentication.user.role >= UserRoles.Staff ?
 			this.courseService.getAll() :
-			this.courseService.getWeeklyForUser(this.authentication.user.id, 0);
+			this.courseService.getForUser(this.authentication.user.id, 0, "AllTime", "Future");
 
 		if (courseObservable) {
 			courseObservable
