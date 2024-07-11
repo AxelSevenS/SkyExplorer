@@ -1,15 +1,15 @@
 @if (entity) {
-<mat-card class="bill" appearance="outlined">
-	<mat-card-content [matMenuTriggerFor]="billPreview">
-		<mat-card-title>{{ entity.name }}</mat-card-title>
-		<mat-card-subtitle>	Url: {{ entity.name }}</mat-card-subtitle>
-
-
-	</mat-card-content>
+<mat-card class="entity bill" appearance="outlined">
+	<a [matMenuTriggerFor]="billPreview">
+		<mat-card-content>
+			<mat-card-title>{{ entity.name }}</mat-card-title>
+			<mat-card-subtitle>	Url: {{ entity.name }}</mat-card-subtitle>
+		</mat-card-content>
+	</a>
 	<mat-menu class="bill-menu" #billPreview="matMenu" xPosition="after" yPosition="above">
 		<a [href]="entity.url">
 			{{ entity.url }}
-			</a>
+		</a>
 	</mat-menu>
 	@if (authentication.user && (authentication.user.role >= UserRoles.Staff )) {
 	<mat-card-actions>

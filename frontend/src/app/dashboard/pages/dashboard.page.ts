@@ -4,6 +4,8 @@ import { CourseService } from '../../courses/services/course.service';
 import { Router } from '@angular/router';
 import { FormBuilder } from '@angular/forms';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
+import { Course } from '../../courses/models/course.model';
+import { UserRoles } from '../../users/models/user.model';
 
 @Component({
 	selector: 'se-course-list-page',
@@ -12,7 +14,7 @@ import { AuthenticationService } from '../../authentication/services/authenticat
 })
 export class DashboardPage {
 
-	nextCourses: any[] = [];
+	upcomingCourses: Course[] = [];
 	nextCourse: any;
 
 
@@ -32,21 +34,17 @@ export class DashboardPage {
 	ngOnInit() {
 		if (! this.authentication.user) return;
 
-		this.courseService.getWeeklyForUser(this.authentication.user.id, 0).subscribe((res) => {
-			if (Array.isArray(res) && res.length > 0) {
-				this.nextCourses = res.slice(0, 3);
-			}
-		});
-	}
+		const courseObservable = this.authentication.user.role >= UserRoles.Staff ?
+			this.courseService.getAll() :
+			this.courseService.getWeeklyForUser(this.authentication.user.id, 0);
 
-	displayNextCourse() {
-		for (let i = 0; i < this.nextCourses.length; i++) {
-			let nextCourse = this.nextCourses[i];
-			let courseName = nextCourse.name;
-			let student = nextCourse.student;
-			let teacher = nextCourse.teacher;
-			let courseDate = nextCourse.date;
-
+		if (courseObservable) {
+			courseObservable
+				.subscribe((res) => {
+					if (Array.isArray(res) && res.length > 0) {
+						this.upcomingCourses = res.slice(0, 3);
+					}
+				});
 		}
 	}
 }

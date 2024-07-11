@@ -1,11 +1,17 @@
 @import '../../../../variables.scss';
 
-.course {
+:host > mat-card {
 	height: 100%;
 	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+}
+
+.course {
+	// height: 100%;
+	// width: 100%;
+	// display: flex;
+	// align-items: center;
+	// justify-content: center;
+	// border-radius: 1rem;
 
 	&, & * {
 		color: get-color(primary, 500-contrast);
