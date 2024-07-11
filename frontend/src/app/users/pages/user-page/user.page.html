@@ -1,13 +1,13 @@
 <section>
 @if (user) {
-	<h1>
+	<mat-card-title>
 		@if (authentication.user && authentication.user.id == user.id) {
 			Votre Profil
 		}
 		@else {
-			Profil de {{ user.firstName }} {{ user.lastName }}
+			 Profil de {{ user.firstName }} {{ user.lastName }}
 		}
-	</h1>
+	</mat-card-title>
 
 	<mat-card>
 		<form class="grid" id="edit-user__form" [formGroup]="editUserForm">
@@ -34,8 +34,15 @@
 					<mat-form-field class="grid__child--full-width">
 						<mat-label>Rôle</mat-label>
 						<mat-select matInput formControlName="role">
-							@for (role of subRoles; track role) {
-								<mat-option [value]="role">{{ UserRoles[role] }}</mat-option>
+							<mat-option [value]="0">Utilisateur</mat-option>
+							@if (authentication.user.role >= UserRoles.Collaborator) {
+								<mat-option [value]="1">Collaborateur</mat-option>
+							}
+							@if (authentication.user.role >= UserRoles.Staff) {
+								<mat-option [value]="2">Personnel</mat-option>
+							}
+							@if (authentication.user.role == UserRoles.Admin) {
+								<mat-option [value]="3">Administrateur</mat-option>
 							}
 						</mat-select>
 					</mat-form-field>

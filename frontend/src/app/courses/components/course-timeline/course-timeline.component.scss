@@ -24,7 +24,7 @@ $line-width: 1px;
 
 		& > * {
 			position: relative;
-			min-width: 5vw; // Added to prevent squishing
+			white-space: nowrap;
 
 			// Prevent shrinking
 			flex-shrink: 0;
@@ -52,22 +52,9 @@ $line-width: 1px;
 			}
 		}
 	}
-
-	&__card {
-		height: 100%;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		&, & {
-			color: get-color(primary, 500-contrast);
-		}
-	}
 }
 
 .day {
-
 	&__header {
 		&--content {
 			display: flex;
@@ -80,22 +67,22 @@ $line-width: 1px;
 }
 
 .hour__label-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	font-weight: bold;
 }
 
 
 mat-card-title {
-  font-size: 1.2em;
+	font-size: 1.2em;
 	line-height: 1.2em;
-  font-weight: bold;
-  text-align: center;
+	font-weight: bold;
+	text-align: center;
 }
 
 mat-card-content {
-  font-size: 1em;
-  text-align: center;
+	font-size: 1em;
+	text-align: center;
 }

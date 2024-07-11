@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../users/services/user.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Plane } from '../../../planes/models/plane.model';
-import { PlaneService } from '../../../planes/services/course.service';
+import { PlaneService } from '../../../planes/services/plane.service';
 import { FlightService } from '../../../flights/services/flight.service';
 import { CourseService } from '../../services/course.service';
 import { FlightCreateDto } from '../../../flights/models/flight.model';
@@ -32,6 +32,8 @@ export class CreateCoursePage implements OnInit {
 			date: [''],
 			time: [''],
 			duration: [''],
+			billName: [''],
+			billUrl: [''],
 		}, {
 		}
 	);
@@ -40,6 +42,7 @@ export class CreateCoursePage implements OnInit {
 	students: User[] = [];
 	teachers?: User[];
 
+	wasAcquitted: boolean = false;
 	planeId?: number;
 	studentId?: number;
 	teacherId?: number;
@@ -77,7 +80,7 @@ export class CreateCoursePage implements OnInit {
 
 
 		if (this.authentication.user && this.authentication.user.role == UserRoles.Collaborator) {
-			this.teacherId = this.authentication.user.id;
+			this.publishForm.controls["teacher"].setValue(this.authentication.user.id);
 		}
 		else {
 			this.userService.getByRole(UserRoles.Collaborator)
@@ -98,24 +101,27 @@ export class CreateCoursePage implements OnInit {
 
 		const date: Date = new Date(this.publishForm.controls["date"].value);
 		const time: string = this.publishForm.controls["time"].value;
-		const duration: string = this.publishForm.controls["duration"].value;
+		const duration: string = this.publishForm.controls["duration"].value.substring(0, 5);
 
 		const timeSplit = time.split(':');
 		date.setHours(parseInt(timeSplit[0]));
 		date.setMinutes(parseInt(timeSplit[1]));
+		date.setSeconds(0);
+		date.setMilliseconds(0);
 
 
-		let billRequest = new BillCreateDto(
-			this.publishForm.controls["url"].value,
-			"name",
+		const billRequest = new BillCreateDto(
+			this.publishForm.controls["billUrl"]?.value ?? "",
+			this.publishForm.controls["billName"]?.value ?? "",
 			false,
 		);
+		console.log(billRequest);
 
 		this.billService.create(billRequest)
 			.subscribe(bill => {
 				if (bill instanceof HttpErrorResponse) return;
 
-				let flightRequest = new FlightCreateDto(
+				const flightRequest = new FlightCreateDto(
 					this.publishForm.controls["student"].value,
 					this.publishForm.controls["teacher"].value,
 					bill.id,
@@ -123,18 +129,21 @@ export class CreateCoursePage implements OnInit {
 					duration,
 					date.toJSON(),
 				);
+				console.log(flightRequest);
 
 				this.flightService.create(flightRequest)
 					.subscribe(flight => {
 						if (flight instanceof HttpErrorResponse) return;
 
-						let courseRequest = new CourseCreateDto(
+						const courseRequest = new CourseCreateDto(
 							this.publishForm.controls["courseName"].value,
 							flight.id,
 							"", // this.publishForm.controls["goals"].value,
+							"", // this.publishForm.controls["achievedGoals"].value,
 							"", // this.publishForm.controls["notes"].value,
 							"", // this.publishForm.controls["acquiredSkills"].value,
 						);
+						console.log(courseRequest);
 
 						this.courseService.create(courseRequest)
 						.subscribe(course => {

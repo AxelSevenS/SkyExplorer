@@ -2,22 +2,20 @@ import { Component } from '@angular/core';
 import { CourseService } from '../../services/course.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Course } from '../../models/course.model';
+import { UserRoles } from '../../../users/models/user.model';
 
 
-export enum CoursePeriod {
-	Weekly = 'weekly',
-	Monthly = 'monthly'
-};
 @Component({
-  selector: 'se-course-timeline',
-  templateUrl: './course-timeline.component.html',
-  styleUrls: ['./course-timeline.component.scss']
+	selector: 'se-course-timeline',
+	templateUrl: './course-timeline.component.html',
+	styleUrls: ['./course-timeline.component.scss']
 })
 export class CourseTimelineComponent {
 	DisplayMode = CoursePeriod;
-  hours: number[] = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+	hours: number[] = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-  data: { [key in number]: PeriodCourseData} = {};
+	data: { [key in number]: PeriodCourseData} = {};
 
 	public get displayMode() { return this._displayMode; }
 	public set displayMode(value: CoursePeriod) {
@@ -51,9 +49,13 @@ export class CourseTimelineComponent {
 
 		this.data[this._timelineOffset] = {
 			type: this.displayMode,
-			days: []
+			days: [],
 		};
 		const courseData = this.data[this._timelineOffset];
+		let tempData: PeriodCourseData = {
+			type: this.displayMode,
+			days: [],
+		};
 
 		let today = new Date(Date.now());
 
@@ -89,13 +91,30 @@ export class CourseTimelineComponent {
 				date: date,
 				courses: []
 			};
+
+			tempData.days[day] = {
+				date: date,
+				courses: []
+			}
 		}
 
+
+
+		const coursesObservable =
+			this.authentication.user.role == UserRoles.User ? this.course.getWeeklyForStudent(this.authentication.user.id, this.timelineOffset) :
+			this.authentication.user.role == UserRoles.Collaborator ? this.course.getWeeklyForTeacher(this.authentication.user.id, this.timelineOffset) :
+			null;
+
+		if (! coursesObservable) return;
+
 		// get the course data for the week
-		this.course.getWeeklyForStudent(this.authentication.user.id, this.timelineOffset)
+		coursesObservable
 			.subscribe(courses => {
 				if (courses instanceof HttpErrorResponse) return;
 
+
+
+				// Setup for caching, get all the course data in a legible state
 				for (let index = 0; index < courses.length; index++) {
 					const course = courses[index];
 					const dateTime = new Date(course.flight.dateTime);
@@ -106,50 +125,59 @@ export class CourseTimelineComponent {
 
 					if (time < this.hours[0] || time > this.hours[this.hours.length - 1]) continue;
 
-					courseData.days[day].courses[time] = {
-						name: course.name,
-						plane: course.flight.plane.name,
-						duration: duration.getHours()
+					tempData.days[day].courses[time] = {
+						course: course,
+						duration: Math.min(duration.getHours(), this.hours.length - this.hours.indexOf(time)),
+						hidden: false,
 					};
 				}
+
+				// cache the data in a per-hour basis
+				for (let day = 0; day < tempData.days.length; day++) {
+					const dayCourses = tempData.days[day].courses;
+
+					for (let hour = dayCourses.length - 1; hour > 0; hour--) {
+						const hourCourse = dayCourses[hour];
+						if (! hourCourse) continue;
+						console.log(hourCourse);
+
+						const durationEnd = Math.min(hourCourse.duration, this.hours[this.hours.length - 1] - hour);
+						for (let travellingDuration = 0; travellingDuration < durationEnd; travellingDuration++) {
+							courseData.days[day].courses[hour + travellingDuration] = {
+								course: hourCourse.course,
+								duration: hourCourse.duration - travellingDuration,
+								hidden: travellingDuration !== 0,
+							}
+						}
+
+						const nextCourse = courseData.days[day].courses[hour + hourCourse.duration];
+						if (nextCourse) {
+							nextCourse.hidden = false;
+						}
+					}
+				}
+
+				console.log(courseData);
 			})
 	}
 
-	getDuration(maxDuration: number, hour: number): number {
-		return Math.min(maxDuration, this.hours.length - this.hours.indexOf(hour))
-	}
-
-  getCourseAtTime(day: number, time: number): CourseData | null {
-    const dayData = this.data[this._timelineOffset].days[day];
+	getCourseAtTime(day: number, time: number): CourseData | null {
+		const dayData = this.data[this._timelineOffset].days[day];
 		if (! dayData) return null;
 
-		const hourCourse = dayData.courses[time];
-
-    return hourCourse ? hourCourse : null;
-  }
-
-  isCourseOccupied(day: number, time: number): boolean {
-		for (let index = time - 1; index > 0; index--) {
-			let course = this.getCourseAtTime(day, index);
-			if (course && course.duration - 1 >= time - index) {
-				return true;
-			}
-		}
-		return false;
-  }
-
-	stringToColor(str: string): string {
-    let hash = 0;
-    for (var i = 0; i < str.length; i++) {
-			hash = str.charCodeAt(i) + ((hash << 15) - hash);
-    }
-    let colour = '#';
-    for (let i = 0; i < 3; i++) {
-			let value = (hash >> (i * 8)) & 0xFF;
-			colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
+		return dayData.courses[time];
 	}
+
+	// if (potentialIntersector && potentialIntersector.duration - 1 >= time - index) {
+	// 	if (index + potentialIntersector.duration > time) {
+	// 		// If a previous course overlaps the current time but is not exactly at the current time
+	// 		return {
+	// 			...potentialIntersector,
+	// 			duration: index + potentialIntersector.duration - time,
+	// 			hidden: false
+	// 		};
+	// 	}
+	// }
 }
 
 type PeriodCourseData = {
@@ -161,7 +189,12 @@ type PeriodCourseData = {
 };
 
 type CourseData = {
-	name: string;
-	plane: string;
+	hidden: boolean,
+	course: Course;
 	duration: number;
+};
+
+export enum CoursePeriod {
+	Weekly = 'weekly',
+	Monthly = 'monthly'
 };

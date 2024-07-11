@@ -5,14 +5,15 @@ import { UserPage } from './pages/user-page/user.page';
 
 const routes: Routes = [
 	{
-		path: 'list',
+		path: '',
 		component: UserListComponent,
 	},
 	{
 		path: ':id',
 		component: UserPage,
 	},
-	{ path: '', redirectTo: 'list', pathMatch: 'full' }
+
+	{ path: '', redirectTo: '', pathMatch: 'full' }
 ];
 
 @NgModule({

@@ -90,38 +90,39 @@ export class UserPage {
 		if ( ! this.user ) return;
 		if ( ! this.editUserForm.valid ) return;
 
-		let updated = new UserUpdateDto();
+		const updated = new UserUpdateDto();
 
-		let emailInput = this.editUserForm.controls['email'];
-		if (emailInput.value !== this.user.email) {
-			updated.email = emailInput.value;
+		const emailInput: string = this.editUserForm.controls['email'].value;
+		if (emailInput !== this.user.email) {
+			updated.email = emailInput;
 		}
 
-		let roleInput = this.editUserForm.controls['role'];
-		if (roleInput.value !== this.user.role) {
-			updated.role = roleInput.value;
+		const passwordInput: string = this.editUserForm.controls['password'].value;
+		if (! passwordInput) {
+			updated.password = passwordInput;
 		}
 
-		let passwordInput = this.editUserForm.controls['password'];
-		if (! passwordInput.value) {
-			updated.password = passwordInput.value;
+		const roleInput: number = this.editUserForm.controls['role'].value;
+		if (roleInput !== this.user.role) {
+			updated.role = roleInput;
 		}
 
-		if (! updated.email && ! updated.password && ! updated.role) return;
+		if (updated.email !== undefined || updated.password !== undefined || updated.role !== undefined) {
+			this.userService.updateById(this.requestId, updated)
+				.subscribe(async res => {
+					if (res instanceof HttpErrorResponse) {
+						// const alert = await this.alertController.create({
+						// 	header: 'Erreur lors de la Modification de l\'Utilisateur',
+						// 	message: `La modification de l\'Utilisateur à échoué (erreur ${res.statusText})`,
+						// 	buttons: ['Ok'],
+						// });
 
-		this.userService.updateById(this.requestId, updated)
-			.subscribe(async res => {
-				if (res instanceof HttpErrorResponse) {
-					// const alert = await this.alertController.create({
-					// 	header: 'Erreur lors de la Modification de l\'Utilisateur',
-					// 	message: `La modification de l\'Utilisateur à échoué (erreur ${res.statusText})`,
-					// 	buttons: ['Ok'],
-					// });
+						// await alert.present();
+						return;
+					}
+				});
+		}
 
-					// await alert.present();
-					return;
-				}
-			});
 	}
 
 	async delete() {

@@ -8,29 +8,31 @@ using Microsoft.EntityFrameworkCore;
 public class BillController(AppDbContext context) : RegularController<Bill, BillSetupDTO, BillUpdateDTO>(context) {
 	protected override DbSet<Bill> Set => Repository.Bills;
 
-
 	[HttpGet("search")]
-	public async Task<ActionResult<IEnumerable<Bill>>> Search([FromForm] string name ) =>
+	public async Task<ActionResult<IEnumerable<Bill>>> Search([FromForm] string name) =>
 		Ok(await GetQuery
 			.Where(b => b.Name
 			.Contains(name))
 			.ToListAsync()
 		);
 
-	[HttpGet("order")]
+	[HttpGet("ordered")]
 	public async Task<ActionResult<IEnumerable<Bill>>> All() =>
 		Ok(await GetQuery
-		.OrderByDescending(b => b.CreatedAt)
-		.ToListAsync());
+			.OrderByDescending(b => b.CreatedAt)
+			.ToListAsync()
+		);
 
-	[HttpGet("order/{userId}")]
-	public async Task<ActionResult<IEnumerable<Bill>>> Order(int userId) =>
-		Ok(await GetQuery
-		.Join(context.Flights,
-			bill => bill.Id,
-			flight => flight.Id,
-			(bill, flight) => new { Bill = bill, Flight = flight })
-		.Where(bf => bf.Flight.UserId == userId)
-		.Select(bf => bf.Bill)
-		.ToListAsync());
+	[HttpGet("ordered/{userId}")]
+	public async Task<ActionResult<IEnumerable<Bill>>> Order(uint userId) =>
+		Ok(await Repository.Flights
+			.Include(c => c.Plane)
+			.Include(c => c.User)
+			.Include(c => c.Overseer)
+			.Include(c => c.Bill)
+			.Where(b => b.UserId == userId)
+			.Select(b => b.Bill)
+			.OrderByDescending(b => b.CreatedAt)
+			.ToListAsync()
+		);
 }

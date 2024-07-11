@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { User, UserRoles } from '../../../users/models/user.model';
 import { Plane } from '../../../planes/models/plane.model';
 import { UserService } from '../../../users/services/user.service';
-import { PlaneService } from '../../../planes/services/course.service';
+import { PlaneService } from '../../../planes/services/plane.service';
 import { BillService } from '../../../bills/services/bill.service';
 import { FlightService } from '../../../flights/services/flight.service';
 import moment from 'moment';
@@ -21,6 +21,7 @@ import { BillUpdateDto } from '../../../bills/models/bill.model';
 	styleUrls: ['course.page.scss'],
 })
 export class CoursePage {
+	moment = moment;
 
 	UserRoles = UserRoles;
 
@@ -145,24 +146,24 @@ export class CoursePage {
 		if ( ! this.editCourseForm.valid ) return;
 
 
-		let updatedBill = new BillUpdateDto();
+		const updatedBill = new BillUpdateDto();
 
-		let billNameInput = this.editCourseForm.controls['billName'];
-		if (billNameInput.value != this.course.flight.bill.name) {
-			updatedBill.name = billNameInput.value;
+		const billNameInput: string = this.editCourseForm.controls['billName'].value;
+		if (billNameInput !== this.course.flight.bill.name) {
+			updatedBill.name = billNameInput;
 
 		}
-		let billUrlInput = this.editCourseForm.controls['billUrl'];
-		if (billUrlInput.value != this.course.flight.bill.url) {
-			updatedBill.url = billUrlInput.value;
+		const billUrlInput: string = this.editCourseForm.controls['billUrl'].value;
+		if (billUrlInput !== this.course.flight.bill.url) {
+			updatedBill.url = billUrlInput;
 		}
 
-		let billWasAcquittedInput = this.editCourseForm.controls['wasAcquitted'];
-		if (billWasAcquittedInput.value !== this.course.flight.bill.wasAcquitted) {
-			updatedBill.wasAcquitted = billWasAcquittedInput.value;
+		const billWasAcquittedInput: boolean = this.editCourseForm.controls['wasAcquitted'].value;
+		if (billWasAcquittedInput !== this.course.flight.bill.wasAcquitted) {
+			updatedBill.wasAcquitted = billWasAcquittedInput;
 		}
 
-		if (updatedBill.name || updatedBill.url || updatedBill.wasAcquitted) {
+		if (updatedBill.name !== undefined || updatedBill.url !== undefined || updatedBill.wasAcquitted !== undefined) {
 			this.billService.updateById(this.course.flight.bill.id, updatedBill)
 				.subscribe(async bill => {
 					if (bill instanceof HttpErrorResponse || ! this.course) return;
@@ -174,13 +175,13 @@ export class CoursePage {
 
 		const updatedFlight = new FlightUpdateDto();
 
-		let teacherInput = this.editCourseForm.controls['teacher'];
-		if (! teacherInput.value) {
-			updatedFlight.overseerId = teacherInput.value;
+		const teacherInput: number = this.editCourseForm.controls['teacher'].value;
+		if (teacherInput !== this.course.flight.overseer.id) {
+			updatedFlight.overseerId = teacherInput;
 		}
 
-		let dateInput: Date = new Date(this.editCourseForm.controls['date'].value);
-		let timeInput: string = this.editCourseForm.controls['time'].value;
+		const dateInput: Date = new Date(this.editCourseForm.controls['date'].value);
+		const timeInput: string = this.editCourseForm.controls['time'].value;
 		if (dateInput && timeInput) {
 			const timeSplit = timeInput.substring(0, 5).split(':');
 			dateInput.setHours(parseInt(timeSplit[0]));
@@ -193,11 +194,11 @@ export class CoursePage {
 		}
 
 		const durationInput: string = this.editCourseForm.controls['duration'].value;
-		if (durationInput && durationInput != this.course.flight.duration) {
+		if (durationInput !== this.course.flight.duration) {
 			updatedFlight.duration = durationInput;
 		}
 
-		if (updatedFlight.overseerId || updatedFlight.dateTime || updatedFlight.duration) {
+		if (updatedFlight.overseerId !== undefined || updatedFlight.dateTime !== undefined || updatedFlight.duration !== undefined) {
 			this.flightService.updateById(this.course.flight.id, updatedFlight)
 				.subscribe(async flight => {
 					console.log(flight);
@@ -210,12 +211,12 @@ export class CoursePage {
 
 		const updatedCourse = new CourseUpdateDto();
 
-		const nameInput = this.editCourseForm.controls['courseName'];
-		if (nameInput.value !== this.course.name) {
-			updatedCourse.name = nameInput.value;
+		const nameInput: string = this.editCourseForm.controls['courseName'].value;
+		if (nameInput !== this.course.name) {
+			updatedCourse.name = nameInput;
 		}
 
-		if (updatedCourse.name) {
+		if (updatedCourse.name !== undefined) {
 			this.courseService.updateById(this.course.id, updatedCourse)
 				.subscribe(async course => {
 					if (course instanceof HttpErrorResponse || ! this.course) return;

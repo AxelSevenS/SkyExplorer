@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CourseComponent } from './components/course/course.component';
 import { CourseListPage } from './pages/course-list-page/course-list.page';
 import { CoursePage } from './pages/course-page/course.page';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { CoursePage } from './pages/course-page/course.page';
 		MatFormFieldModule,
 		MatOptionModule,
 		MatSelectModule,
+		MatMenuModule,
 		MatDatepickerModule,
 		MatCheckboxModule,
 		MatNativeDateModule,

@@ -86,12 +86,11 @@ export class FlightUpdateDto extends EntityUpdateDto {
 	}
 
 	override populate(formData: FormData): void {
-		if (this?.overseerId) formData.append('OverseerId', this.overseerId.toString());
-		if (this?.billId) formData.append('BillId', this.billId.toString());
-		if (this?.planeId) formData.append('PlaneId', this.planeId.toString());
+		if (this.overseerId !== undefined) formData.append('OverseerId', this.overseerId.toString());
+		if (this.billId !== undefined) formData.append('BillId', this.billId.toString());
+		if (this.planeId !== undefined) formData.append('PlaneId', this.planeId.toString());
 
-		if (this?.duration) formData.append('Duration', this.duration);
-		if (this?.dateTime) formData.append('DateTime', this.dateTime);
-		console.log(formData.get("DateTime"));
+		if (this.duration !== undefined) formData.append('Duration', this.duration);
+		if (this.dateTime !== undefined) formData.append('DateTime', this.dateTime);
 	}
 }
