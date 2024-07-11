@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/users")]
-public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : RegularController<AppUser, UserRegisterDTO, UserUpdateDTO>(context) {
+public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : RegularController<AppUser, UserRegisterDto, UserUpdateDto>(context) {
 	protected override DbSet<AppUser> Set => Repository.Users;
 
 
@@ -21,7 +21,7 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 	///     or NotFound if the user does not exist
 	/// </returns>
 	[HttpPost("auth")]
-	public async Task<ActionResult> Authenticate([FromForm] UserLoginDTO dto) {
+	public async Task<ActionResult> Authenticate([FromForm] UserLoginDto dto) {
 		dto.Password = jwtOptions.HashPassword(dto.Password);
 
 		return await Repository.Users.FirstOrDefaultAsync(
@@ -35,7 +35,7 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 
 
 	[Authorize]
-	public override async Task<ActionResult<AppUser>> Update(uint id, [FromForm] UserUpdateDTO dto) {
+	public override async Task<ActionResult<AppUser>> Update(uint id, [FromForm] UserUpdateDto dto) {
 		if (! VerifyOwnershipOrRole(id, AppUser.Roles.Admin, out ActionResult<AppUser> error, out _, out AppUser.Roles userRole))
 			return error;
 
@@ -63,7 +63,7 @@ public class AppUserController(AppDbContext context, JwtOptions jwtOptions) : Re
 		return await base.Delete(id);
 	}
 
-	public override async Task<ActionResult<AppUser>> Add([FromForm] UserRegisterDTO dto) {
+	public override async Task<ActionResult<AppUser>> Add([FromForm] UserRegisterDto dto) {
 		if (Repository.Users.Any(u => u.Email == dto.Email)) {
 			return Conflict("Email already Taken");
 		}

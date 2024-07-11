@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Bill } from "../../bills/models/bill.model";
-import { IEntity, EntitySetupDto, EntityUpdateDto } from "../../core/models/entity.model";
+import { IEntity, EntityCreateDto, EntityUpdateDto } from "../../core/models/entity.model";
 import { Plane } from "../../planes/models/plane.model";
 import { User } from "../../users/models/user.model";
 
@@ -16,7 +16,7 @@ export interface Flight extends IEntity {
 	dateTime: string,
 }
 
-export class FlightCreateDto extends EntitySetupDto {
+export class FlightCreateDto extends EntityCreateDto {
 	userId: number;
 	overseerId: number;
 	billId: number;

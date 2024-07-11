@@ -19,4 +19,6 @@ export class BillComponent extends EntityViewComponent<Bill, BillCreateDto, Bill
 	) {
 		super(authentication, entityService)
 	}
+
+	protected override onUpdate(): void { }
 }

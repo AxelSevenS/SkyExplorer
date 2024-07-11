@@ -35,4 +35,6 @@ export class CourseComponent extends EntityViewComponent<Course, CourseCreateDto
 		}
 		return colour;
 	}
+
+	protected override onUpdate(): void { }
 }

@@ -82,7 +82,7 @@ public enum FlightType: ushort {
 };
 
 [Serializable]
-public record FlightSetupDTO : IEntitySetup<Flight> {
+public record FlightSetupDto : IEntitySetup<Flight> {
 	[JsonPropertyName("userId")]
 	public uint UserId { get; set; }
 
@@ -131,7 +131,7 @@ public record FlightSetupDTO : IEntitySetup<Flight> {
 }
 
 [Serializable]
-public record FlightUpdateDTO : IEntityUpdate<Flight> {
+public record FlightUpdateDto : IEntityUpdate<Flight> {
 
 	[JsonPropertyName("overseerId")]
 	public uint? OverseerId { get; set; }

@@ -32,7 +32,7 @@ export class DashboardPage {
 	ngOnInit() {
 		if (! this.authentication.user) return;
 
-		this.courseService.getWeeklyForStudent(this.authentication.user.id, 0).subscribe((res) => {
+		this.courseService.getWeeklyForUser(this.authentication.user.id, 0).subscribe((res) => {
 			if (Array.isArray(res) && res.length > 0) {
 				this.nextCourses = res.slice(0, 3);
 			}

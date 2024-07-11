@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Course, CourseUpdateDto } from '../../models/course.model';
+import { Course, CourseCreateDto, CourseUpdateDto } from '../../models/course.model';
 import { CourseService } from '../../services/course.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -14,16 +14,17 @@ import { FlightService } from '../../../flights/services/flight.service';
 import moment from 'moment';
 import { FlightUpdateDto } from '../../../flights/models/flight.model';
 import { BillUpdateDto } from '../../../bills/models/bill.model';
+import { EntityViewComponent } from '../../../core/components/entity-view/entity-view.component';
 
 @Component({
 	selector: 'se-course-page',
 	templateUrl: 'course.page.html',
 	styleUrls: ['course.page.scss'],
 })
-export class CoursePage {
+export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, CourseUpdateDto> {
 	moment = moment;
-
 	UserRoles = UserRoles;
+
 
 	editCourseForm: FormGroup = this.formBuilder.group(
 		{
@@ -53,27 +54,26 @@ export class CoursePage {
 	teacherId?: number;
 
 
-	public get requestId(): number { return this.activatedRoute.snapshot.params['id'] }
-
-	public get course() { return this._course }
-	private _course?: Course | null;
-
-
 	constructor(
 		private formBuilder: FormBuilder,
-		private router: Router,
+		protected router: Router,
 		private activatedRoute: ActivatedRoute,
 
-		public authentication: AuthenticationService,
+		public override authentication: AuthenticationService,
 		private userService: UserService,
 		private planeService: PlaneService,
 		private courseService: CourseService,
 		private billService: BillService,
 		private flightService: FlightService,
 	) {
+		super(authentication, courseService);
 	}
 
-	ngOnInit(): void {
+
+
+	override ngOnInit(): void {
+		super.ngOnInit();
+
 		this.planeService.getAll()
 			.subscribe(res => {
 				if (res instanceof HttpErrorResponse) return;
@@ -98,76 +98,53 @@ export class CoursePage {
 				});
 		}
 
-
-		this.updateCourse();
-
-		this.courseService.eventRemoved
-			.subscribe(course => {
-				if (this._course?.id != course.id) return;
-				this._course = null;
-			});
-
-		this.courseService.eventUpdated
-			.subscribe(course => {
-				if (this._course?.id != course.id) return;
-				this._course = course;
-			});
-
 		this.router.events
 			.subscribe(e => {
-				this.updateCourse();
+				this.id = this.activatedRoute.snapshot.params['id'];
 			});
 	}
 
-	private updateCourse(): void {
-		if (this.course?.id === this.requestId) return;
-
-		this.courseService.getById(this.requestId)
-			.subscribe(course => {
-				if (course instanceof HttpErrorResponse) return;
-
-				this._course = course;
-
-				this.editCourseForm.controls['courseName'].setValue(course.name);
-				this.editCourseForm.controls['student'].setValue(course.flight.user.id);
-				this.editCourseForm.controls['teacher'].setValue(course.flight.overseer.id);
-				this.editCourseForm.controls['date'].setValue(course.flight.dateTime);
-				this.editCourseForm.controls['time'].setValue(moment(course.flight.dateTime).format("HH:mm"));
-				this.editCourseForm.controls['duration'].setValue(course.flight.duration.substring(0, 5));
-				this.editCourseForm.controls['billName'].setValue(course.flight.bill.name);
-				this.editCourseForm.controls['billUrl'].setValue(course.flight.bill.url);
-				this.editCourseForm.controls['wasAcquitted'].setValue(course.flight.bill.wasAcquitted);
-			});
+	protected override onUpdate(): void {
+		this.editCourseForm.controls['courseName'].setValue(this.entity?.name);
+		this.editCourseForm.controls['student'].setValue(this.entity?.flight.user.id);
+		this.editCourseForm.controls['teacher'].setValue(this.entity?.flight.overseer.id);
+		this.editCourseForm.controls['date'].setValue(this.entity?.flight.dateTime);
+		this.editCourseForm.controls['time'].setValue(moment(this.entity?.flight.dateTime).format("HH:mm"));
+		this.editCourseForm.controls['duration'].setValue(this.entity?.flight.duration.substring(0, 5));
+		this.editCourseForm.controls['billName'].setValue(this.entity?.flight.bill.name);
+		this.editCourseForm.controls['billUrl'].setValue(this.entity?.flight.bill.url);
+		this.editCourseForm.controls['wasAcquitted'].setValue(this.entity?.flight.bill.wasAcquitted);
 	}
+
 
 
 	onSubmit(): void {
-		if ( ! this.course ) return;
+		if ( ! this.entity ) return;
 		if ( ! this.editCourseForm.valid ) return;
 
 
 		const updatedBill = new BillUpdateDto();
 
 		const billNameInput: string = this.editCourseForm.controls['billName'].value;
-		if (billNameInput !== this.course.flight.bill.name) {
+		if (billNameInput !== this.entity.flight.bill.name) {
 			updatedBill.name = billNameInput;
 
 		}
 		const billUrlInput: string = this.editCourseForm.controls['billUrl'].value;
-		if (billUrlInput !== this.course.flight.bill.url) {
+		if (billUrlInput !== this.entity.flight.bill.url) {
 			updatedBill.url = billUrlInput;
 		}
 
 		const billWasAcquittedInput: boolean = this.editCourseForm.controls['wasAcquitted'].value;
-		if (billWasAcquittedInput !== this.course.flight.bill.wasAcquitted) {
+		if (billWasAcquittedInput !== this.entity.flight.bill.wasAcquitted) {
 			updatedBill.wasAcquitted = billWasAcquittedInput;
 		}
 
 		if (updatedBill.name !== undefined || updatedBill.url !== undefined || updatedBill.wasAcquitted !== undefined) {
-			this.billService.updateById(this.course.flight.bill.id, updatedBill)
+			this.billService.updateById(this.entity.flight.bill.id, updatedBill)
 				.subscribe(async bill => {
-					if (bill instanceof HttpErrorResponse || ! this.course) return;
-					this.course.flight.bill = bill;
+					if (bill instanceof HttpErrorResponse || ! this.entity) return;
+					this.entity.flight.bill = bill;
 				})
 		}
 
@@ -176,7 +153,7 @@ export class CoursePage {
 		const updatedFlight = new FlightUpdateDto();
 
 		const teacherInput: number = this.editCourseForm.controls['teacher'].value;
-		if (teacherInput !== this.course.flight.overseer.id) {
+		if (teacherInput !== this.entity.flight.overseer.id) {
 			updatedFlight.overseerId = teacherInput;
 		}
 
@@ -188,22 +165,22 @@ export class CoursePage {
 			dateInput.setMinutes(parseInt(timeSplit[1]));
 			dateInput.setSeconds(0);
 			dateInput.setMilliseconds(0);
-			if (dateInput.toJSON() != new Date(this.course.flight.dateTime).toJSON()) {
+			if (dateInput.toJSON() != new Date(this.entity.flight.dateTime).toJSON()) {
 				updatedFlight.dateTime = dateInput.toJSON();
 			}
 		}
 
 		const durationInput: string = this.editCourseForm.controls['duration'].value;
-		if (durationInput !== this.course.flight.duration) {
+		if (durationInput !== this.entity.flight.duration) {
 			updatedFlight.duration = durationInput;
 		}
 
 		if (updatedFlight.overseerId !== undefined || updatedFlight.dateTime !== undefined || updatedFlight.duration !== undefined) {
-			this.flightService.updateById(this.course.flight.id, updatedFlight)
+			this.flightService.updateById(this.entity.flight.id, updatedFlight)
 				.subscribe(async flight => {
 					console.log(flight);
-					if (flight instanceof HttpErrorResponse || ! this.course) return;
-					this.course.flight = flight;
+					if (flight instanceof HttpErrorResponse || ! this.entity) return;
+					this.entity.flight = flight;
 				});
 		}
 
@@ -212,28 +189,16 @@ export class CoursePage {
 		const updatedCourse = new CourseUpdateDto();
 
 		const nameInput: string = this.editCourseForm.controls['courseName'].value;
-		if (nameInput !== this.course.name) {
+		if (nameInput !== this.entity.name) {
 			updatedCourse.name = nameInput;
 		}
 
 		if (updatedCourse.name !== undefined) {
-			this.courseService.updateById(this.course.id, updatedCourse)
+			this.courseService.updateById(this.entity.id, updatedCourse)
 				.subscribe(async course => {
-					if (course instanceof HttpErrorResponse || ! this.course) return;
-					this._course = course;
+					if (course instanceof HttpErrorResponse || ! this.entity) return;
+					this.entity = course;
 				});
 		}
 	}
-
-
-	async delete() {
-		if(! this.course) return;
-
-		this.courseService.deleteById(this.course.id)
-			.subscribe(async course => {
-				if (course instanceof HttpErrorResponse || ! this.course) return;
-				this._course = course;
-			});
-	}
-
 }

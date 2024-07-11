@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CourseService } from '../../services/course.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,7 +11,7 @@ import { UserRoles } from '../../../users/models/user.model';
 	templateUrl: './course-timeline.component.html',
 	styleUrls: ['./course-timeline.component.scss']
 })
-export class CourseTimelineComponent {
+export class CourseTimelineComponent implements OnInit {
 	DisplayMode = CoursePeriod;
 	hours: number[] = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
@@ -20,7 +20,7 @@ export class CourseTimelineComponent {
 	public get displayMode() { return this._displayMode; }
 	public set displayMode(value: CoursePeriod) {
 		this._displayMode = value;
-		this.setTimelineData();
+		this.updateTimelineData();
 	}
 	private _displayMode: CoursePeriod = CoursePeriod.Weekly;
 
@@ -28,7 +28,7 @@ export class CourseTimelineComponent {
 	get timelineOffset() { return this._timelineOffset; }
 	set timelineOffset(value: number) {
 		this._timelineOffset = value;
-		this.setTimelineData(true);
+		this.updateTimelineData();
 	}
 	_timelineOffset: number = 0;
 
@@ -36,12 +36,29 @@ export class CourseTimelineComponent {
 
 	constructor(
 		private authentication: AuthenticationService,
-		private course: CourseService
+		private courseService: CourseService
 	) {
-		this.setTimelineData();
+		this.updateTimelineData();
 	}
 
-	setTimelineData(force: boolean = false) {
+	ngOnInit(): void {
+		this.courseService.eventRemoved
+			.subscribe(entity => {
+				this.updateTimelineData();
+			});
+
+		this.courseService.eventUpdated
+			.subscribe(entity => {
+				this.updateTimelineData();
+			});
+
+		this.courseService.eventAdded
+			.subscribe(entity => {
+				this.updateTimelineData();
+			});
+	}
+
+	updateTimelineData() {
 		if (! this.authentication.user) return;
 
 		if (this.data[this.timelineOffset] && this.data[this.timelineOffset].type == this.displayMode) return;
@@ -60,8 +77,6 @@ export class CourseTimelineComponent {
 		let today = new Date(Date.now());
 
 
-		// today.setDate(today.getDate() + (offset * 7))
-		// const todayWeekDay = (today.getDay() + 6) % 7; // Get weekday in Monday-first time
 		let timeFrame = 7;
 		let timeBasis = 0;
 
@@ -100,19 +115,10 @@ export class CourseTimelineComponent {
 
 
 
-		const coursesObservable =
-			this.authentication.user.role == UserRoles.User ? this.course.getWeeklyForStudent(this.authentication.user.id, this.timelineOffset) :
-			this.authentication.user.role == UserRoles.Collaborator ? this.course.getWeeklyForTeacher(this.authentication.user.id, this.timelineOffset) :
-			null;
-
-		if (! coursesObservable) return;
-
 		// get the course data for the week
-		coursesObservable
+		this.courseService.getWeeklyForUser(this.authentication.user.id, this.timelineOffset)
 			.subscribe(courses => {
 				if (courses instanceof HttpErrorResponse) return;
-
-
 
 				// Setup for caching, get all the course data in a legible state
 				for (let index = 0; index < courses.length; index++) {
@@ -121,9 +127,14 @@ export class CourseTimelineComponent {
 					const duration = new Date("1970-01-01T" + course.flight.duration);
 
 					const day = (dateTime.getDay() + 6) % 7; // Get weekday in Monday-first time
-					const time = dateTime.getHours();
+					let time = dateTime.getHours();
 
-					if (time < this.hours[0] || time > this.hours[this.hours.length - 1]) continue;
+					if (time > this.hours[this.hours.length - 1]) continue;
+					if (time < this.hours[0]) {
+						const diff = this.hours[0] - time;
+						time += diff;
+						duration.setHours(duration.getHours() - diff);
+					}
 
 					tempData.days[day].courses[time] = {
 						course: course,
@@ -141,7 +152,7 @@ export class CourseTimelineComponent {
 						if (! hourCourse) continue;
 						console.log(hourCourse);
 
-						const durationEnd = Math.min(hourCourse.duration, this.hours[this.hours.length - 1] - hour);
+						const durationEnd = Math.min(hourCourse.duration, this.hours[this.hours.length - 1] - hour + 1);
 						for (let travellingDuration = 0; travellingDuration < durationEnd; travellingDuration++) {
 							courseData.days[day].courses[hour + travellingDuration] = {
 								course: hourCourse.course,
@@ -156,8 +167,6 @@ export class CourseTimelineComponent {
 						}
 					}
 				}
-
-				console.log(courseData);
 			})
 	}
 

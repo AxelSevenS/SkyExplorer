@@ -2,7 +2,7 @@ import { Component, Input, OnInit, numberAttribute } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { EntityService } from '../../services/entity.service';
-import { EntitySetupDto, EntityUpdateDto, IEntity } from '../../models/entity.model';
+import { EntityCreateDto, EntityUpdateDto, IEntity } from '../../models/entity.model';
 
 
 @Component({
@@ -10,38 +10,55 @@ import { EntitySetupDto, EntityUpdateDto, IEntity } from '../../models/entity.mo
 	templateUrl: './entity-view.component.html',
 	styleUrls: ['./entity-view.component.scss'],
 })
-export abstract class EntityViewComponent<T extends IEntity, TSetupDto extends EntitySetupDto, TUpdateDto extends EntityUpdateDto> implements OnInit {
+export abstract class EntityViewComponent<T extends IEntity, TCreateDto extends EntityCreateDto, TUpdateDto extends EntityUpdateDto> implements OnInit {
 
-	@Input({alias: 'entity'}) public entity?: T | null;
-	@Input({alias: 'entity-id', transform: numberAttribute}) public id?: number;
+	public get entity(): T | null | undefined {
+		return this._entity;
+	}
+	@Input({alias: 'entity'}) public set entity(value: T | null) {
+		this._entity = value;
+		this.onUpdate();
+	}
+	private _entity?: T | null;
+
+
+	public get id(): number | null | undefined {
+		return this._entity?.id;
+	}
+	@Input({alias: 'entity-id', transform: numberAttribute}) public set id(value: number | null) {
+		if (value === null) {
+			this.update(undefined);
+		}
+		else {
+			this.entityService.getById(value)
+			.subscribe(entity => {
+				if (entity instanceof HttpErrorResponse) return;
+
+				this.update(entity);
+			})
+		}
+	}
+
 
 	constructor(
 		public authentication: AuthenticationService,
-		protected entityService: EntityService<T, TSetupDto, TUpdateDto>,
+		protected entityService: EntityService<T, TCreateDto, TUpdateDto>
 	) { }
 
 	ngOnInit() {
-		if (this.id && ! this.entity) {
-			this.entityService.getById(this.id)
-				.subscribe(course => {
-					if (course instanceof HttpErrorResponse) return;
-
-					this.entity = course;
-				})
-		} else if (! this.id && this.entity) {
-			this.id = this.entity.id;
-		}
 
 		this.entityService.eventRemoved
-			.subscribe(course => {
-				if (this.entity?.id != course.id) return;
-				this.entity = null;
+			.subscribe(entity => {
+				if (this.entity?.id != entity.id) return;
+
+				this.update(undefined);
 			});
 
 		this.entityService.eventUpdated
-			.subscribe(course => {
-				if (this.entity?.id != course.id) return;
-				this.entity = course;
+			.subscribe(entity => {
+				if (this.entity?.id != entity.id) return;
+
+				this.update(entity);
 			});
 	}
 
@@ -62,4 +79,11 @@ export abstract class EntityViewComponent<T extends IEntity, TSetupDto extends E
 				}
 			});
 	}
+
+	public update(entity?: T) {
+		this._entity = entity;
+		this.onUpdate();
+	}
+
+	protected abstract onUpdate(): void;
 }

@@ -27,7 +27,7 @@ public record Plane : IEntity {
 
 
 	public Plane() { }
-	public Plane(PlaneSetupDTO dto) : this() {
+	public Plane(PlaneSetupDto dto) : this() {
 		Name = dto.Name;
 		Type = dto.Type;
 		Status = dto.Status ?? Availability.Available;
@@ -44,7 +44,7 @@ public record Plane : IEntity {
 }
 
 [Serializable]
-public record PlaneSetupDTO : IEntitySetup<Plane> {
+public record PlaneSetupDto : IEntitySetup<Plane> {
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
 
@@ -61,7 +61,7 @@ public record PlaneSetupDTO : IEntitySetup<Plane> {
 }
 
 [Serializable]
-public record PlaneUpdateDTO : IEntityUpdate<Plane> {
+public record PlaneUpdateDto : IEntityUpdate<Plane> {
 	[JsonPropertyName("status")]
 	public Plane.Availability? Status { get; set; }
 

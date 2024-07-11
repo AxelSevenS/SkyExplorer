@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User, UserRoles, UserUpdateDto } from '../../models/user.model';
+import { User, UserCreateDto, UserRoles, UserUpdateDto } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { first } from 'rxjs';
 import { AuthenticationValidators } from '../../../authentication/validators/authentication-validators';
+import { EntityViewComponent } from '../../../core/components/entity-view/entity-view.component';
 
 @Component({
 	selector: 'se-user-page',
 	templateUrl: 'user.page.html',
 	styleUrls: ['user.page.scss'],
 })
-export class UserPage {
-
+export class UserPage extends EntityViewComponent<User, UserCreateDto, UserUpdateDto> {
 	UserRoles = UserRoles;
 
 	editUserForm: FormGroup = this.formBuilder.group(
@@ -30,70 +30,45 @@ export class UserPage {
 	);
 
 	public get subRoles(): UserRoles[] {
-		if (this._authentication.user == null) return [];
+		if (this.authentication.user == null) return [];
 
-		return this.userService.getSubserviantRoles(this._authentication.user.role);
+		return this.userService.getSubserviantRoles(this.authentication.user.role);
 	}
-
-	public get authentication(): AuthenticationService { return this._authentication }
-	public get requestId(): number { return this.activatedRoute.snapshot.params['id'] }
-
-	public get user() { return this._user }
-	private _user?: User | null;
 
 
 
 	constructor(
 		private router: Router,
-		private formBuilder: FormBuilder,
 		private activatedRoute: ActivatedRoute,
+		public override authentication: AuthenticationService,
+		private formBuilder: FormBuilder,
 		private userService: UserService,
-		private _authentication: AuthenticationService,
-	) {}
+	) {
+		super(authentication, userService)
+	}
 
-	ngOnInit(): void {
-		this.updateUser();
-
-		this.userService.eventRemoved
-			.subscribe(user => {
-				if (this._user?.id != user.id) return;
-				this._user = null;
-			});
-
-		this.userService.eventUpdated
-			.subscribe(user => {
-				if (this._user?.id != user.id) return;
-				this._user = user;
-			});
+	override ngOnInit(): void {
+		super.ngOnInit();
 
 		this.router.events
 			.subscribe(e => {
-				this.updateUser();
+				this.id = this.activatedRoute.snapshot.params['id'];
 			});
 	}
 
-	private updateUser(): void {
-		if (this.user?.id === this.requestId) return;
-
-		this.userService.getById(this.requestId)
-			.subscribe(user => {
-				if (user instanceof HttpErrorResponse) return;
-
-				this._user = user;
-
-				this.editUserForm.controls['email'].setValue(user.email);
-				this.editUserForm.controls['role'].setValue(UserRoles[user.role]);
-			});
+	protected override onUpdate(): void {
+		this.editUserForm.controls['email'].setValue(this.entity?.email);
+		this.editUserForm.controls['role'].setValue(UserRoles[this.entity?.role ?? 0]);
 	}
 
 	onSubmit(): void {
-		if ( ! this.user ) return;
+		if ( ! this.entity ) return;
 		if ( ! this.editUserForm.valid ) return;
 
 		const updated = new UserUpdateDto();
 
 		const emailInput: string = this.editUserForm.controls['email'].value;
-		if (emailInput !== this.user.email) {
+		if (emailInput !== this.entity.email) {
 			updated.email = emailInput;
 		}
 
@@ -103,12 +78,12 @@ export class UserPage {
 		}
 
 		const roleInput: number = this.editUserForm.controls['role'].value;
-		if (roleInput !== this.user.role) {
+		if (roleInput !== this.entity.role) {
 			updated.role = roleInput;
 		}
 
 		if (updated.email !== undefined || updated.password !== undefined || updated.role !== undefined) {
-			this.userService.updateById(this.requestId, updated)
+			this.userService.updateById(this.entity.id, updated)
 				.subscribe(async res => {
 					if (res instanceof HttpErrorResponse) {
 						// const alert = await this.alertController.create({
@@ -124,23 +99,4 @@ export class UserPage {
 		}
 
 	}
-
-	async delete() {
-		if(! this.user) return;
-
-		this.userService.deleteById(this.user.id)
-			.subscribe(async res => {
-				if (res instanceof HttpErrorResponse) {
-					// const alert = await this.alertController.create({
-					// 	header: 'Erreur lors de la Suppression de l\'Utilisateur',
-					// 	message: 'La suppression de l\'Utilisateur a échoué',
-					// 	buttons: ['Ok'],
-					// });
-
-					// await alert.present();
-					return;
-				}
-			});
-	}
-
 }
