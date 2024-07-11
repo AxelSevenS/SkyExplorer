@@ -1,0 +1,41 @@
+@if (plane) {
+<section>
+	<mat-card-title class="mat-card-title-create-form"><h1>Modifier l'Avion</h1></mat-card-title>
+	<div class="line"></div>
+
+	<mat-card>
+		<form class="grid" [formGroup]="editPlaneForm" (ngSubmit)="onSubmit()">
+
+			<mat-card-content class="grid__container">
+				<mat-label class="grid__child--label"><p>Nom de l'Avion</p></mat-label>
+				<span class="grid__child--field">{{ plane.name }}</span>
+
+				<mat-label class="grid__child--label">Type</mat-label>
+				<span class="grid__child--field">{{ plane.type}}</span>
+
+
+				@if (authentication.user && authentication.user.role >= UserRoles.Staff) {
+				<mat-form-field class="grid__child--full-width">
+					<mat-label>Statut</mat-label>
+					<mat-select matInput formControlName="status" [value]="status" required>
+						@for (status of planeStatuses; track status) {
+							<mat-option [value]="status">{{ PlaneStatus[status] }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+				}
+				@else {
+				<mat-label class="grid__child--label">Statut</mat-label>
+				<span class="grid__child--field">{{ plane.status }}</span>
+				}
+			</mat-card-content>
+
+			<mat-card-footer>
+				<button mat-raised-button color="primary" class="button-create-form">Valider</button>
+			</mat-card-footer>
+
+		</form>
+	</mat-card>
+
+</section>
+}

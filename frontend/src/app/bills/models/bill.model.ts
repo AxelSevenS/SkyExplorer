@@ -50,8 +50,8 @@ export class BillUpdateDto extends EntityUpdateDto {
 	}
 
 	override populate(formData: FormData): void {
-		if (this?.url) formData.append('URL', this.url);
-		if (this?.name) formData.append('Name', this.name);
-		if (this?.wasAcquitted) formData.append('WasAcquitted', this.wasAcquitted ? "true" : "false");
+		if (this.url !== undefined) formData.append('URL', this.url);
+		if (this.name !== undefined) formData.append('Name', this.name);
+		if (this.wasAcquitted !== undefined) formData.append('WasAcquitted', this.wasAcquitted ? "true" : "false");
 	}
 }

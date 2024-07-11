@@ -63,6 +63,7 @@ form.grid {
 
 	& .grid__container {
 		display: grid;
+		grid-auto-rows: minmax(70px, auto);
 		grid-gap: 3px;
 		width: 100%;
 
@@ -75,6 +76,7 @@ form.grid {
 		& .grid__child {
 			&--full-width {
 				grid-column: 1 / -1;
+				text-align: center;
 			}
 
 			&--full-height {
@@ -84,29 +86,29 @@ form.grid {
 	}
 
 
-	mat-card-title {
-		font-style: bold;
-		font-family: "Russo One", sans-serif;
-	}
+
 }
 
+mat-card-title {
+	font-style: bold;
+	font-family: "Russo One", sans-serif;
+	margin:0.5rem;
 
+}
 mat-card {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	// width: 30%;
-	// height: 70%;
-	border: 0.5px solid #24265A;
-	box-shadow: 0 0 0.5px 0 rgba(0, 0, 0, 0.2);
+
 	border-radius: 1rem;
-	padding: 1rem;
+
 }
 
 mat-label {
 	color: #24265A;
 	font-size: 1rem;
 	font-family: "Russo One", sans-serif;
+	text-align: center;
 }
 
 mat-datepicker-toggle {
@@ -127,26 +129,42 @@ div.mat-mdc-menu-content {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin: 0.1rem 0;
 }
 
-.mat-card-title-create-form {
-	margin-bottom:1rem;
-	font-size: 2.5rem;
-	color: #24265A;
-	font-family: "Russo One", sans-serif;
+// mat-card-title > h1 {
+// 	margin: 0;
+// 	font-size: 2.5rem;
+// 	color: #24265A;
+// 	font-family: "Russo One", sans-serif;
 
-	&-subtitle{
-		font-size: 1.5rem;
-		color: #24265A;
-		font-family: "Russo One", sans-serif;
-		margin-bottom: 1rem;
+// }
 
+mat-label > p {
+	display: flex;
+	justify-content: center;
 
+}
+
+.line {
+	width: 10rem;
+	height: 0.5rem;
+	background-color: #24265A;
+	margin: 1rem 0;
+}
+
+.book-spread {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+
+	&__page {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
 	}
 }
-
-// .mat-mdc-text-field-wrapper {
-// 	//border: black 1px 1px 0px 1px solid;
-// 	border-radius: 10px;
-// 	box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-// }

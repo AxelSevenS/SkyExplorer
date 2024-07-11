@@ -56,11 +56,11 @@ export class UserUpdateDto extends EntityUpdateDto {
 	}
 
 	override populate(formData: FormData): void {
-		if (this?.email) formData.append('Email', this.email);
-		if (this?.password) formData.append('Password', this.password);
-		if (this?.firstName) formData.append('FirstName', this.firstName);
-		if (this?.lastName) formData.append('LastName', this.lastName);
-		if (this?.role) formData.append('Role', UserRoles[this.role]);
+		if (this.email !== undefined) formData.append('Email', this.email);
+		if (this.password !== undefined) formData.append('Password', this.password);
+		if (this.firstName !== undefined) formData.append('FirstName', this.firstName);
+		if (this.lastName !== undefined) formData.append('LastName', this.lastName);
+		if (this.role !== undefined) formData.append('Role', UserRoles[this.role]);
 	}
 }
 

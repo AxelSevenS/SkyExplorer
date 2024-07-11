@@ -67,10 +67,10 @@ export class CourseUpdateDto extends EntityUpdateDto {
 	}
 
 	override populate(formData: FormData): void {
-		if (this?.name) formData.append('Name', this.name);
-		if (this?.goals) formData.append('Goals', this.goals);
-		if (this?.achievedGoals) formData.append('AchievedGoals', this.achievedGoals);
-		if (this?.notes) formData.append('Notes', this.notes);
-		if (this?.acquiredSkills) formData.append('AcquiredSkills', this.acquiredSkills);
+		if (this.name !== undefined) formData.append('Name', this.name);
+		if (this.goals !== undefined) formData.append('Goals', this.goals);
+		if (this.achievedGoals !== undefined) formData.append('AchievedGoals', this.achievedGoals);
+		if (this.notes !== undefined) formData.append('Notes', this.notes);
+		if (this.acquiredSkills !== undefined) formData.append('AcquiredSkills', this.acquiredSkills);
 	}
 }

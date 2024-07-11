@@ -1,0 +1,45 @@
+<section class="book-spread">
+	@if (authentication.user && authentication.user.role >= UserRoles.Staff) {
+	<img src="../../../../assets/vue-avion.png" alt="image" class="course-picture">
+
+	<div class="book-spread__page">
+		<mat-card-title class="mat-card-title-create-form"><h1>Ajouter un Avion</h1></mat-card-title>
+		<div class="line"></div>
+
+		<mat-card>
+			<form class="grid create-course create-plane" [formGroup]="publishForm" (ngSubmit)="publish()">
+
+				<mat-card-content class="grid__container">
+					<mat-form-field class="grid__child--full-width">
+						<mat-label>Nom de l'avion</mat-label>
+						<input matInput formControlName="name" required>
+					</mat-form-field>
+
+					<mat-form-field class="grid__child--full-width">
+						<mat-label>Type</mat-label>
+						<input matInput formControlName="type" required>
+					</mat-form-field>
+
+					<mat-form-field class="grid__child--full-width">
+						<mat-label>Statut</mat-label>
+
+						<mat-select matInput formControlName="status" [value]="status" required>
+							<mat-option value="0">Disponible</mat-option>
+							<mat-option value="1">Maintenance</mat-option>
+							<mat-option value="2">Indisponible</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</mat-card-content>
+
+				<mat-card-footer>
+					<button mat-raised-button color="primary" class="button-create-form">
+						Valider
+					</button>
+				</mat-card-footer>
+
+			</form>
+		</mat-card>
+
+	</div>
+	}
+</section>
