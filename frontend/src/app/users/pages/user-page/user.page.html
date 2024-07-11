@@ -1,11 +1,11 @@
-<section>
 @if (entity) {
+<section>
 	<mat-card-title>
 		@if (authentication.user && authentication.user.id == entity.id) {
 			Votre Profil
 		}
 		@else {
-			 Profil de {{ entity.firstName }} {{ entity.lastName }}
+				Profil de {{ entity.firstName }} {{ entity.lastName }}
 		}
 	</mat-card-title>
 
@@ -106,5 +106,5 @@
 
 		</form>
 	</mat-card>
-}
 </section>
+}

@@ -1,5 +1,5 @@
-@if (entity) {
 <section>
+	@if (entity) {
 	@if (authentication.user && authentication.user.role >= UserRoles.Staff) {
 	<mat-card-title>Modifier l'Avion</mat-card-title>
 	}
@@ -38,6 +38,5 @@
 
 		</form>
 	</mat-card>
-
+	}
 </section>
-}
