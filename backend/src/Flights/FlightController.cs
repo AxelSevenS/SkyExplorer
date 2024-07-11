@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/flights")]
-public class FlightController(AppDbContext context) : TimeFrameController<Flight, FlightSetupDTO, FlightUpdateDTO>(context) {
+public class FlightController(AppDbContext context) : TimeFrameController<Flight, FlightSetupDto, FlightUpdateDto>(context) {
 	private static readonly Expression<Func<Flight, DateTime>> GetFlightDateTime = f => f.DateTime;
 
 	protected override DbSet<Flight> Set => Repository.Flights;
@@ -40,5 +40,5 @@ public class FlightController(AppDbContext context) : TimeFrameController<Flight
 		);
 	}
 
-	
+
 }

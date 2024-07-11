@@ -1,16 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../authentication/services/authentication.service';
-import { User, UserRoles } from '../../../users/models/user.model';
+import { UserRoles } from '../../../users/models/user.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../../users/services/user.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Plane, PlaneStatus } from '../../../planes/models/plane.model';
-import { FlightService } from '../../../flights/services/flight.service';
+import { PlaneStatus } from '../../../planes/models/plane.model';
 import { PlaneService } from '../../services/plane.service';
-import { FlightCreateDto } from '../../../flights/models/flight.model';
-import { BillService } from '../../../bills/services/bill.service';
-import { BillCreateDto } from '../../../bills/models/bill.model';
 import { PlaneCreateDto } from '../../models/plane.model';
 
 @Component({

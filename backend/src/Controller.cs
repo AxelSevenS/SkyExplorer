@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context) : ControllerBase where T : class, IEntity where TSetupDTO : class, IEntitySetup<T> where TUpdateDTO : class, IEntityUpdate<T> {
+public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context) : ControllerBase where T : class, IEntity where TSetupDto : class, IEntitySetup<T> where TUpdateDto : class, IEntityUpdate<T> {
 	protected readonly AppDbContext Repository = context;
 	protected abstract DbSet<T> Set { get; }
 
@@ -24,7 +24,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 
 
 	[HttpPost]
-	public virtual async Task<ActionResult<T>> Add([FromForm] TSetupDTO dto) {
+	public virtual async Task<ActionResult<T>> Add([FromForm] TSetupDto dto) {
 		T? entity = dto.Create(Repository, out string error);
 		if (entity is null) {
 			return BadRequest(error);
@@ -38,7 +38,7 @@ public abstract class Controller<T, TSetupDTO, TUpdateDTO>(AppDbContext context)
 
 
 	[HttpPatch("{id}")]
-	public virtual async Task<ActionResult<T>> Update(uint id, [FromForm] TUpdateDTO dto) {
+	public virtual async Task<ActionResult<T>> Update(uint id, [FromForm] TUpdateDto dto) {
 		if (GetQuery.FirstOrDefault(e => e.Id == id) is not T found) {
 			return NotFound();
 		}

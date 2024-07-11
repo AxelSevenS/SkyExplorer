@@ -38,7 +38,7 @@ public record Activity : IEntity {
 }
 
 [Serializable]
-public record ActivitySetupDTO : IEntitySetup<Activity> {
+public record ActivitySetupDto : IEntitySetup<Activity> {
 	[JsonPropertyName("flightId")]
 	public uint FlightId { get; set; }
 
@@ -63,7 +63,7 @@ public record ActivitySetupDTO : IEntitySetup<Activity> {
 }
 
 [Serializable]
-public record ActivityUpdateDTO : IEntityUpdate<Activity> {
+public record ActivityUpdateDto : IEntityUpdate<Activity> {
 	[JsonPropertyName("title")]
 	public string Title { get; set; }
 

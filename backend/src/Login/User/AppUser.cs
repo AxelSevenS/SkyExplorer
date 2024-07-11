@@ -46,7 +46,7 @@ public record AppUser : IEntity {
 
 
 	public AppUser() : base() { }
-	public AppUser(UserRegisterDTO dto) : this() {
+	public AppUser(UserRegisterDto dto) : this() {
 		Email = dto.Email;
 		Password = dto.Password;
 		FirstName = dto.FirstName ?? string.Empty;
@@ -68,7 +68,7 @@ public record AppUser : IEntity {
 
 
 [Serializable]
-public record UserRegisterDTO : IEntitySetup<AppUser> {
+public record UserRegisterDto : IEntitySetup<AppUser> {
 	[JsonPropertyName("email")]
 	public string Email { get; set; }
 
@@ -88,7 +88,7 @@ public record UserRegisterDTO : IEntitySetup<AppUser> {
 }
 
 [Serializable]
-public record UserUpdateDTO : IEntityUpdate<AppUser> {
+public record UserUpdateDto : IEntityUpdate<AppUser> {
 	[JsonPropertyName("email")]
 	public string? Email { get; set; }
 
@@ -117,7 +117,7 @@ public record UserUpdateDTO : IEntityUpdate<AppUser> {
 }
 
 [Serializable]
-public record UserLoginDTO {
+public record UserLoginDto {
 	[JsonPropertyName("email")]
 	public string Email { get; set; }
 

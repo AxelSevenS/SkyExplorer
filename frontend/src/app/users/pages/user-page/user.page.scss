@@ -1,18 +1,9 @@
 #edit-user__form {
 
 	& .grid__container {
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(2, 16rem);
 
 		& .grid__child {
-			&--label {
-				grid-column: auto / span 1;
-			}
-			&--field {
-				grid-column: auto / span 3;
-				text-align: center;
-				align-items: center;
-			}
-
 			&--half {
 				grid-column: auto / span 2;
 			}
@@ -21,6 +12,7 @@
 
 
 }
+
 mat-card-title.mat-mdc-card-title {
 	font-style: bold;
 	font-family: "Russo One", sans-serif;
@@ -28,17 +20,4 @@ mat-card-title.mat-mdc-card-title {
 	font-size: 2rem;
 	color: #24265A;
 
-}
-
-// mat-label.grid__child--field {
-
-// 	display: flex;
-// 	justify-content: center;
-// 	text-align: center;
-// 	color: white;
-// }
-span.grid__child--field {
-	display: flex;
-	justify-content: center;
-	text-align: center;
 }

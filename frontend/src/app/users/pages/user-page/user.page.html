@@ -1,11 +1,11 @@
 <section>
-@if (user) {
+@if (entity) {
 	<mat-card-title>
-		@if (authentication.user && authentication.user.id == user.id) {
+		@if (authentication.user && authentication.user.id == entity.id) {
 			Votre Profil
 		}
 		@else {
-			 Profil de {{ user.firstName }} {{ user.lastName }}
+			 Profil de {{ entity.firstName }} {{ entity.lastName }}
 		}
 	</mat-card-title>
 
@@ -13,24 +13,24 @@
 		<form class="grid" id="edit-user__form" [formGroup]="editUserForm">
 
 			<mat-card-content class="grid__container">
-				@if (authentication.user && authentication.user.id == user.id) {
+				@if (authentication.user && authentication.user.id == entity.id) {
 					<mat-form-field class="grid__child--full-width">
 						<mat-label>E-mail</mat-label>
 						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail"/>
 					</mat-form-field>
 				}
 				@else {
-					<mat-label class="grid__child--label">E-mail</mat-label>
-					<span class="grid__child--field">{{ user.email }}</span>
+					<mat-label>E-mail</mat-label>
+					<span>{{ entity.email }}</span>
 				}
 
-				<mat-label class="grid__child--label">Prénom</mat-label>
-				<span class="grid__child--field">{{ user.firstName }}</span>
+				<mat-label>Prénom</mat-label>
+				<span>{{ entity.firstName }}</span>
 
-				<mat-label class="grid__child--label">Nom</mat-label>
-				<span class="grid__child--field">{{ user.lastName }}</span>
+				<mat-label>Nom</mat-label>
+				<span>{{ entity.lastName }}</span>
 
-				@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id != user.id)) {
+				@if (authentication.user && authentication.user.role == UserRoles.Admin && authentication.user.id != entity.id) {
 					<mat-form-field class="grid__child--full-width">
 						<mat-label>Rôle</mat-label>
 						<mat-select matInput formControlName="role">
@@ -48,20 +48,20 @@
 					</mat-form-field>
 				}
 				@else {
-					<mat-label class="grid__child--label">Rôle</mat-label>
-					<span class="grid__child--field">{{ user.role }}</span>
+					<mat-label>Rôle</mat-label>
+					<span>{{ entity.role }}</span>
 				}
 
 
-				@if (authentication.user && authentication.user.id == user.id) {
-					<mat-form-field class="grid__child--half">
+				@if (authentication.user && authentication.user.id == entity.id) {
+					<mat-form-field>
 						<mat-label>
 							Nouveau Mot de Passe
 							<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
 						</mat-label>
 						<input matInput formControlName="password" type="password" autocomplete="new-password">
 					</mat-form-field>
-					<mat-form-field class="grid__child--half">
+					<mat-form-field>
 						<mat-label>
 							Confirmer le Nouveau Mot de Passe
 							<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
@@ -96,7 +96,7 @@
 			</mat-card-content>
 
 
-			@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id == user.id)) {
+			@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id == entity.id)) {
 				<mat-card-footer>
 					<button class="grid__child--full-width" color="primary" mat-raised-button (click)="onSubmit()">
 						Sauvegarder

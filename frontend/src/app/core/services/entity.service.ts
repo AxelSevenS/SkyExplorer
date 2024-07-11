@@ -3,12 +3,12 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { environment } from '../../../environments/environment';
 import { Observable, Subject, catchError, map, of, share } from 'rxjs';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
-import { EntitySetupDto, EntityUpdateDto, IEntity } from '../models/entity.model';
+import { EntityCreateDto, EntityUpdateDto, IEntity } from '../models/entity.model';
 
 @Injectable({
 	providedIn: 'root'
 })
-export abstract class EntityService<T extends IEntity, TCreateDto extends EntitySetupDto, TUpdateDto extends EntityUpdateDto> {
+export abstract class EntityService<T extends IEntity, TCreateDto extends EntityCreateDto, TUpdateDto extends EntityUpdateDto> {
 
 	protected abstract get endpointSuffix(): string;
 	public get endpoint() { return `${environment.host}/api/${this.endpointSuffix}`; }
