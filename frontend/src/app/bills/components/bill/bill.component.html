@@ -1,25 +1,28 @@
-@if (entity) {
-<mat-card class="entity bill" appearance="outlined">
-	<a [matMenuTriggerFor]="billPreview">
-		<mat-card-content>
-			<mat-card-title>{{ entity.name }}</mat-card-title>
-			<mat-card-subtitle>	Url: {{ entity.name }}</mat-card-subtitle>
-		</mat-card-content>
-	</a>
-	<mat-menu class="bill-menu" #billPreview="matMenu" xPosition="after" yPosition="above">
-		<a [href]="entity.url">
-			{{ entity.url }}
+@if (entity === undefined) {
+	<mat-progress-spinner color="primary" mode="indeterminate" />
+}
+@else if ( entity && authentication.user && (entity.user.id == authentication.user.id || authentication.user.role >= UserRoles.Staff) ) {
+	<mat-card class="entity bill" appearance="outlined">
+		<a [matMenuTriggerFor]="billPreview">
+			<mat-card-content>
+				<mat-card-title>{{ entity.name }}</mat-card-title>
+				<mat-card-subtitle>	Url: {{ entity.url }}</mat-card-subtitle>
+			</mat-card-content>
 		</a>
-	</mat-menu>
-	@if (authentication.user && (authentication.user.role >= UserRoles.Staff )) {
-	<mat-card-actions>
+		<mat-menu class="bill-menu" #billPreview="matMenu" xPosition="after" yPosition="above">
+			<a [href]="entity.url">
+				{{ entity.url }}
+			</a>
+		</mat-menu>
+		@if (authentication.user && (authentication.user.role >= UserRoles.Staff )) {
+			<mat-card-actions>
 
-			<button class="bill__delete-btn" mat-raised-button (click)="delete()" color="warn">
-				<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
-				<mat-label>Supprimer</mat-label>
-			</button>
+				<button class="bill__delete-btn" mat-raised-button (click)="delete()" color="warn">
+					<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+					<mat-label>Supprimer</mat-label>
+				</button>
 
-	</mat-card-actions>
-	}
-</mat-card>
+			</mat-card-actions>
+		}
+	</mat-card>
 }

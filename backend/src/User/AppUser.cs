@@ -55,14 +55,11 @@ public record AppUser : IEntity {
 	}
 
 
-
-	[Flags]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum Roles : ushort {
-		User,
-		Collaborator,
-		Staff,
-		Admin,
+		User = 0,
+		Collaborator = 1,
+		Staff = 2,
+		Admin = 3,
 	};
 }
 

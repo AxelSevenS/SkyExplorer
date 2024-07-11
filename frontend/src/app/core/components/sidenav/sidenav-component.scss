@@ -36,8 +36,8 @@ mat-sidenav {
 .entry {
 	display: flex;
 	flex-direction: row;
-	gap: 1.5px;
-	justify-content: space-between;
+	gap: 1rem;
+	justify-content: flex-start;
 }
 
 a.active {

@@ -9,14 +9,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { UsersRoutingModule } from './users-routing.module';
-
 import { UserComponent } from './components/user/user.component';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { UserPage } from './pages/user-page/user.page';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -26,6 +25,7 @@ import { MatInputModule } from '@angular/material/input';
 		ReactiveFormsModule,
 		RouterModule,
 
+		MatProgressSpinnerModule,
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,

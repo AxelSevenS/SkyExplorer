@@ -9,9 +9,9 @@
 	}
 </section>
 @if (authentication.user && authentication.user.role >= UserRoles.Collaborator) {
-<section>
-	<button mat-raised-button color="primary" [routerLink]="['/courses/create']">
-		Ajouter
-	</button>
-</section>
+	<section>
+		<button mat-raised-button color="primary" [routerLink]="['/courses/create']">
+			Ajouter
+		</button>
+	</section>
 }

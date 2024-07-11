@@ -23,6 +23,8 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 	public get eventUpdated() { return this._eventUpdated };
 	private _eventUpdated: Subject<T> = new Subject<T>;
 
+	protected get bearerAuth(): string { return `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}`; }
+
 	constructor(
 		protected http: HttpClient
 	) { }
@@ -31,7 +33,9 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 
 
 	getAll(): Observable<T[] | HttpErrorResponse> {
-		return this.http.get<T[]>(this.endpoint)
+		const headers = new HttpHeaders({ 'Authorization': this.bearerAuth });
+
+		return this.http.get<T[]>(this.endpoint, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -39,7 +43,9 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 	}
 
 	getById(id: number): Observable<T | HttpErrorResponse> {
-		return this.http.get<T>(`${this.endpoint}/${id}`)
+		const headers = new HttpHeaders({ 'Authorization': this.bearerAuth });
+
+		return this.http.get<T>(`${this.endpoint}/${id}`, {headers: headers})
 			.pipe(
 				share(),
 				catchError( (err: HttpErrorResponse) => of(err) ),
@@ -50,7 +56,7 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 		const formData = new FormData();
 		createRequest.populate(formData);
 
-		const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
+		const headers = new HttpHeaders({ 'enctype': 'multipart/form-data', 'Authorization': this.bearerAuth });
 
 		let observable = this.http.post<T>(this.endpoint, formData, {headers: headers})
 			.pipe(
@@ -71,7 +77,7 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 		const formData = new FormData();
 		updateRequest.populate(formData);
 
-		const headers = new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}` });
+		const headers = new HttpHeaders({ 'Authorization': this.bearerAuth });
 
 		let observable = this.http.patch<T>(`${this.endpoint}/${id}`, formData, {headers: headers})
 			.pipe(
@@ -89,7 +95,7 @@ export abstract class EntityService<T extends IEntity, TCreateDto extends Entity
 	}
 
 	deleteById(id: number): Observable<T | HttpErrorResponse> {
-		const headers = new HttpHeaders({ 'Authorization': `Bearer ${localStorage.getItem(AuthenticationService.storageKey)}` });
+		const headers = new HttpHeaders({ 'Authorization': this.bearerAuth });
 
 		let observable = this.http.delete<T>(`${this.endpoint}/${id}`, {headers: headers})
 			.pipe(

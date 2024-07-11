@@ -54,7 +54,8 @@ public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context)
 
 	[HttpDelete("{id}")]
 	public virtual async Task<ActionResult<T>> Delete(uint id) {
-		T? found = Set.Find(id);
+		T? found = await GetQuery
+			.FirstOrDefaultAsync(e => e.Id == id);
 		if (found is null) {
 			return NotFound();
 		}

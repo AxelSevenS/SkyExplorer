@@ -1,110 +1,116 @@
-@if (entity) {
-<section>
-	<mat-card-title>
-		@if (authentication.user && authentication.user.id == entity.id) {
-			Votre Profil
-		}
-		@else {
-				Profil de {{ entity.firstName }} {{ entity.lastName }}
-		}
-	</mat-card-title>
-
-	<mat-card>
-		<form class="grid" id="edit-user__form" [formGroup]="editUserForm">
-
-			<mat-card-content class="grid__container">
-				@if (authentication.user && authentication.user.id == entity.id) {
-					<mat-form-field class="grid__child--full-width">
-						<mat-label>E-mail</mat-label>
-						<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail"/>
-					</mat-form-field>
-				}
-				@else {
-					<mat-label>E-mail</mat-label>
-					<span>{{ entity.email }}</span>
-				}
-
-				<mat-label>Prénom</mat-label>
-				<span>{{ entity.firstName }}</span>
-
-				<mat-label>Nom</mat-label>
-				<span>{{ entity.lastName }}</span>
-
-				@if (authentication.user && authentication.user.role == UserRoles.Admin && authentication.user.id != entity.id) {
-					<mat-form-field class="grid__child--full-width">
-						<mat-label>Rôle</mat-label>
-						<mat-select matInput formControlName="role">
-							<mat-option [value]="0">Utilisateur</mat-option>
-							@if (authentication.user.role >= UserRoles.Collaborator) {
-								<mat-option [value]="1">Collaborateur</mat-option>
-							}
-							@if (authentication.user.role >= UserRoles.Staff) {
-								<mat-option [value]="2">Personnel</mat-option>
-							}
-							@if (authentication.user.role == UserRoles.Admin) {
-								<mat-option [value]="3">Administrateur</mat-option>
-							}
-						</mat-select>
-					</mat-form-field>
-				}
-				@else {
-					<mat-label>Rôle</mat-label>
-					<span>{{ entity.role }}</span>
-				}
-
-
-				@if (authentication.user && authentication.user.id == entity.id) {
-					<mat-form-field>
-						<mat-label>
-							Nouveau Mot de Passe
-							<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
-						</mat-label>
-						<input matInput formControlName="password" type="password" autocomplete="new-password">
-					</mat-form-field>
-					<mat-form-field>
-						<mat-label>
-							Confirmer le Nouveau Mot de Passe
-							<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
-						</mat-label>
-						<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password">
-					</mat-form-field>
-
-					<div class="grid__child--full-width">
-						@if (editUserForm.controls['password'].errors != null && editUserForm.controls['password'].value) {
-							@if (editUserForm.controls['password'].hasError('PasswordNoUppercase')) {
-								<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
-							}
-							@if (editUserForm.controls['password'].hasError('PasswordNoLowercase')) {
-								<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
-							}
-							@if (editUserForm.controls['password'].hasError('PasswordNoDigit')) {
-								<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
-							}
-							@if (editUserForm.controls['password'].hasError('PasswordNoSpecial')) {
-								<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
-							}
-							@if (editUserForm.controls['password'].hasError('PasswordTooShort')) {
-								<mat-error class="grid__child--full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
-							}
-						}
-						@if (editUserForm.controls['password'].errors == null && editUserForm.controls['password'].value && editUserForm.hasError('PasswordNoMatch')) {
-							<mat-error class="grid__child--full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
-						}
-					</div>
-				}
-
-			</mat-card-content>
-
-
-			@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id == entity.id)) {
-				<mat-card-footer>
-					<button class="grid__child--full-width" color="primary" mat-raised-button (click)="onSubmit()">
-						Sauvegarder
-					</button>
-				</mat-card-footer>
+@if (entity === undefined) {
+	<mat-spinner color="primary"></mat-spinner>
+}
+@else if (entity && authentication.user && (authentication.user.id == entity.id || authentication.user.role >= UserRoles.Staff || entity.role == UserRoles.Collaborator)) {
+	<section>
+		<mat-card-title>
+			@if (authentication.user && authentication.user.id == entity.id) {
+				Votre Profil
 			}
+			@else {
+				Profil de {{ entity.firstName }} {{ entity.lastName }}
+			}
+		</mat-card-title>
 
-		</form>
-	</mat-card>
-</section>
+		<mat-card>
+			<form class="grid" id="edit-user__form" [formGroup]="editUserForm">
+
+				<mat-card-content class="grid__container">
+					@if (authentication.user && authentication.user.id == entity.id) {
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>E-mail</mat-label>
+							<input matInput formControlName="email" type="email" autocomplete="email" placeholder="Adresse E-mail"/>
+						</mat-form-field>
+					}
+					@else {
+						<mat-label>E-mail</mat-label>
+						<span>{{ entity.email }}</span>
+					}
+
+					<mat-label>Prénom</mat-label>
+					<span>{{ entity.firstName }}</span>
+
+					<mat-label>Nom</mat-label>
+					<span>{{ entity.lastName }}</span>
+
+					@if (authentication.user && authentication.user.role == UserRoles.Admin && authentication.user.id != entity.id) {
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Rôle</mat-label>
+							<mat-select matInput formControlName="role">
+								<mat-option [value]="UserRoles.User">Utilisateur</mat-option>
+								@if (authentication.user.role >= UserRoles.Collaborator) {
+									<mat-option [value]="UserRoles.Collaborator">Collaborateur</mat-option>
+								}
+								@if (authentication.user.role >= UserRoles.Staff) {
+									<mat-option [value]="UserRoles.Staff">Personnel</mat-option>
+								}
+								@if (authentication.user.role == UserRoles.Admin) {
+									<mat-option [value]="UserRoles.Admin">Administrateur</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+					}
+					@else {
+						<mat-label>Rôle</mat-label>
+						<span>{{ entity.role }}</span>
+					}
+
+
+					@if (authentication.user && authentication.user.id == entity.id) {
+						<mat-form-field>
+							<mat-label>
+								Nouveau Mot de Passe
+								<mat-icon aria-hidden="false" aria-label="Mot de Passe">lock</mat-icon>
+							</mat-label>
+							<input matInput formControlName="password" type="password" autocomplete="new-password">
+						</mat-form-field>
+						<mat-form-field>
+							<mat-label>
+								Confirmer le Nouveau Mot de Passe
+								<mat-icon aria-hidden="false" aria-label="Confirmer le Mot de Passe">check</mat-icon>
+							</mat-label>
+							<input matInput formControlName="passwordConfirm" type="password" autocomplete="new-password">
+						</mat-form-field>
+
+						<div class="grid__child--full-width">
+							@if (editUserForm.controls['password'].errors != null && editUserForm.controls['password'].value) {
+								@if (editUserForm.controls['password'].hasError('PasswordNoUppercase')) {
+									<mat-error >Le Mot de Passe doit contenir un <strong>caractère Majuscule</strong></mat-error>
+								}
+								@if (editUserForm.controls['password'].hasError('PasswordNoLowercase')) {
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère Minuscule</strong></mat-error>
+								}
+								@if (editUserForm.controls['password'].hasError('PasswordNoDigit')) {
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>chiffre</strong></mat-error>
+								}
+								@if (editUserForm.controls['password'].hasError('PasswordNoSpecial')) {
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit contenir un <strong>caractère spécial</strong>.</mat-error>
+								}
+								@if (editUserForm.controls['password'].hasError('PasswordTooShort')) {
+									<mat-error class="grid__child--full-width">Le Mot de Passe doit faire au moins <strong>8</strong> caractères de long.</mat-error>
+								}
+							}
+							@if (editUserForm.controls['password'].errors == null && editUserForm.controls['password'].value && editUserForm.hasError('PasswordNoMatch')) {
+								<mat-error class="grid__child--full-width">Les Mots de Passes doivent <strong>correspondrent</strong>.</mat-error>
+							}
+						</div>
+					}
+
+				</mat-card-content>
+
+
+				@if (authentication.user && (authentication.user.role == UserRoles.Admin || authentication.user.id == entity.id)) {
+					<mat-card-footer>
+						<button class="grid__child--full-width" color="primary" mat-raised-button (click)="onSubmit()">
+							Sauvegarder
+						</button>
+					</mat-card-footer>
+				}
+
+			</form>
+		</mat-card>
+	</section>
+}
+@else {
+	<mat-card-title>Vous n'avez pas accès à cette page</mat-card-title>
 }

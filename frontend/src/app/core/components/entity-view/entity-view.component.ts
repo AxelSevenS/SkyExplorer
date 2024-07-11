@@ -7,8 +7,8 @@ import { EntityCreateDto, EntityUpdateDto, IEntity } from '../../models/entity.m
 
 @Component({
 	selector: 'se-entity-view',
-	templateUrl: './entity-view.component.html',
-	styleUrls: ['./entity-view.component.scss'],
+	template: '',
+	styles: [''],
 })
 export abstract class EntityViewComponent<T extends IEntity, TCreateDto extends EntityCreateDto, TUpdateDto extends EntityUpdateDto> implements OnInit {
 

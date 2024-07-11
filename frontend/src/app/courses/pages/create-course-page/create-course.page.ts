@@ -26,8 +26,8 @@ export class CreateCoursePage implements OnInit {
 	publishForm: FormGroup = this.formBuilder.group(
 		{
 			courseName: [''],
-			student: [''],
-			teacher: [''],
+			user: [''],
+			overseer: [''],
 			plane: [''],
 			date: [''],
 			time: [''],
@@ -39,13 +39,13 @@ export class CreateCoursePage implements OnInit {
 	);
 
 	planes: Plane[] = [];
-	students: User[] = [];
-	teachers?: User[];
+	users: User[] = [];
+	overseers?: User[];
 
 	wasAcquitted: boolean = false;
 	planeId?: number;
-	studentId?: number;
-	teacherId?: number;
+	userId?: number;
+	overseerId?: number;
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -75,18 +75,18 @@ export class CreateCoursePage implements OnInit {
 		this.userService.getByRole(UserRoles.User)
 			.subscribe(res => {
 				if (res instanceof HttpErrorResponse) return;
-				this.students = res;
+				this.users = res;
 			});
 
 
 		if (this.authentication.user && this.authentication.user.role == UserRoles.Collaborator) {
-			this.publishForm.controls["teacher"].setValue(this.authentication.user.id);
+			this.publishForm.controls["overseer"].setValue(this.authentication.user.id);
 		}
 		else {
 			this.userService.getByRole(UserRoles.Collaborator)
 				.subscribe(res => {
 					if (res instanceof HttpErrorResponse) return;
-					this.teachers = res;
+					this.overseers = res;
 				});
 		}
 	}
@@ -97,6 +97,8 @@ export class CreateCoursePage implements OnInit {
 			console.log(this.publishForm);
 			return;
 		}
+
+		if ( ! this.authentication.user ) return;
 
 
 		const date: Date = new Date(this.publishForm.controls["date"].value);
@@ -109,10 +111,17 @@ export class CreateCoursePage implements OnInit {
 		date.setSeconds(0);
 		date.setMilliseconds(0);
 
+		const userId: number = this.publishForm.controls["user"].value;
+		let billName: string = this.publishForm.controls["billName"].value;
+		if (! billName) billName = "https://";
+		let billUrl: string = this.publishForm.controls["billUrl"].value;
+		if (! billUrl) billUrl = this.publishForm.controls["courseName"].value;
+
 
 		const billRequest = new BillCreateDto(
-			this.publishForm.controls["billUrl"]?.value ?? "",
-			this.publishForm.controls["billName"]?.value ?? "",
+			userId,
+			billName,
+			billUrl,
 			false,
 		);
 		console.log(billRequest);
@@ -122,8 +131,8 @@ export class CreateCoursePage implements OnInit {
 				if (bill instanceof HttpErrorResponse) return;
 
 				const flightRequest = new FlightCreateDto(
-					this.publishForm.controls["student"].value,
-					this.publishForm.controls["teacher"].value,
+					this.publishForm.controls["user"].value,
+					this.publishForm.controls["overseer"].value,
 					bill.id,
 					this.publishForm.controls["plane"].value,
 					duration,
@@ -156,7 +165,7 @@ export class CreateCoursePage implements OnInit {
 	}
 
 // 	public createActivity(): void {
-// 		if (!this.studentId || !this.teacherId || !this.planeId) return;
+// 		if (!this.userId || !this.overseerId || !this.planeId) return;
 
 // 		let billRequest = new BillCreateDto(
 // 			"url",
@@ -166,12 +175,12 @@ export class CreateCoursePage implements OnInit {
 
 // 		this.billService.create(billRequest)
 // 			.subscribe(bill => {
-// 				if (!this.studentId || !this.teacherId || !this.planeId) return;
+// 				if (!this.userId || !this.overseerId || !this.planeId) return;
 // 				if (bill instanceof HttpErrorResponse) return;
 
 // 				let flightRequest = new FlightCreateDto(
-// 					this.studentId,
-// 					this.teacherId,
+// 					this.userId,
+// 					this.overseerId,
 // 					bill.id,
 // 					this.planeId,
 

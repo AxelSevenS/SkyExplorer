@@ -15,8 +15,7 @@ import moment from 'moment';
 import { FlightUpdateDto } from '../../../flights/models/flight.model';
 import { BillUpdateDto } from '../../../bills/models/bill.model';
 import { EntityViewComponent } from '../../../core/components/entity-view/entity-view.component';
-
-@Component({
+import {MatSpinner} from '@angular/material/progress-spinner';@Component({
 	selector: 'se-course-page',
 	templateUrl: 'course.page.html',
 	styleUrls: ['course.page.scss'],
@@ -29,8 +28,8 @@ export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, Cou
 	editCourseForm: FormGroup = this.formBuilder.group(
 		{
 			courseName: [''],
-			student: [''],
-			teacher: [''],
+			user: [''],
+			overseer: [''],
 			plane: [''],
 			date: [''],
 			time: [''],
@@ -45,13 +44,13 @@ export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, Cou
 	);
 
 	planes: Plane[] = [];
-	students: User[] = [];
-	teachers?: User[];
+	users: User[] = [];
+	overseers?: User[];
 
 	wasAcquitted: boolean = false;
 	planeId?: number;
-	studentId?: number;
-	teacherId?: number;
+	userId?: number;
+	overseerId?: number;
 
 
 	constructor(
@@ -83,18 +82,18 @@ export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, Cou
 		this.userService.getByRole(UserRoles.User)
 			.subscribe(res => {
 				if (res instanceof HttpErrorResponse) return;
-				this.students = res;
+				this.users = res;
 			});
 
 
 		if (this.authentication.user && this.authentication.user.role == UserRoles.Collaborator) {
-			this.teacherId = this.authentication.user.id;
+			this.overseerId = this.authentication.user.id;
 		}
 		else {
 			this.userService.getByRole(UserRoles.Collaborator)
 				.subscribe(res => {
 					if (res instanceof HttpErrorResponse) return;
-					this.teachers = res;
+					this.overseers = res;
 				});
 		}
 
@@ -106,14 +105,15 @@ export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, Cou
 
 	protected override onUpdate(): void {
 		this.editCourseForm.controls['courseName'].setValue(this.entity?.name);
-		this.editCourseForm.controls['student'].setValue(this.entity?.flight.user.id);
-		this.editCourseForm.controls['teacher'].setValue(this.entity?.flight.overseer.id);
+		this.editCourseForm.controls['user'].setValue(this.userId = this.entity?.flight.user.id);
+		this.editCourseForm.controls['overseer'].setValue(this.overseerId = this.entity?.flight.overseer.id);
+		this.editCourseForm.controls['plane'].setValue(this.planeId = this.entity?.flight.plane.id);
 		this.editCourseForm.controls['date'].setValue(this.entity?.flight.dateTime);
 		this.editCourseForm.controls['time'].setValue(moment(this.entity?.flight.dateTime).format("HH:mm"));
 		this.editCourseForm.controls['duration'].setValue(this.entity?.flight.duration.substring(0, 5));
 		this.editCourseForm.controls['billName'].setValue(this.entity?.flight.bill.name);
 		this.editCourseForm.controls['billUrl'].setValue(this.entity?.flight.bill.url);
-		this.editCourseForm.controls['wasAcquitted'].setValue(this.entity?.flight.bill.wasAcquitted);
+		this.editCourseForm.controls['wasAcquitted'].setValue(this.wasAcquitted = this.entity?.flight.bill.wasAcquitted ?? false);
 	}
 
 
@@ -122,39 +122,44 @@ export class CoursePage extends EntityViewComponent<Course, CourseCreateDto, Cou
 		if ( ! this.entity ) return;
 		if ( ! this.editCourseForm.valid ) return;
 
+		if ( ! this.authentication.user ) return;
+		if ( this.authentication.user.id !== this.entity.flight.user.id && this.authentication.user.id !== this.entity.flight.overseer.id && this.authentication.user.role < UserRoles.Staff ) return;
 
-		const updatedBill = new BillUpdateDto();
 
-		const billNameInput: string = this.editCourseForm.controls['billName'].value;
-		if (billNameInput !== this.entity.flight.bill.name) {
-			updatedBill.name = billNameInput;
+		if (this.authentication.user.id === this.entity.flight.user.id || this.authentication.user.role >= UserRoles.Staff) {
+			const updatedBill = new BillUpdateDto();
 
-		}
-		const billUrlInput: string = this.editCourseForm.controls['billUrl'].value;
-		if (billUrlInput !== this.entity.flight.bill.url) {
-			updatedBill.url = billUrlInput;
-		}
+			const billNameInput: string = this.editCourseForm.controls['billName'].value;
+			if (billNameInput !== this.entity.flight.bill.name) {
+				updatedBill.name = billNameInput;
 
-		const billWasAcquittedInput: boolean = this.editCourseForm.controls['wasAcquitted'].value;
-		if (billWasAcquittedInput !== this.entity.flight.bill.wasAcquitted) {
-			updatedBill.wasAcquitted = billWasAcquittedInput;
-		}
+			}
+			const billUrlInput: string = this.editCourseForm.controls['billUrl'].value;
+			if (billUrlInput !== this.entity.flight.bill.url) {
+				updatedBill.url = billUrlInput;
+			}
 
-		if (updatedBill.name !== undefined || updatedBill.url !== undefined || updatedBill.wasAcquitted !== undefined) {
-			this.billService.updateById(this.entity.flight.bill.id, updatedBill)
-				.subscribe(async bill => {
-					if (bill instanceof HttpErrorResponse || ! this.entity) return;
-					this.entity.flight.bill = bill;
-				})
+			const billWasAcquittedInput: boolean = this.editCourseForm.controls['wasAcquitted'].value;
+			if (billWasAcquittedInput !== this.entity.flight.bill.wasAcquitted) {
+				updatedBill.wasAcquitted = billWasAcquittedInput;
+			}
+
+			if (updatedBill.name !== undefined || updatedBill.url !== undefined || updatedBill.wasAcquitted !== undefined) {
+				this.billService.updateById(this.entity.flight.bill.id, updatedBill)
+					.subscribe(async bill => {
+						if (bill instanceof HttpErrorResponse || ! this.entity) return;
+						this.entity.flight.bill = bill;
+					})
+			}
 		}
 
 
 
 		const updatedFlight = new FlightUpdateDto();
 
-		const teacherInput: number = this.editCourseForm.controls['teacher'].value;
-		if (teacherInput !== this.entity.flight.overseer.id) {
-			updatedFlight.overseerId = teacherInput;
+		const overseerInput: number = this.editCourseForm.controls['overseer'].value;
+		if (overseerInput !== this.entity.flight.overseer.id) {
+			updatedFlight.overseerId = overseerInput;
 		}
 
 		const dateInput: Date = new Date(this.editCourseForm.controls['date'].value);

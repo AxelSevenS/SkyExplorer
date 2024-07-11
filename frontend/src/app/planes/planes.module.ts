@@ -18,12 +18,13 @@ import { PlaneComponent } from './components/plane/plane.component';
 import { CreatePlanePage } from './pages/create-plane-page/create-plane.page';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @NgModule({
   imports: [
     PlanesRoutingModule,
-
+		MatProgressSpinnerModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
