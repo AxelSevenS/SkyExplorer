@@ -10,6 +10,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 public abstract class RegularController<T, TSetupDto, TUpdateDto>(AppDbContext context) : Controller<T, TSetupDto, TUpdateDto>(context) where T : class, IEntity where TSetupDto : class, IEntitySetup<T> where TUpdateDto : class, IEntityUpdate<T> {
 	[HttpGet]
-	public virtual async Task<ActionResult<List<T>>> GetAll() =>
-		Ok(await GetQuery.ToListAsync());
+	public virtual ActionResult<List<T>> GetAll() =>
+		Ok(GetQuery.ToList());
 }

@@ -78,7 +78,7 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 			.FirstOrDefaultAsync(c => c.Id == id);
 		if (found is null) return NotFound();
 
-		if (!VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
 
 		return await base.Update(id, dto);
 	}
@@ -90,14 +90,14 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 			.FirstOrDefaultAsync(c => c.Id == id);
 		if (found is null) return NotFound();
 
-		if (!VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
 
 		return await base.Delete(id);
 	}
 
 	[Authorize]
 	public override async Task<ActionResult<Course>> Add([FromForm] CourseSetupDto dto) {
-		if (!VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+		if (! VerifyRole(AppUser.Roles.Collaborator, out _)) return Unauthorized();
 
 		return await base.Add(dto);
 	}

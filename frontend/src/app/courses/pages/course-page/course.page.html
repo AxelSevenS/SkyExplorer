@@ -1,6 +1,9 @@
-<section>
-	@if (entity) {
-		@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+@if (entity === undefined) {
+	<mat-spinner color="primary"></mat-spinner>
+}
+@else if (entity && authentication.user && (authentication.user.id === entity.flight.user.id || authentication.user.id === entity.flight.overseer.id || authentication.user.role >= UserRoles.Staff)) {
+	<section>
+		@if (authentication.user.id === entity.flight.overseer.id || authentication.user.id === entity.flight.user.id || authentication.user.role >= UserRoles.Staff) {
 			<mat-card-title><h1>Modifier le Cours</h1></mat-card-title>
 		}
 		<div class="line"></div>
@@ -9,7 +12,7 @@
 			<form class="grid" [formGroup]="editCourseForm" (ngSubmit)="onSubmit()">
 
 				<mat-card-content class="grid__container">
-					@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+					@if (authentication.user.id === entity.flight.overseer.id || authentication.user.role >= UserRoles.Staff) {
 						<mat-form-field class="grid__child--full-width">
 							<mat-label>Intitulé du Cours</mat-label>
 							<input matInput formControlName="courseName" type="text">
@@ -24,27 +27,48 @@
 					}
 
 
-					@if (authentication.user && authentication.user.role > UserRoles.Collaborator) {
-						<mat-form-field class="grid__child--full-width">
-							<mat-label>Professeur</mat-label>
-							<mat-select matInput formControlName="teacher" [value]="teacherId">
-								@if (teachers?.length == 0) {
-									<mat-option disabled>Aucun Professeur Disponible</mat-option>
+					@if (authentication.user.role >= UserRoles.Staff) {
+						<mat-form-field>
+							<mat-label>Superviseur</mat-label>
+							<mat-select matInput formControlName="overseer" [value]="overseerId">
+								@if (overseers?.length == 0) {
+									<mat-option disabled>Aucun Superviseur Disponible</mat-option>
 								}
 								@else {
-									@for (teacher of teachers; track teacher) {
-										<mat-option [value]="teacher.id">{{teacher.firstName}} {{teacher.lastName}}</mat-option>
+									@for (overseer of overseers; track overseer) {
+										<mat-option [value]="overseer.id">{{overseer.firstName}} {{overseer.lastName}}</mat-option>
 									}
 								}
 							</mat-select>
 						</mat-form-field>
 					}
 					@else {
-						<mat-label class="grid__child--label">Professeur</mat-label>
+						<mat-label class="grid__child--label">Superviseur</mat-label>
 						<span class="grid__child--field">{{ entity.flight.overseer.firstName }}  {{ entity.flight.overseer.lastName }}</span>
 					}
 
-					@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+					@if (authentication.user.role >= UserRoles.Collaborator) {
+						<mat-form-field [ngClass]="{'grid__child--full-width': authentication.user.role < UserRoles.Staff}">
+							<mat-label>Élève</mat-label>
+
+							<mat-select matInput formControlName="user" [value]="userId" required>
+								@if (users.length == 0) {
+									<mat-option disabled>Aucun Elève Disponible</mat-option>
+								}
+								@else {
+									@for (user of users; track user) {
+										<mat-option [value]="user.id">{{user.firstName}} {{user.lastName}}</mat-option>
+									}
+								}
+							</mat-select>
+						</mat-form-field>
+					}
+					@else {
+						<mat-label class="grid__child--label">Elève</mat-label>
+						<span class="grid__child--field">{{ entity.flight.user.firstName }}  {{ entity.flight.user.lastName }}</span>
+					}
+
+					@if (authentication.user.id === entity.flight.overseer.id || authentication.user.role >= UserRoles.Staff) {
 						<mat-form-field class="grid__child--half">
 							<mat-label>Date</mat-label>
 
@@ -66,7 +90,7 @@
 					}
 
 
-					@if (authentication.user && (authentication.user.id === entity.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+					@if (authentication.user.id === entity.flight.overseer.id || authentication.user.role >= UserRoles.Staff) {
 						<mat-form-field class="grid__child--full-width">
 							<mat-label>Durée</mat-label>
 
@@ -79,27 +103,44 @@
 					}
 
 
-					<mat-card-title class="mat-card-title-create-form-subtitle">Facturation</mat-card-title>
+					@if (authentication.user.id === entity.flight.bill.user.id || authentication.user.role >= UserRoles.Staff) {
+						<mat-card-title class="grid__child--full-width">Facturation</mat-card-title>
+					}
 
-					<mat-form-field class="grid__child--full-width">
-						<mat-label>Nom de la facture</mat-label>
-						<input type="text" matInput formControlName="billName">
-					</mat-form-field>
+					@if (authentication.user.role >= UserRoles.Staff) {
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Nom de la facture</mat-label>
+							<input type="text" matInput formControlName="billName">
+						</mat-form-field>
 
-					<mat-form-field class="grid__child--full-width">
-						<mat-label>Url</mat-label>
-						<input type="url" matInput formControlName="billUrl">
-					</mat-form-field>
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Url</mat-label>
+							<input type="url" matInput formControlName="billUrl">
+						</mat-form-field>
 
-					<mat-checkbox matInput  class="grid__child--full-width" formControlName="wasAcquitted" [value]="wasAcquitted.toString()">Acquitté</mat-checkbox>
+						<mat-checkbox class="grid__child--full-width" formControlName="wasAcquitted" [checked]="wasAcquitted">Acquitté</mat-checkbox>
+					}
+					@else if (authentication.user.id === entity.flight.user.id) {
+						<mat-label class="grid__child--label">Nom de la facture</mat-label>
+						<span class="grid__child--field">{{ entity.flight.bill.name }}</span>
+
+						<mat-label class="grid__child--label">Url</mat-label>
+						<span class="grid__child--field">{{ entity.flight.bill.url }}</span>
+
+						<span class="grid__child--full-width">{{ wasAcquitted ? "Acquitté" : "Non Acquitté"}}</span>
+					}
 				</mat-card-content>
 
-				<mat-card-footer>
-					<button mat-raised-button color="primary" class="button-create-form">Valider</button>
-				</mat-card-footer>
-
+				@if (authentication.user.id === entity.flight.overseer.id || authentication.user.id === entity.flight.user.id || authentication.user.role >= UserRoles.Staff) {
+					<mat-card-footer>
+						<button mat-raised-button color="primary" class="button-create-form">Valider</button>
+					</mat-card-footer>
+				}
 			</form>
 		</mat-card>
-	}
 
-</section>
+	</section>
+}
+@else {
+	<mat-card-title>Vous n'avez pas accès à cette page</mat-card-title>
+}

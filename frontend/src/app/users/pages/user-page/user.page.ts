@@ -58,7 +58,7 @@ export class UserPage extends EntityViewComponent<User, UserCreateDto, UserUpdat
 
 	protected override onUpdate(): void {
 		this.editUserForm.controls['email'].setValue(this.entity?.email);
-		this.editUserForm.controls['role'].setValue(UserRoles[this.entity?.role ?? 0]);
+		this.editUserForm.controls['role'].setValue(this.entity?.role);
 	}
 
 	onSubmit(): void {
@@ -78,7 +78,7 @@ export class UserPage extends EntityViewComponent<User, UserCreateDto, UserUpdat
 		}
 
 		const roleInput: number = this.editUserForm.controls['role'].value;
-		if (roleInput !== this.entity.role) {
+		if (roleInput != this.entity.role) {
 			updated.role = roleInput;
 		}
 

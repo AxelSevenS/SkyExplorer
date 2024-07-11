@@ -3,10 +3,10 @@
 		<se-plane [entity]="plane" />
 	}
 </section>
-<section>
-	@if (authentication.user && authentication.user.role >= UserRoles.Collaborator) {
-	<button mat-raised-button color="primary" [routerLink]="['/planes/create']">
-		Ajouter
-	</button>
-	}
-</section>
+@if (authentication.user && authentication.user.role >= UserRoles.Staff) {
+	<section>
+		<button mat-raised-button color="primary" [routerLink]="['/planes/create']">
+			Ajouter
+		</button>
+	</section>
+}
