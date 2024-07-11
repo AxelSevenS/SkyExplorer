@@ -1,0 +1,33 @@
+@if (entity) {
+<mat-card class="plane" appearance="outlined">
+	<mat-card-content>
+		<a [routerLink]="['/planes', entity.id]">
+			<!-- <mat-card-header> -->
+
+				<mat-card-title>{{ entity.name }}</mat-card-title>
+				<mat-card-subtitle>Type: {{ entity.type }}</mat-card-subtitle>
+				<mat-card-subtitle>Disponibilité: {{ entity.status }}</mat-card-subtitle>
+
+		</a>
+
+		@if (authentication.user && (authentication.user.role >= UserRoles.Staff)) {
+			<mat-card-actions>
+					<button class="plane__delete-btn" mat-raised-button (click)="delete()" color="warn">
+						<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+						<mat-label>Supprimer</mat-label>
+					</button>
+			</mat-card-actions>
+		}
+	</mat-card-content>
+</mat-card>
+}
+@else {
+<mat-card class="plane" appearance="outlined">
+	<mat-card-content>
+		<mat-card-title>Aucun Avion Disponible</mat-card-title>
+	</mat-card-content>
+	<mat-card-actions>
+
+	</mat-card-actions>
+</mat-card>
+}

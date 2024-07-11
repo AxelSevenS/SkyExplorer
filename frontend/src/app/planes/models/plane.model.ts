@@ -31,15 +31,19 @@ export class PlaneCreateDto extends EntitySetupDto {
 }
 
 export class PlaneUpdateDto extends EntityUpdateDto {
-	status: PlaneStatus;
+	status?: PlaneStatus;
 
-	constructor(status: PlaneStatus) {
+	constructor(
+		{ status }:
+		{ status?: PlaneStatus } =
+		{ }
+	) {
 		super();
 		this.status = status;
 	}
 
 	override populate(formData: FormData): void {
-		formData.append('Status', PlaneStatus[this.status]);
+		if (this.status !== undefined) formData.append('Status', PlaneStatus[this.status]);
 	}
 }
 

@@ -31,7 +31,7 @@ export class CourseService extends EntityService<Course, CourseCreateDto, Course
 	}
 
 	getWeeklyForTeacher(userId: number, offset: number = 0): Observable<Course[] | HttpErrorResponse> {
-		let url = new URL(`${this.endpoint}/teache/${userId}`);
+		let url = new URL(`${this.endpoint}/teacher/${userId}`);
 		url.searchParams.append('timeFrame', "Weekly");
 		url.searchParams.append('offset', offset.toString());
 

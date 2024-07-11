@@ -6,7 +6,7 @@ import { CoursePage } from './pages/course-page/course.page';
 
 const routes: Routes = [
 	{
-		path: 'list',
+		path: '',
 		component: CourseListPage,
 	},
 	{
@@ -18,7 +18,7 @@ const routes: Routes = [
 		component: CoursePage,
 	},
 
-	{ path: '', redirectTo: 'list', pathMatch: 'full' },
+	{ path: '', redirectTo: '', pathMatch: 'full' },
 
 ];
 

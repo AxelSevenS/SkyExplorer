@@ -1,13 +1,13 @@
 <section>
 	@if (course) {
-		<mat-card-title class="mat-card-title-create-form">Modifier le Cours</mat-card-title>
-		<div class="subtitle"></div>
+		<mat-card-title><h1>le Cours</h1></mat-card-title>
+		<div class="line"></div>
 
 		<mat-card>
 			<form class="grid " [formGroup]="editCourseForm" (ngSubmit)="onSubmit()">
 
 				<mat-card-content class="grid__container">
-					@if (authentication.user && authentication.user.id == course.flight.overseer.id || authentication.user?.role == UserRoles.Admin) {
+					@if (authentication.user && (authentication.user.id === course.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
 						<mat-form-field class="grid__child--full-width">
 							<mat-label>Intitulé du Cours</mat-label>
 							<input matInput formControlName="courseName" type="text">
@@ -42,27 +42,39 @@
 						<span class="grid__child--field">{{ course.flight.overseer.firstName }}  {{ course.flight.overseer.lastName }}</span>
 					}
 
-					<mat-form-field class="grid__child--half">
-						<mat-label>Date</mat-label>
+					@if (authentication.user && (authentication.user.id === course.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+						<mat-form-field class="grid__child--half">
+							<mat-label>Date</mat-label>
 
-						<input matInput formControlName="date" [matDatepicker]="picker">
-						<mat-hint>JJ/MM/AAAA</mat-hint>
-						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-						<mat-datepicker #picker></mat-datepicker>
-					</mat-form-field>
+							<input matInput formControlName="date" [matDatepicker]="picker">
+							<mat-hint>JJ/MM/AAAA</mat-hint>
+							<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+							<mat-datepicker #picker></mat-datepicker>
+						</mat-form-field>
 
-					<mat-form-field class="grid__child--half">
-						<mat-label>Heure</mat-label>
+						<mat-form-field class="grid__child--half">
+							<mat-label>Heure</mat-label>
 
-						<input type="time" matInput formControlName="time">
-					</mat-form-field>
+							<input type="time" matInput formControlName="time">
+						</mat-form-field>
+					}
+					@else {
+						<mat-label class="grid__child--label">Date</mat-label>
+						<span class="grid__child--field">{{ moment(course.flight.dateTime).toDate().toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</span>
+					}
 
 
-					<mat-form-field class="grid__child--full-width">
-						<mat-label>Durée</mat-label>
+					@if (authentication.user && (authentication.user.id === course.flight.overseer.id || authentication.user.role > UserRoles.Collaborator)) {
+						<mat-form-field class="grid__child--full-width">
+							<mat-label>Durée</mat-label>
 
-						<input type="time" matInput formControlName="duration">
-					</mat-form-field>
+							<input type="time" matInput formControlName="duration">
+						</mat-form-field>
+					}
+					@else {
+						<mat-label class="grid__child--label">Durée</mat-label>
+						<span class="grid__child--field">{{ course.flight.duration }}</span>
+					}
 
 
 					<mat-card-title class="mat-card-title-create-form-subtitle">Facturation</mat-card-title>

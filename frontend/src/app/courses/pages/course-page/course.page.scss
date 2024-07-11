@@ -1,18 +1,11 @@
 
 
 @import "../../../../variables.scss";
+@import "../../../../styles.scss";
 
 
 .grid {
 	&__container {
 		grid-template-columns: repeat(2, 1fr);
-		grid-auto-rows: minmax(70px, auto);
 	}
-}
-
-.subtitle {
-	height: 1px;
-	width: 25%;
-	background-color: #24265A;
-	margin: 0rem 0rem 2rem 1rem;
 }

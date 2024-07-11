@@ -1,0 +1,44 @@
+@import "../../../../variables.scss";
+
+.grid {
+	&__container {
+		grid-template-columns: repeat(2, 1fr);
+
+	}
+
+}
+
+#date-picker__field {
+	& mat-hint {
+		color: get-color(accent, 500);
+	}
+}
+
+
+
+
+.button-create-form {
+	margin-top: 2rem auto;
+	color: white;
+}
+
+.course-picture {
+	width: 30vw;
+	height: auto;
+}
+
+.create-plane {
+	width: 30vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}

@@ -1,0 +1,16 @@
+<section>
+	@for (plane of planes; track $index) {
+		<se-plane [entity]="plane">
+		</se-plane>
+
+
+
+	}
+</section>
+<section>
+	@if (authentication.user && authentication.user.role >= UserRoles.Collaborator) {
+	<button mat-raised-button color="primary" [routerLink]="['/planes/create']">
+		Ajouter
+	</button>
+	}
+</section>

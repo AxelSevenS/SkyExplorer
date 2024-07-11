@@ -22,4 +22,17 @@ export class CourseComponent extends EntityViewComponent<Course, CourseCreateDto
 	) {
 		super(authentication, entityService)
 	}
+
+	stringToColor(str: string): string {
+		let hash = 0;
+		for (var i = 0; i < str.length; i++) {
+			hash = str.charCodeAt(i) + ((hash << 15) - hash);
+		}
+		let colour = '#';
+		for (let i = 0; i < 3; i++) {
+			let value = (hash >> (i * 8)) & 0xFF;
+			colour += ('00' + value.toString(16)).substr(-2);
+		}
+		return colour;
+	}
 }

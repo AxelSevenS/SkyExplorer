@@ -1,0 +1,25 @@
+@if (entity) {
+<mat-card class="bill" appearance="outlined">
+	<mat-card-content [matMenuTriggerFor]="billPreview">
+		<mat-card-title>{{ entity.name }}</mat-card-title>
+		<mat-card-subtitle>	Url: {{ entity.name }}</mat-card-subtitle>
+
+
+	</mat-card-content>
+	<mat-menu class="bill-menu" #billPreview="matMenu" xPosition="after" yPosition="above">
+		<a [href]="entity.url">
+			{{ entity.url }}
+			</a>
+	</mat-menu>
+	@if (authentication.user && (authentication.user.role >= UserRoles.Staff )) {
+	<mat-card-actions>
+
+			<button class="bill__delete-btn" mat-raised-button (click)="delete()" color="warn">
+				<mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+				<mat-label>Supprimer</mat-label>
+			</button>
+
+	</mat-card-actions>
+	}
+</mat-card>
+}
