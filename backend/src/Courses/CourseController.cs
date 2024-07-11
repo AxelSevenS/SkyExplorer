@@ -1,6 +1,7 @@
 namespace SkyExplorer;
 
 using System.Linq.Expressions;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,13 +22,14 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 
 
 	[HttpGet("user/{userId}")]
-	public async Task<ActionResult<List<Course>>> GetForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0) {
+	public async Task<ActionResult<List<Course>>> GetForUser(uint userId, [FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] DateFrame dateFrame = DateFrame.AllTime, [FromQuery] int offset = 0) {
 		return Ok(await GetQuery
 			.Where(c =>
 				c.Flight.UserId == userId && c.Flight.User.Role == AppUser.Roles.User ||
 				c.Flight.OverseerId == userId && c.Flight.Overseer.Role == AppUser.Roles.Collaborator
 			)
 			.InTimeFrame(c => c.Flight.DateTime, timeFrame, offset)
+			.InDateFrame(c => c.Flight.DateTime, dateFrame, offset)
 			.OrderByDescending(c => c.Flight.DateTime)
 			.ToListAsync()
 		);
@@ -35,9 +37,10 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 
 
 	[HttpGet("time")]
-	public async Task<ActionResult<TimeSpan>> GetTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, int offset = 0){
+	public async Task<ActionResult<TimeSpan>> GetTime([FromQuery] TimeFrame timeFrame = TimeFrame.AllTime, [FromQuery] DateFrame dateFrame = DateFrame.AllTime, [FromQuery] int offset = 0){
 		return Ok(GetQuery
 			.InTimeFrame(c => c.Flight.DateTime, timeFrame, offset)
+			.InDateFrame(c => c.Flight.DateTime, dateFrame, offset)
 			.Select(c => c.Flight.Duration)
 			.ToList()
 			.Aggregate(TimeSpan.Zero, (sum, d) => sum.Add(d))
@@ -45,7 +48,7 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 	}
 
 	[HttpGet("count")]
-	public async Task<ActionResult<int>> GetCount(){
+	public async Task<ActionResult<int>> GetCount() {
 		return Ok(await GetQuery.CountAsync());
 	}
 
@@ -75,7 +78,7 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 			.FirstOrDefaultAsync(c => c.Id == id);
 		if (found is null) return NotFound();
 
-		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+		if (!VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
 
 		return await base.Update(id, dto);
 	}
@@ -87,17 +90,15 @@ public class CourseController(AppDbContext context) : TimeFrameController<Course
 			.FirstOrDefaultAsync(c => c.Id == id);
 		if (found is null) return NotFound();
 
-		if (! VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
+		if (!VerifyOwnershipOrRole(found.Flight.OverseerId, AppUser.Roles.Staff, out ActionResult<Course> result, out _, out _)) return result;
 
 		return await base.Delete(id);
 	}
 
 	[Authorize]
 	public override async Task<ActionResult<Course>> Add([FromForm] CourseSetupDto dto) {
-		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+		if (!VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
 
 		return await base.Add(dto);
 	}
-
-
 }

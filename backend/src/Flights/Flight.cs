@@ -76,7 +76,7 @@ public record Flight : IEntity {
 
 [Flags]
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum FlightType: ushort {
+public enum FlightType : ushort {
 	Lesson,
 	Leasure
 };

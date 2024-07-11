@@ -43,7 +43,7 @@ public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context)
 			return NotFound();
 		}
 
-		if (! dto.TryUpdate(found, Repository, out string error)) {
+		if (!dto.TryUpdate(found, Repository, out string error)) {
 			return BadRequest(error);
 		}
 
@@ -97,11 +97,11 @@ public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context)
 		result = null!;
 		userRole = AppUser.Roles.User;
 
-		if (! TryGetAuthenticatedUserId(out userId)) {
+		if (!TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
 			return false;
 		}
-		if (! VerifyRole(neededRole, out userRole)) {
+		if (!VerifyRole(neededRole, out userRole)) {
 			result = Forbid();
 			return false;
 		}
@@ -118,7 +118,7 @@ public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context)
 	/// True if the user is authenticated and posesses the given <c>authorizations</c> OR has <c>authId</c> as their Id, otherwise False.
 	/// </returns>
 	protected bool VerifyOwnership(uint authId, out ActionResult<T> result) {
-		if (! TryGetAuthenticatedUserId(out uint currentId)) {
+		if (!TryGetAuthenticatedUserId(out uint currentId)) {
 			result = Unauthorized();
 			return false;
 		}
@@ -169,11 +169,11 @@ public abstract class Controller<T, TSetupDto, TUpdateDto>(AppDbContext context)
 		result = null!;
 		userRole = AppUser.Roles.User;
 
-		if (! TryGetAuthenticatedUserId(out userId)) {
+		if (!TryGetAuthenticatedUserId(out userId)) {
 			result = Unauthorized();
 			return false;
 		}
-		if (authId != userId && ! VerifyRole(neededRole, out userRole)) {
+		if (authId != userId && !VerifyRole(neededRole, out userRole)) {
 			result = Forbid();
 			return false;
 		}

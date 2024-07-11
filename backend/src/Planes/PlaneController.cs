@@ -16,7 +16,7 @@ public class PlaneController(AppDbContext context) : RegularController<Plane, Pl
 		List<Plane> AvailablePlanes = await Repository.Planes.ToListAsync();
 		return AvailablePlanes.Count == 0
 			? 0
-			: AvailablePlanes.Count(p => p.Status == Plane.Availability.Available ) / AvailablePlanes.Count;
+			: AvailablePlanes.Count(p => p.Status == Plane.Availability.Available) / AvailablePlanes.Count;
 	}
 
 	[HttpPut("status/{id}")]
@@ -37,21 +37,21 @@ public class PlaneController(AppDbContext context) : RegularController<Plane, Pl
 
 	[Authorize]
 	public override async Task<ActionResult<Plane>> Update(uint id, [FromForm] PlaneUpdateDto dto) {
-		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+		if (!VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
 
 		return await base.Update(id, dto);
 	}
 
 	[Authorize]
 	public override async Task<ActionResult<Plane>> Delete(uint id) {
-		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+		if (!VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
 
 		return await base.Delete(id);
 	}
 
 	[Authorize]
 	public override async Task<ActionResult<Plane>> Add([FromForm] PlaneSetupDto dto) {
-		if (! VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
+		if (!VerifyRole(AppUser.Roles.Staff, out _)) return Unauthorized();
 
 		return await base.Add(dto);
 	}
