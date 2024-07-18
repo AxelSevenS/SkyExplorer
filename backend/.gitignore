@@ -2,8 +2,6 @@
 /obj
 /out
 
-swagger.json
-swagger.yaml
 
 # IDEs and editors
 .idea/
